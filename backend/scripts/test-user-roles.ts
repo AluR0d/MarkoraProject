@@ -6,11 +6,6 @@ async function testUserRoles() {
   try {
     await sequelize.authenticate();
     console.log('✅ Conexión con la BD establecida');
-
-    // Opcional: sincronizar modelos (NO recomendado en producción si ya tienes la BD creada)
-    // await sequelize.sync();
-
-    // Obtener un usuario y sus roles
     const user = await User.findByPk(1, {
       include: [Role],
     });
