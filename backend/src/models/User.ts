@@ -33,8 +33,8 @@ export class User extends Model {
   @Column(DataType.STRING(100))
   password!: string;
 
-  readonly createdAt?: Date;
-  readonly updatedAt?: Date;
+  readonly createdAt?: Date | null;
+  readonly updatedAt?: Date | null;
 
   @BelongsToMany(() => Role, () => UserRole)
   roles!: Role[];
