@@ -1,6 +1,4 @@
-// src/__tests__/utils/mockUser.ts
-
-import { User } from '../../models/User';
+import { User } from '../models/User';
 
 export const createMockUser = (overrides: Partial<User> = {}) =>
   ({

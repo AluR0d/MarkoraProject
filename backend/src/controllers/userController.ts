@@ -1,10 +1,29 @@
 import { Request, Response } from 'express';
-import { User } from '../models/User';
+import { UserService } from '../services/userService';
+import { createUserSchema } from '../schemas/createUserSchema';
 
 export class UserController {
-  getUserByPk = async (req: Request, res: Response): Promise<void> => {
+  getAllUsers = async (_req: Request, res: Response) => {
     try {
-      const user = await User.findByPk(req.params.id);
+      const users = await UserService.getAllUsers();
+      if (users.length === 0) {
+        res.status(404).json({ message: 'No users found' });
+        return;
+      }
+
+      res.status(200).json(users);
+      return;
+    } catch (error) {
+      console.error(`Error fetching users: ${error}`);
+      res.status(500).json({ message: 'Internal server error' });
+      return;
+    }
+  };
+
+  getUserByPk = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+      const user = await UserService.getUserByPk(Number(id));
       if (!user) {
         res.status(404).json({ message: 'User not found' });
         return;
@@ -13,9 +32,28 @@ export class UserController {
       res.status(200).json(user);
       return;
     } catch (error) {
-      console.error('Error fetching user:', error);
+      console.error(`Error fetching user: ${error}`);
       res.status(500).json({ message: 'Internal server error' });
       return;
+    }
+  };
+
+  createUser = async (req: Request, res: Response) => {
+    const result = createUserSchema.safeParse(req.body);
+
+    if (!result.success) {
+      res.status(400).json({ errors: result.error.flatten().fieldErrors });
+    } else {
+      try {
+        const newUser = await UserService.createUser(result.data);
+
+        res.status(201).json(newUser);
+        return;
+      } catch (error) {
+        console.error(`Error creating user: ${error}`);
+        res.status(500).json({ message: 'Internal server error' });
+        return;
+      }
     }
   };
 }

@@ -9,16 +9,18 @@ import {
   AllowNull,
   BelongsToMany,
 } from 'sequelize-typescript';
+import { CreationOptional } from 'sequelize';
 import { tableNames } from '../constants/tableNames';
 import { Role } from './Role';
 import { UserRole } from './UserRole';
+import { CreateUserDTO } from '../schemas/createUserSchema';
 
 @Table({ tableName: tableNames.USERS, timestamps: true })
-export class User extends Model {
+export class User extends Model<User, CreateUserDTO> {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
-  id!: number;
+  id!: CreationOptional<number>;
 
   @AllowNull(false)
   @Column(DataType.STRING(50))
