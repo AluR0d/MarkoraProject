@@ -5,7 +5,7 @@ import userRoutes from './routes/userRoutes';
 
 const app = express();
 
-const allowedOrigins = ['https://markora-frontend.onrender.com'];
+const allowedOrigins = ['https://frontend-markora.onrender.com'];
 
 app.use(
   cors({
