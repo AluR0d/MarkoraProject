@@ -6,9 +6,15 @@ import { UserRole } from '../models/UserRole';
 import { Owner } from '../models/Owner';
 import { Place } from '../models/Place';
 
-dotenv.config();
+// Cargar el .env.local en desarrollo
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: '.env.local' });
+} else {
+  dotenv.config();
+}
 
-export const sequelize = new Sequelize({
+// Configuración base de Sequelize
+const sequelizeConfig: any = {
   dialect: 'postgres',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
@@ -17,10 +23,16 @@ export const sequelize = new Sequelize({
   database: process.env.DB_NAME,
   models: [User, Role, UserRole, Owner, Place],
   logging: false,
-  dialectOptions: {
+};
+
+// Solo en producción (Render) añadimos SSL
+if (process.env.NODE_ENV === 'production') {
+  sequelizeConfig.dialectOptions = {
     ssl: {
       require: true,
       rejectUnauthorized: false,
     },
-  },
-});
+  };
+}
+
+export const sequelize = new Sequelize(sequelizeConfig);
