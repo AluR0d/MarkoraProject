@@ -4,8 +4,14 @@ import bodyParser from 'body-parser';
 import userRoutes from './routes/userRoutes';
 
 const app = express();
+const allowedOrigins = ['https://markora-frontend.onrender.com'];
 
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 
 app.use('/users', userRoutes);
