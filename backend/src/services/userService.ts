@@ -1,7 +1,7 @@
 import { CreateUserDTO } from '../schemas/createUserSchema';
 import { User } from '../models/User';
 import { UpdateUserDTO } from '../schemas/updateUserSchema';
-
+import bcrypt from 'bcrypt';
 export class UserService {
   static async getAllUsers() {
     const users = await User.findAll();
@@ -14,7 +14,12 @@ export class UserService {
   }
 
   static async createUser(data: CreateUserDTO) {
-    const user = await User.create(data);
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    const user = await User.create({
+      ...data,
+      password: hashedPassword,
+    });
     return user;
   }
 
@@ -24,5 +29,14 @@ export class UserService {
 
     const updatedUser = await User.findByPk(id);
     return updatedUser;
+  }
+
+  static async deleteUser(id: number) {
+    const affectedRows = await User.destroy({ where: { id } });
+    return affectedRows > 0;
+  }
+
+  static async comparePasswords(plainPassword: string, hashedPassword: string) {
+    return await bcrypt.compare(plainPassword, hashedPassword);
   }
 }
