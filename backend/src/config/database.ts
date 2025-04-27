@@ -17,4 +17,10 @@ export const sequelize = new Sequelize({
   database: process.env.DB_NAME,
   models: [User, Role, UserRole, Owner, Place],
   logging: false,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
 });
