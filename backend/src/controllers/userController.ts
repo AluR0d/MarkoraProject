@@ -110,4 +110,55 @@ export class UserController {
       return;
     }
   };
+
+  getUserRoles = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+      const roles = await UserService.getRolesForUser(Number(id));
+      if (!roles) {
+        res.status(404).json({ message: 'No user was found to show roles.' });
+        return;
+      }
+
+      res.status(200).json(roles);
+      return;
+    } catch (error) {
+      console.error(`Error fetching roles from user: ${error}`);
+      res.status(500).json({ message: 'Internal server error' });
+      return;
+    }
+  };
+
+  assignUserRoles = async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    const { roleId } = req.body;
+
+    if (!Array.isArray(roleId)) {
+      res.status(400).json({
+        message: 'roleIds must be an array of numbers and they must exist',
+      });
+      return;
+    }
+
+    try {
+      const roles = await UserService.assignRolesForUser(
+        Number(userId),
+        roleId
+      );
+      if (!roles) {
+        res.status(404).json({ message: 'No user was found to add roles' });
+        return;
+      }
+
+      const updatedUserRoles = await UserService.getRolesForUser(
+        Number(userId)
+      );
+      res.status(200).json(updatedUserRoles);
+      return;
+    } catch (error) {
+      console.error(`Error assigning role: ${error}`);
+      res.status(500).json({ message: 'Internal server error' });
+      return;
+    }
+  };
 }

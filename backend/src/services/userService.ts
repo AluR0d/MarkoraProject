@@ -2,6 +2,7 @@ import { CreateUserDTO } from '../schemas/User/createUserSchema';
 import { User } from '../models/User';
 import { UpdateUserDTO } from '../schemas/User/updateUserSchema';
 import bcrypt from 'bcrypt';
+import { Role } from '../models/Role';
 export class UserService {
   static async getAllUsers() {
     const users = await User.findAll();
@@ -44,5 +45,28 @@ export class UserService {
 
   static async comparePasswords(plainPassword: string, hashedPassword: string) {
     return await bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  static async getRolesForUser(id: number) {
+    return await User.findByPk(id, {
+      include: [Role],
+    });
+  }
+
+  static async assignRolesForUser(userId: number, roleId: number[]) {
+    const user = await User.findByPk(userId);
+    if (user) {
+      await user.$set('roles', roleId);
+      return await user.$get('roles');
+    }
+    return null;
+  }
+
+  static async getUserByEmail(email: string) {
+    return await User.findOne({
+      where: {
+        email,
+      },
+    });
   }
 }

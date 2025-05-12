@@ -6,7 +6,9 @@ const userController = new UserController();
 
 router.get('/', userController.getAllUsers);
 router.get('/:id', userController.getUserByPk);
+router.get('/:id/roles', userController.getUserRoles);
 router.post('/', userController.createUser);
+router.post('/:id/roles', userController.assignUserRoles);
 router.put('/:id', userController.updateUser);
 router.delete('/:id', userController.deleteUser);
 

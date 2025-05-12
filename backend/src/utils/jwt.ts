@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-// No usamos promisify directamente, hacemos nuestra propia función async
 export const generateToken = async (
   payload: Record<string, unknown>,
   secret: string,

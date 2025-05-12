@@ -5,6 +5,7 @@ import userRoutes from './routes/userRoutes';
 import placeRoutes from './routes/placeRoutes';
 import ownerRoutes from './routes/ownerRoutes';
 import roleRouter from './routes/roleRoutes';
+import authRoutes from './routes/authRoutes';
 
 const app = express();
 
@@ -25,5 +26,6 @@ app.use('/users', userRoutes);
 app.use('/places', placeRoutes);
 app.use('/owners', ownerRoutes);
 app.use('/roles', roleRouter);
+app.use('/auth', authRoutes);
 
 export default app;
