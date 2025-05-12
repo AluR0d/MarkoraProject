@@ -8,7 +8,9 @@ import {
   Default,
   BelongsTo,
   ForeignKey,
+  BeforeCreate,
 } from 'sequelize-typescript';
+import { nanoid } from 'nanoid';
 import { tableNames } from '../constants/tableNames';
 import { Owner } from './Owner';
 
@@ -56,8 +58,8 @@ export class Place extends Model {
   @Column(DataType.BOOLEAN)
   active!: boolean;
 
-  // @Column(DataType.GEOMETRY('POINT'))
-  // coords!: { type: 'Point'; coordinates: [number, number] };
+  //@Column(DataType.GEOMETRY('POINT'))
+  //coords!: { type: 'Point'; coordinates: [number, number] };
   @Column(DataType.JSON)
   coords!: { type: 'Point'; coordinates: [number, number] };
 
@@ -70,4 +72,9 @@ export class Place extends Model {
 
   @BelongsTo(() => Owner)
   owner!: Owner;
+
+  @BeforeCreate
+  static generateId(place: Place) {
+    place.id = nanoid(27);
+  }
 }

@@ -6,14 +6,12 @@ import { UserRole } from '../models/UserRole';
 import { Owner } from '../models/Owner';
 import { Place } from '../models/Place';
 
-// Cargar el .env.local en desarrollo
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config({ path: '.env.local' });
 } else {
   dotenv.config();
 }
 
-// Configuración base de Sequelize
 const sequelizeConfig: any = {
   dialect: 'postgres',
   host: process.env.DB_HOST,
@@ -25,7 +23,6 @@ const sequelizeConfig: any = {
   logging: false,
 };
 
-// Solo en producción (Render) añadimos SSL
 if (process.env.NODE_ENV === 'production') {
   sequelizeConfig.dialectOptions = {
     ssl: {

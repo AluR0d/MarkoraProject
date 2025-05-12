@@ -24,7 +24,13 @@ export class UserService {
   }
 
   static async updateUser(id: number, data: UpdateUserDTO) {
-    const [affectedRows] = await User.update(data, { where: { id } });
+    const dataUpdated = data;
+    if (data.password) {
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+      data.password = hashedPassword;
+      dataUpdated.password = hashedPassword;
+    }
+    const [affectedRows] = await User.update(dataUpdated, { where: { id } });
     if (affectedRows === 0) return null;
 
     const updatedUser = await User.findByPk(id);

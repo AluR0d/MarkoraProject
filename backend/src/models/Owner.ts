@@ -22,6 +22,9 @@ export class Owner extends Model {
   @Column(DataType.STRING(50))
   name!: string;
 
+  @Column(DataType.TEXT)
+  description!: string;
+
   readonly createdAt!: Date;
   readonly updatedAt!: Date;
 

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services/userService';
 import { createUserSchema } from '../schemas/createUserSchema';
-import { UpdateUserSchema } from '../schemas/updateUserSchema';
+import { updateUserSchema } from '../schemas/updateUserSchema';
 
 export class UserController {
   getAllUsers = async (_req: Request, res: Response) => {
@@ -60,7 +60,7 @@ export class UserController {
 
   updateUser = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result = UpdateUserSchema.safeParse(req.body);
+    const result = updateUserSchema.safeParse(req.body);
 
     if (!result.success) {
       res.status(400).json({ errors: result.error.flatten().fieldErrors });
@@ -96,7 +96,12 @@ export class UserController {
         return;
       }
 
-      await UserService.deleteUser(Number(id));
+      const deletedUser = await UserService.deleteUser(Number(id));
+      if (!deletedUser) {
+        res.status(400).json({ message: 'Failed to delete user' });
+        return;
+      }
+
       res.status(200).json({ message: 'User deleted successfully' });
       return;
     } catch (error) {

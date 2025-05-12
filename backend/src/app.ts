@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import userRoutes from './routes/userRoutes';
+import placeRoutes from './routes/placeRoutes';
+import ownerRoutes from './routes/ownerRoutes';
 
 const app = express();
 
@@ -19,5 +21,7 @@ app.use(
 app.use(bodyParser.json());
 
 app.use('/users', userRoutes);
+app.use('/places', placeRoutes);
+app.use('/owners', ownerRoutes);
 
 export default app;

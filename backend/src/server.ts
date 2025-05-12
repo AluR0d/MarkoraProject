@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
     console.log('Database connection has been established successfully.');
 
     await sequelize.sync();
-    console.log('🚀 Servidor preparado para recibir peticiones...');
+    console.log('Server ready to recibe requests...');
 
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
