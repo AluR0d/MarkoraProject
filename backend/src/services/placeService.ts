@@ -1,6 +1,6 @@
 import { Place } from '../models/Place';
-import { CreatePlaceDTO } from '../schemas/createPlaceSchema';
-import { UpdatePlaceDTO } from '../schemas/updatePlaceSchema';
+import { CreatePlaceDTO } from '../schemas/Place/createPlaceSchema';
+import { UpdatePlaceDTO } from '../schemas/Place/updatePlaceSchema';
 
 export class PlaceService {
   static async getAllPlaces(page = 1, limit = 10) {

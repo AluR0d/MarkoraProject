@@ -1,6 +1,6 @@
 import { Owner } from '../models/Owner';
-import { CreateOwnerDTO } from '../schemas/createOwnerSchema';
-import { UpdateOwnerDTO } from '../schemas/updateOwnerSchema';
+import { CreateOwnerDTO } from '../schemas/Owner/createOwnerSchema';
+import { UpdateOwnerDTO } from '../schemas/Owner/updateOwnerSchema';
 
 export class OwnerService {
   static async getAllOwners() {

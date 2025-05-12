@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services/userService';
-import { createUserSchema } from '../schemas/createUserSchema';
-import { updateUserSchema } from '../schemas/updateUserSchema';
+import { createUserSchema } from '../schemas/User/createUserSchema';
+import { updateUserSchema } from '../schemas/User/updateUserSchema';
 
 export class UserController {
   getAllUsers = async (_req: Request, res: Response) => {
@@ -98,7 +98,7 @@ export class UserController {
 
       const deletedUser = await UserService.deleteUser(Number(id));
       if (!deletedUser) {
-        res.status(400).json({ message: 'Failed to delete user' });
+        res.status(400).json({ message: 'No user was deleted' });
         return;
       }
 

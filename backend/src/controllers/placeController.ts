@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { PlaceService } from '../services/placeService';
-import { createPlaceSchema } from '../schemas/createPlaceSchema';
-import { updatePlaceSchema } from '../schemas/updatePlaceSchema';
+import { createPlaceSchema } from '../schemas/Place/createPlaceSchema';
+import { updatePlaceSchema } from '../schemas/Place/updatePlaceSchema';
 import { defaultValues } from '../constants/defaultValues';
 
 export class PlaceController {
@@ -122,7 +122,7 @@ export class PlaceController {
 
       const deletedPlace = await PlaceService.deletePlace(id);
       if (!deletedPlace) {
-        res.status(400).json({ message: 'Failed to delete place' });
+        res.status(400).json({ message: 'No place was deleted' });
         return;
       }
 

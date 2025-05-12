@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import userRoutes from './routes/userRoutes';
 import placeRoutes from './routes/placeRoutes';
 import ownerRoutes from './routes/ownerRoutes';
+import roleRouter from './routes/roleRoutes';
 
 const app = express();
 
@@ -23,5 +24,6 @@ app.use(bodyParser.json());
 app.use('/users', userRoutes);
 app.use('/places', placeRoutes);
 app.use('/owners', ownerRoutes);
+app.use('/roles', roleRouter);
 
 export default app;

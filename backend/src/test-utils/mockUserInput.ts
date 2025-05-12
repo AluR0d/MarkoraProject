@@ -1,4 +1,4 @@
-import { CreateUserDTO } from '../schemas/createUserSchema';
+import { CreateUserDTO } from '../schemas/User/createUserSchema';
 
 export const mockUserInput = (
   overrides: Partial<CreateUserDTO> = {}

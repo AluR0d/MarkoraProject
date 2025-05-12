@@ -13,7 +13,7 @@ import { CreationOptional } from 'sequelize';
 import { tableNames } from '../constants/tableNames';
 import { Role } from './Role';
 import { UserRole } from './UserRole';
-import { CreateUserDTO } from '../schemas/createUserSchema';
+import { CreateUserDTO } from '../schemas/User/createUserSchema';
 
 @Table({ tableName: tableNames.USERS, timestamps: true })
 export class User extends Model<User, CreateUserDTO> {

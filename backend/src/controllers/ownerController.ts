@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { OwnerService } from '../services/ownerService';
-import { createOwnerSchema } from '../schemas/createOwnerSchema';
-import { updateOwnerSchema } from '../schemas/updateOwnerSchema';
+import { createOwnerSchema } from '../schemas/Owner/createOwnerSchema';
+import { updateOwnerSchema } from '../schemas/Owner/updateOwnerSchema';
 
 export class OwnerController {
   getAllOwners = async (_req: Request, res: Response) => {
@@ -109,7 +109,7 @@ export class OwnerController {
 
       const deletedOwner = await OwnerService.deleteOwner(Number(id));
       if (!deletedOwner) {
-        res.status(400).json({ message: 'Failed to delete owner' });
+        res.status(400).json({ message: 'No owner was deleted' });
         return;
       }
 

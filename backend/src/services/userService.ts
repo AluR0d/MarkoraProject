@@ -1,6 +1,6 @@
-import { CreateUserDTO } from '../schemas/createUserSchema';
+import { CreateUserDTO } from '../schemas/User/createUserSchema';
 import { User } from '../models/User';
-import { UpdateUserDTO } from '../schemas/updateUserSchema';
+import { UpdateUserDTO } from '../schemas/User/updateUserSchema';
 import bcrypt from 'bcrypt';
 export class UserService {
   static async getAllUsers() {
