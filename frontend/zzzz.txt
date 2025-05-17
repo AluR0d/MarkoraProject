@@ -1,0 +1,4 @@
+Cosas pendientes que se me van ocurriendo:
+    -Crear boton de redigirir entre login y register.
+    -Crear href de "has olvidado tu contraseña" <- Mandar correo para cambiarla.
+    

@@ -6,10 +6,12 @@ import placeRoutes from './routes/placeRoutes';
 import ownerRoutes from './routes/ownerRoutes';
 import roleRouter from './routes/roleRoutes';
 import authRoutes from './routes/authRoutes';
+import { ApiError } from './utils/ApiError';
+import { Request, Response, NextFunction } from 'express';
 
 const app = express();
 
-const allowedOrigins = ['https://frontend-markora.onrender.com'];
+const allowedOrigins = ['http://localhost:5173'];
 
 app.use(
   cors({
@@ -27,5 +29,17 @@ app.use('/places', placeRoutes);
 app.use('/owners', ownerRoutes);
 app.use('/roles', roleRouter);
 app.use('/auth', authRoutes);
+
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  if (err instanceof ApiError) {
+    res.status(err.statusCode).json({ message: err.message });
+    return;
+  }
+
+  console.error('Unexpected error:', err);
+
+  res.status(500).json({ message: 'Internal server error' });
+  return;
+});
 
 export default app;
