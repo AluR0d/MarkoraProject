@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/userController';
+import { authenticateJWT } from '../middlewares/authenticateJWT';
 
 const router = Router();
 const userController = new UserController();
 
-router.get('/', userController.getAllUsers);
+router.get('/', authenticateJWT, userController.getAllUsers);
 router.get('/:id', userController.getUserByPk);
 router.get('/:id/roles', userController.getUserRoles);
 router.post('/', userController.createUser);

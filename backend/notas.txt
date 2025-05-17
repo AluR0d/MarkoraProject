@@ -1,0 +1,8 @@
+Seleccionar places --> crear correos en base a variables --> mandar los correos a los mails.
+
+-------------------------
+
+MIRAR TEMA Correo con Campañas y el mensaje generado automatico que se pueda personalizar.
+
+Panel de usuarios, panel places
+

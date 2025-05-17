@@ -4,8 +4,14 @@ import { createUserSchema } from '../schemas/User/createUserSchema';
 import { updateUserSchema } from '../schemas/User/updateUserSchema';
 
 export class UserController {
-  getAllUsers = async (_req: Request, res: Response) => {
+  getAllUsers = async (req: Request, res: Response) => {
     try {
+      const { roles } = (req as any).user;
+
+      if (!roles || !roles.includes('Administrator')) {
+        res.status(403).json({ message: 'Forbidden' });
+        return;
+      }
       const users = await UserService.getAllUsers();
       if (users.length === 0) {
         res.status(404).json({ message: 'No users found' });

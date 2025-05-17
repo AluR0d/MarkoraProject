@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request } from 'express';
 import { verifyToken } from '../utils/jwt';
 import dotenv from 'dotenv';
 
@@ -11,11 +11,7 @@ export interface AuthRequest extends Request {
   };
 }
 
-export const authenticateJWT = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const authenticateJWT = async (req: any, res: any, next: any) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {

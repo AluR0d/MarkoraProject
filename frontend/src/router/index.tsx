@@ -1,15 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from '../components/pages/LoginPage';
-import RegisterPage from '../components/pages/RegisterPage'; // Importar RegisterPage
+import { BrowserRouter as Router, Routes } from 'react-router-dom';
 
 function AppRouter() {
   return (
     <Router>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        {/* Aquí después irán más rutas */}
-      </Routes>
+      <Routes></Routes>
     </Router>
   );
 }

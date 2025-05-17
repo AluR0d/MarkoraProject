@@ -46,12 +46,12 @@ export default defineConfig([
       ...eslintPluginImport.configs.recommended.rules,
       'import/no-unresolved': 'off',
 
-      'prefer-const': 'warn', // Igual que en backend
-      'react/react-in-jsx-scope': 'off', // No hace falta importar React en Vite/React 18+
+      'prefer-const': 'warn',
+      'react/react-in-jsx-scope': 'off',
     },
     settings: {
       react: {
-        version: 'detect', // Detectar automáticamente la versión de React
+        version: 'detect',
       },
     },
   },
