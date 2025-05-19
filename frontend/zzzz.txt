@@ -1,8 +1,16 @@
 Cosas pendientes que se me van ocurriendo:
-    -Crear panel /admin para gestion de usuarios, lugares y campañas
+    -Crear panel /admin para gestion de usuarios, lugares, dueños de lugares y campañas(en un futuro).
+    -Crear filtros para usuarios y lugares.
+    -Testear usuarios y lugares, intentar romper la app.
     -Extender panel usuario para modificar los datos.
     -Crear boton de redigirir entre login y register.
     -Crear href de "has olvidado tu contraseña" <- Mandar correo para cambiarla.
+    -Mantener una navbar general en toda la pagina que permita redireccion por todos los endpoints.
     
 ---BACKEND---
     -Al implementar ApiError, quitar todos los try/catch
+    -Crear tablas, modelos, cruds de campaña, emails, etc.(en un futuro).
+
+
+---CSS---
+    -Una vez sea todo añadido y este funcional(funciones principales de la app), crear rama y trabajar sobre esta para estilizar toda la aplicacion en su conjunto.
