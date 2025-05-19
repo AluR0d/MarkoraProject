@@ -52,3 +52,7 @@ export async function register(name: string, email: string, password: string) {
     throw new Error(message);
   }
 }
+
+export function logout() {
+  localStorage.removeItem('token');
+}

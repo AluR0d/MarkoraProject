@@ -5,7 +5,9 @@ import bcrypt from 'bcrypt';
 import { Role } from '../models/Role';
 export class UserService {
   static async getAllUsers() {
-    const users = await User.findAll();
+    const users = await User.findAll({
+      include: [Role],
+    });
     return users;
   }
 
@@ -16,26 +18,46 @@ export class UserService {
 
   static async createUser(data: CreateUserDTO) {
     const hashedPassword = await bcrypt.hash(data.password, 10);
+    const { roles, ...rest } = data;
 
     const user = await User.create({
-      ...data,
+      ...rest,
       password: hashedPassword,
     });
-    return user;
+
+    let roleIds: number[] = [];
+
+    if (roles && Array.isArray(roles) && roles.length > 0) {
+      roleIds = roles;
+    } else {
+      const basicRole = await Role.findOne({ where: { name: 'Basic' } });
+      if (basicRole) {
+        roleIds = [basicRole.id];
+      }
+    }
+
+    await user.$set('roles', roleIds);
+
+    return await User.findByPk(user.id, { include: [Role] });
   }
 
   static async updateUser(id: number, data: UpdateUserDTO) {
-    const dataUpdated = data;
+    const { roles, ...dataUpdated } = data;
+
     if (data.password) {
       const hashedPassword = await bcrypt.hash(data.password, 10);
-      data.password = hashedPassword;
       dataUpdated.password = hashedPassword;
     }
+
     const [affectedRows] = await User.update(dataUpdated, { where: { id } });
     if (affectedRows === 0) return null;
 
-    const updatedUser = await User.findByPk(id);
-    return updatedUser;
+    // ✅ Asignar roles si llegan
+    if (roles && Array.isArray(roles)) {
+      await this.assignRolesForUser(id, roles);
+    }
+
+    return await User.findByPk(id, { include: [Role] });
   }
 
   static async deleteUser(id: number) {

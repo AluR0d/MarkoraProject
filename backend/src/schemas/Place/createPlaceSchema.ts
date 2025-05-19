@@ -10,7 +10,7 @@ export const createPlaceSchema = z.object({
     .max(9, 'phone must be no longer than 9 digits')
     .optional(),
   email: z.array(z.string().email('Invalid email format')).optional(),
-  website: z.string().url('Invalid URL format').optional(),
+  website: z.string().optional(),
   opening_hours: z.string().optional(),
   rating: z
     .preprocess(

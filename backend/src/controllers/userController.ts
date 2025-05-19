@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserService } from '../services/userService';
 import { createUserSchema } from '../schemas/User/createUserSchema';
 import { updateUserSchema } from '../schemas/User/updateUserSchema';
+import { ApiError } from '../utils/ApiError';
 
 export class UserController {
   getAllUsers = async (req: Request, res: Response) => {
@@ -51,16 +52,14 @@ export class UserController {
     if (!result.success) {
       res.status(400).json({ errors: result.error.flatten().fieldErrors });
     } else {
-      try {
-        const newUser = await UserService.createUser(result.data);
-
-        res.status(201).json(newUser);
-        return;
-      } catch (error) {
-        console.error(`Error creating user: ${error}`);
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+      const existingUser = await UserService.getUserByEmail(result.data.email);
+      if (existingUser) {
+        throw new ApiError('Email already registered', 409);
       }
+      const newUser = await UserService.createUser(result.data);
+
+      res.status(201).json(newUser);
+      return;
     }
   };
 

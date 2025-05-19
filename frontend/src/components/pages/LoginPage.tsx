@@ -5,18 +5,24 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { login } from '../../services/authService';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
+import { getUserFromToken } from '../../utils/jwt';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate(); // para redirigir al usuario
+  const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleLogin = async (data: { email: string; password: string }) => {
     setIsLoading(true);
     setErrorMessage('');
     try {
       await login(data.email, data.password);
+      const token = localStorage.getItem('token');
+      const loggedUser = token ? getUserFromToken(token) : null;
 
+      setUser(loggedUser);
       navigate('/home');
     } catch (error: any) {
       setErrorMessage(error.message);

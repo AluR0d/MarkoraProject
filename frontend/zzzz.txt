@@ -1,4 +1,8 @@
 Cosas pendientes que se me van ocurriendo:
+    -Crear panel /admin para gestion de usuarios, lugares y campañas
+    -Extender panel usuario para modificar los datos.
     -Crear boton de redigirir entre login y register.
     -Crear href de "has olvidado tu contraseña" <- Mandar correo para cambiarla.
     
+---BACKEND---
+    -Al implementar ApiError, quitar todos los try/catch

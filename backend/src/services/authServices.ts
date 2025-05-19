@@ -4,6 +4,7 @@ import { CreateUserDTO } from '../schemas/User/createUserSchema';
 import { User } from '../models/User';
 import { defaultValues } from '../constants/defaultValues';
 import { generateToken } from '../utils/jwt';
+import { ApiError } from '../utils/ApiError';
 
 export class AuthService {
   static async registerUser(data: CreateUserDTO) {
@@ -15,7 +16,7 @@ export class AuthService {
       where: { name: defaultValues.d_userRole },
     });
 
-    if (defaultRole) await user.$add('roles', [defaultRole.id]);
+    if (defaultRole) await user!.$add('roles', [defaultRole.id]);
 
     return user;
   }
@@ -27,7 +28,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new Error('Invalid credentials');
+      throw new ApiError('Invalid credentials', 401);
     }
     const isValid = await UserService.comparePasswords(
       data.password,
@@ -35,10 +36,12 @@ export class AuthService {
     );
 
     if (!isValid) {
-      throw new Error('Invalid credentials');
+      throw new ApiError('Invalid credentials', 401);
     }
     const payload = {
-      userId: user.id,
+      id: user.id,
+      name: user.name,
+      email: user.email,
       roles: user.roles.map((role) => role.name),
     };
     const token = await generateToken(payload, process.env.JWT_SECRET!, {
