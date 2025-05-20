@@ -1,14 +1,50 @@
 import { Place } from '../models/Place';
 import { CreatePlaceDTO } from '../schemas/Place/createPlaceSchema';
 import { UpdatePlaceDTO } from '../schemas/Place/updatePlaceSchema';
+import { Op } from 'sequelize';
 
 export class PlaceService {
-  static async getAllPlaces(page = 1, limit = 10) {
+  static async getAllPlaces(
+    page = 1,
+    limit = 10,
+    filters: {
+      name?: string;
+      zone?: string;
+      rating?: number;
+      active?: boolean;
+    } = {},
+    orderBy?: string,
+    order: 'asc' | 'desc' = 'asc'
+  ) {
     const offset = (page - 1) * limit;
 
+    const where: any = {};
+
+    if (filters.name) {
+      where.name = { [Op.iLike]: `%${filters.name}%` };
+    }
+
+    if (filters.zone) {
+      where.zone = { [Op.iLike]: `%${filters.zone}%` };
+    }
+
+    if (filters.rating !== undefined) {
+      where.rating = { [Op.gte]: filters.rating };
+    }
+
+    if (filters.active !== undefined) {
+      where.active = filters.active;
+    }
+
+    const orderOption: [string, 'ASC' | 'DESC'][] = orderBy
+      ? [[orderBy, order.toUpperCase() as 'ASC' | 'DESC']]
+      : [];
+
     const { count, rows } = await Place.findAndCountAll({
+      where,
       limit,
       offset,
+      order: orderOption,
     });
 
     return {

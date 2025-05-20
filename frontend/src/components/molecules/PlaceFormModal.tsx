@@ -66,12 +66,12 @@ export default function PlaceFormModal({
     }
   }, [initialData, open]);
 
-  const isValid = isEditing
-    ? true
-    : formData.name?.trim() &&
-      formData.address?.trim() &&
-      formData.types &&
-      formData.types.length > 0;
+  const isValid =
+    !!formData.name?.trim() &&
+    !!formData.zone?.trim() &&
+    !!formData.address?.trim() &&
+    !!formData.types &&
+    formData.types.length > 0;
 
   const handleSubmit = () => {
     const cleanData = Object.fromEntries(
@@ -89,6 +89,7 @@ export default function PlaceFormModal({
         <TextField
           fullWidth
           label="Nombre"
+          required
           margin="normal"
           value={formData.name || ''}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -96,6 +97,7 @@ export default function PlaceFormModal({
         <TextField
           fullWidth
           label="Zona"
+          required
           margin="normal"
           value={formData.zone || ''}
           onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
@@ -103,6 +105,7 @@ export default function PlaceFormModal({
         <TextField
           fullWidth
           label="Dirección"
+          required
           margin="normal"
           value={formData.address || ''}
           onChange={(e) =>
@@ -182,12 +185,16 @@ export default function PlaceFormModal({
         <TextField
           fullWidth
           label="Tipos (separados por comas)"
+          required
           margin="normal"
           value={(formData.types || []).join(', ')}
           onChange={(e) =>
             setFormData({
               ...formData,
-              types: e.target.value.split(',').map((t) => t.trim()),
+              types: e.target.value
+                .split(',')
+                .map((t) => t.trim())
+                .filter((t) => t),
             })
           }
         />

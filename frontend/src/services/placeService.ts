@@ -19,7 +19,20 @@ export const PlaceService = {
         headers: { Authorization: `Bearer ${token()}` },
       }
     );
-    return res.data; // se espera que venga en forma { data, totalPages, currentPage }
+    return res.data;
+  },
+
+  getFiltered: async (
+    queryString: string
+  ): Promise<{
+    data: Place[];
+    totalPages: number;
+    currentPage: number;
+  }> => {
+    const res = await axios.get(`${API_URL}/places?${queryString}`, {
+      headers: { Authorization: `Bearer ${token()}` },
+    });
+    return res.data;
   },
 
   create: async (place: Partial<Place>): Promise<Place> => {

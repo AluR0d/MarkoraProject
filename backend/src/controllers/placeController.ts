@@ -8,21 +8,33 @@ export class PlaceController {
   getAllPlaces = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || defaultValues.d_page;
     const limit = parseInt(req.query.limit as string) || defaultValues.d_limit;
-    try {
-      const result = await PlaceService.getAllPlaces(page, limit);
+    const orderBy = req.query.orderBy as string;
+    const order = (req.query.order as 'asc' | 'desc') || 'asc';
 
-      if (result.data.length === 0) {
-        res.status(404).json({ message: 'No places found' });
-        return;
-      }
+    const filters = {
+      name: req.query.name as string,
+      zone: req.query.zone as string,
+      rating: req.query.rating
+        ? parseFloat(req.query.rating as string)
+        : undefined,
+      active:
+        req.query.active === 'true'
+          ? true
+          : req.query.active === 'false'
+            ? false
+            : undefined,
+    };
 
-      res.status(200).json(result);
-      return;
-    } catch (error) {
-      console.error(`Error fetching places: ${error}`);
-      res.status(500).json({ message: 'Internal server error' });
-      return;
-    }
+    const result = await PlaceService.getAllPlaces(
+      page,
+      limit,
+      filters,
+      orderBy,
+      order
+    );
+
+    res.status(200).json(result);
+    return;
   };
 
   getAllPlacesNotPaginated = async (_req: Request, res: Response) => {

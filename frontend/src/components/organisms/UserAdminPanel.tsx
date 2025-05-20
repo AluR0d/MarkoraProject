@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { TableContainer, Paper } from '@mui/material';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 
+import NotificationSnackbar from '../atoms/NotificationSnackbar';
+import ConfirmDialog from '../atoms/ConfirmDialog';
 import UserFormModal from '../molecules/UserFormModal';
 import UserTable from '../molecules/UserTable';
 import PanelHeader from '../molecules/PanelHeader';
@@ -12,10 +13,31 @@ import { Role } from '../../types/Role';
 export default function UserAdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
-  const [open, setOpen] = useState(false); // para crear
+  const [open, setOpen] = useState(false);
   const [editUser, setEditUser] = useState<
     (User & { roleIds: number[] }) | null
   >(null);
+
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    userId?: number;
+  }>({
+    open: false,
+  });
+
+  const showSnackbar = (message: string, severity: 'success' | 'error') => {
+    setSnackbar({ open: true, message, severity });
+  };
 
   const fetchUsers = async () => {
     try {
@@ -29,6 +51,7 @@ export default function UserAdminPanel() {
       setUsers(response.data);
     } catch (error) {
       console.error('Error al cargar usuarios', error);
+      showSnackbar('Error al cargar usuarios', 'error');
     }
   };
 
@@ -44,6 +67,7 @@ export default function UserAdminPanel() {
       setRoles(response.data);
     } catch (error) {
       console.error('Error al cargar roles', error);
+      showSnackbar('Error al cargar roles', 'error');
     }
   };
 
@@ -66,15 +90,11 @@ export default function UserAdminPanel() {
       const newUser = response.data;
       setUsers((prev) => [...prev, newUser]);
       setOpen(false);
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Usuario creado',
-        text: `Se ha creado el usuario ${newUser.name}`,
-      });
+      showSnackbar(`Se ha creado el usuario ${newUser.name}`, 'success');
     } catch (error: any) {
       console.error('Error al crear el usuario', error);
       setOpen(false);
+
       const zodError = error.response?.data?.errors;
       let message = '';
 
@@ -86,11 +106,10 @@ export default function UserAdminPanel() {
         message = error.response.data.message;
       }
 
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: message || 'No se pudo crear el usuario. Intenta de nuevo.',
-      });
+      showSnackbar(
+        message || 'No se pudo crear el usuario. Intenta de nuevo.',
+        'error'
+      );
     }
   };
 
@@ -117,15 +136,11 @@ export default function UserAdminPanel() {
         prev.map((u) => (u.id === updatedUser.id ? updatedUser : u))
       );
       setEditUser(null);
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Usuario actualizado',
-        text: `Se ha actualizado correctamente.`,
-      });
+      showSnackbar('Usuario actualizado correctamente.', 'success');
     } catch (error: any) {
       console.error('Error actualizando usuario:', error);
       setEditUser(null);
+
       const zodError = error.response?.data?.errors;
       let message = '';
 
@@ -137,46 +152,33 @@ export default function UserAdminPanel() {
         message = error.response.data.message;
       }
 
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: message || 'No se pudo actualizar el usuario.',
-      });
+      showSnackbar(message || 'No se pudo actualizar el usuario.', 'error');
     }
   };
 
-  const handleDeleteUser = async (userId: number) => {
-    const confirm = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará al usuario de forma permanente.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-    });
+  const handleDeleteUser = (userId: number) => {
+    setConfirmDialog({ open: true, userId });
+  };
 
-    if (confirm.isConfirmed) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
+  const confirmDelete = async () => {
+    if (!confirmDialog.userId) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/users/${confirmDialog.userId}`,
+        {
           headers: { Authorization: `Bearer ${token}` },
-        });
+        }
+      );
 
-        setUsers((prev) => prev.filter((u) => u.id !== userId));
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Eliminado',
-          text: 'El usuario ha sido eliminado correctamente.',
-        });
-      } catch (error: any) {
-        console.error('Error al eliminar usuario:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo eliminar el usuario.',
-        });
-      }
+      setUsers((prev) => prev.filter((u) => u.id !== confirmDialog.userId));
+      showSnackbar('El usuario ha sido eliminado correctamente.', 'success');
+    } catch (error: any) {
+      console.error('Error al eliminar usuario:', error);
+      showSnackbar('No se pudo eliminar el usuario.', 'error');
+    } finally {
+      setConfirmDialog({ open: false });
     }
   };
 
@@ -187,6 +189,23 @@ export default function UserAdminPanel() {
 
   return (
     <TableContainer component={Paper} sx={{ mt: 2, p: 2 }}>
+      {/* Confirmación visual para eliminar */}
+      <ConfirmDialog
+        open={confirmDialog.open}
+        title="¿Eliminar usuario?"
+        message="Esta acción eliminará al usuario de forma permanente. ¿Deseas continuar?"
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmDialog({ open: false })}
+      />
+
+      {/* Snackbar para notificaciones */}
+      <NotificationSnackbar
+        open={snackbar.open}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        message={snackbar.message}
+        severity={snackbar.severity}
+      />
+
       <PanelHeader title="Lista de usuarios" onCreate={() => setOpen(true)} />
 
       <UserFormModal

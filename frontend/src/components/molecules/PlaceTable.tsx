@@ -19,13 +19,15 @@ export default function PlaceTable({ places, onEdit, onDelete }: Props) {
     <Table>
       <TableHead>
         <TableRow>
+          <TableCell>ID</TableCell>
           <TableCell>Nombre</TableCell>
           <TableCell>Zona</TableCell>
-          <TableCell>Teléfono</TableCell>
+          <TableCell>Puntuación</TableCell>
           <TableCell>Activo</TableCell>
           <TableCell>Acciones</TableCell>
         </TableRow>
       </TableHead>
+
       <TableBody>
         {places.map((place) => (
           <PlaceRow

@@ -13,4 +13,5 @@ Cosas pendientes que se me van ocurriendo:
 
 
 ---CSS---
-    -Una vez sea todo añadido y este funcional(funciones principales de la app), crear rama y trabajar sobre esta para estilizar toda la aplicacion en su conjunto.
+    -Una vez sea todo añadido y este funcional(funciones principales de la app), 
+     crear rama y trabajar sobre esta para estilizar toda la aplicacion en su conjunto.

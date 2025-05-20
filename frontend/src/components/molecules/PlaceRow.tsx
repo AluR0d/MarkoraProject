@@ -12,9 +12,10 @@ type Props = {
 export default function PlaceRow({ place, onEdit, onDelete }: Props) {
   return (
     <TableRow>
+      <TableCell>{place.id}</TableCell>
       <TableCell>{place.name}</TableCell>
       <TableCell>{place.zone}</TableCell>
-      <TableCell>{place.phone}</TableCell>
+      <TableCell>⭐ {place.rating || '—'}</TableCell>
       <TableCell>{place.active ? '✅' : '❌'}</TableCell>
       <TableCell>
         <IconButton onClick={onEdit}>
