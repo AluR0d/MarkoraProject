@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Place } from '../../types/Place';
 import { Box, Typography, CircularProgress, Button } from '@mui/material';
 import PlaceDetailEditableCard from '../molecules/PlaceDetailEditableCard';
+import PlaceMap from '../molecules/PlaceMap';
 
 export default function PlaceDetailPage() {
   const { id } = useParams();
@@ -38,6 +39,7 @@ export default function PlaceDetailPage() {
         </Typography>
 
         <PlaceDetailEditableCard place={place} onUpdate={setPlace} />
+        <PlaceMap place={place} onUpdate={setPlace} />
       </Box>
     </Box>
   );

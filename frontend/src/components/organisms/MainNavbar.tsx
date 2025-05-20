@@ -16,16 +16,25 @@ export default function MainNavbar() {
     navigate('/login');
   };
 
+  const hasAdminRole = user?.roles?.includes('Administrator');
+
   return (
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           Bienvenido{user ? `, ${user.name}` : ''}
         </Typography>
-        <Button color="inherit">Inicio</Button>
+        <Button color="inherit" onClick={() => navigate('/home')}>
+          Inicio
+        </Button>
         <Button color="inherit" onClick={() => navigate('/profile')}>
           Perfil
         </Button>
+        {hasAdminRole && (
+          <Button color="inherit" onClick={() => navigate('/admin')}>
+            Admin
+          </Button>
+        )}
         <Button color="inherit" onClick={handleLogout}>
           Cerrar sesión
         </Button>

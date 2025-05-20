@@ -1,3 +1,4 @@
+// src/pages/admin/places/PlaceDetailEditableCard.tsx
 import { useState } from 'react';
 import {
   Paper,
@@ -31,7 +32,10 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
   const startEditing = (field: EditableField, currentValue?: any) => {
     setEditingField(field);
 
-    if (Array.isArray(currentValue)) {
+    if (field === 'coords' && currentValue?.coordinates?.length === 2) {
+      const [lng, lat] = currentValue.coordinates;
+      setTempValue(`${lat}, ${lng}`);
+    } else if (Array.isArray(currentValue)) {
       setTempValue(currentValue.join(', '));
     } else if (typeof currentValue === 'object' && currentValue !== null) {
       setTempValue(JSON.stringify(currentValue));
@@ -84,19 +88,10 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
       case 'user_ratings_total':
         return !/^\d+$/.test(value) ? 'Debe ser un número entero ≥ 0' : null;
       case 'coords':
-        try {
-          const parsed = JSON.parse(value);
-          if (
-            typeof parsed !== 'object' ||
-            parsed.type !== 'Point' ||
-            !Array.isArray(parsed.coordinates)
-          ) {
-            return 'Debe tener formato JSON con type y coordinates';
-          }
-          return null;
-        } catch {
-          return 'Formato JSON inválido';
-        }
+        const parts = value.split(',').map((p) => parseFloat(p.trim()));
+        return parts.length === 2 && parts.every((n) => !isNaN(n))
+          ? null
+          : 'Debes escribir latitud y longitud separados por coma';
       default:
         return null;
     }
@@ -121,7 +116,11 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
     } else if (tempValue.trim() === '') {
       valueToSend = '';
     } else if (editingField === 'coords') {
-      valueToSend = JSON.parse(tempValue);
+      const [lat, lng] = tempValue.split(',').map((p) => parseFloat(p.trim()));
+      valueToSend = {
+        type: 'Point',
+        coordinates: [lng, lat],
+      };
     } else if (
       ['rating', 'user_ratings_total', 'owner_id'].includes(editingField)
     ) {
@@ -164,7 +163,7 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
       user_ratings_total: 'Ej: 120',
       types: 'Ej: tienda, servicio',
       active: '',
-      coords: 'Ej: {"type":"Point","coordinates":[-5.99,37.38]}',
+      coords: 'Ej: 37.38, -5.99',
       owner_id: 'Ej: 1',
       id: '',
     };
@@ -226,9 +225,13 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
                 ? (place[field] as string[]).length > 0
                   ? (place[field] as string[]).join(', ')
                   : 'N/A'
-                : typeof place[field] === 'object'
-                  ? JSON.stringify(place[field])
-                  : place[field]?.toString() || 'N/A'}
+                : field === 'coords' && place.coords?.coordinates
+                  ? `${place.coords.coordinates[1]}, ${place.coords.coordinates[0]}`
+                  : place[field] === null ||
+                      place[field] === undefined ||
+                      place[field] === ''
+                    ? 'N/A'
+                    : place[field]?.toString()}
             </Typography>
             <IconButton onClick={() => startEditing(field, place[field])}>
               <EditIcon />
@@ -254,7 +257,7 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
         {renderField('Total valoraciones', 'user_ratings_total')}
         {renderField('Tipos (separados por coma)', 'types')}
         {renderField('Activo', 'active', true)}
-        {renderField('Coordenadas (JSON)', 'coords')}
+        {renderField('Coordenadas (latitud, longitud)', 'coords')}
         {renderField('Propietario ID', 'owner_id')}
       </Paper>
 

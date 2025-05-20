@@ -1,6 +1,6 @@
 Cosas pendientes que se me van ocurriendo:
-    -Crear panel /admin para gestion de usuarios, lugares, dueños de lugares y campañas(en un futuro).
-    -Crear filtros para usuarios y lugares.
+    -Crear panel /admin para gestion de dueños de lugares y campañas(en un futuro).
+    -Crear filtros para usuarios.
     -Testear usuarios y lugares, intentar romper la app.
     -Extender panel usuario para modificar los datos.
     -Crear boton de redigirir entre login y register.

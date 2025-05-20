@@ -1,6 +1,6 @@
 import Container from '@mui/material/Container';
 import { useUser } from '../../context/UserContext';
-import UserPanel from '../organisms/UserPanel';
+import UserEditForm from '../molecules/UserEditForm';
 
 export default function UserPanelPage() {
   const { user } = useUser();
@@ -9,7 +9,7 @@ export default function UserPanelPage() {
 
   return (
     <Container maxWidth="sm">
-      <UserPanel name={user.name} email={user.email} roles={user.roles} />
+      <UserEditForm />
     </Container>
   );
 }
