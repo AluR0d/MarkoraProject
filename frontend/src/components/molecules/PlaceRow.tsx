@@ -1,4 +1,4 @@
-import { TableCell, TableRow, IconButton } from '@mui/material';
+import { TableCell, TableRow, IconButton, Link } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Place } from '../../types/Place';
@@ -13,7 +13,15 @@ export default function PlaceRow({ place, onEdit, onDelete }: Props) {
   return (
     <TableRow>
       <TableCell>{place.id}</TableCell>
-      <TableCell>{place.name}</TableCell>
+      <TableCell>
+        <Link
+          component="a"
+          href={`/admin/places/${place.id}`}
+          style={{ textDecoration: 'none', color: '#1976d2' }}
+        >
+          {place.name}
+        </Link>
+      </TableCell>
       <TableCell>{place.zone}</TableCell>
       <TableCell>⭐ {place.rating || '—'}</TableCell>
       <TableCell>{place.active ? '✅' : '❌'}</TableCell>

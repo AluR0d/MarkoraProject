@@ -7,6 +7,7 @@ import UserPanelPage from '../components/pages/UserPanelPage';
 import { AdminRoute } from './AdminRoute';
 import AdminPage from '../components/pages/AdminPage';
 import Unauthorized from '../components/pages/Unauthorized';
+import PlaceDetailPage from '../components/pages/PlaceDetailPage';
 
 function AppRouter() {
   return (
@@ -36,6 +37,14 @@ function AppRouter() {
             <AdminRoute>
               <AdminPage />
             </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/places/:id"
+          element={
+            <PrivateRoute>
+              <PlaceDetailPage />
+            </PrivateRoute>
           }
         />
         <Route path="/unauthorized" element={<Unauthorized />} />
