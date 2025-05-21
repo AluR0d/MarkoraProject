@@ -1,11 +1,13 @@
 import { Box, Button, Typography } from '@mui/material';
+import React from 'react';
 
 type Props = {
   title: string;
   onCreate: () => void;
+  children: React.ReactNode;
 };
 
-export default function PanelHeader({ title, onCreate }: Props) {
+export default function PanelHeader({ title, onCreate, children }: Props) {
   return (
     <Box
       display="flex"
@@ -15,7 +17,7 @@ export default function PanelHeader({ title, onCreate }: Props) {
     >
       <Typography variant="h6">{title}</Typography>
       <Button variant="contained" color="primary" onClick={onCreate}>
-        ➕ Crear usuario
+        {children}
       </Button>
     </Box>
   );

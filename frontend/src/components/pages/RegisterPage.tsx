@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import RegisterForm from '../molecules/RegisterForm';
 import { register } from '../../services/authService';
+import RedirectLink from '../atoms/RedirectLink';
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +38,11 @@ export default function RegisterPage() {
             onSubmit={handleRegister}
             isLoading={isLoading}
             errorMessage={errorMessage}
+          />
+          <RedirectLink
+            question=""
+            linkText="¿Ya tienes una cuenta?"
+            to="/login"
           />
         </Paper>
       </Box>

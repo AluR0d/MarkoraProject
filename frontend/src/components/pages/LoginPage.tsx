@@ -7,6 +7,7 @@ import { login } from '../../services/authService';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { getUserFromToken } from '../../utils/jwt';
+import RedirectLink from '../atoms/RedirectLink';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,6 +41,19 @@ export default function LoginPage() {
             isLoading={isLoading}
             errorMessage={errorMessage}
           />
+
+          <Box display="flex" justifyContent="space-between" mt={2}>
+            <RedirectLink
+              question=""
+              linkText="¿No tienes una cuenta?"
+              to="/register"
+            />
+            <RedirectLink
+              question=""
+              linkText="¿Has olvidado tu contraseña?"
+              to="/forgot-password"
+            />
+          </Box>
         </Paper>
       </Box>
     </Container>

@@ -154,7 +154,9 @@ export default function PlaceAdminPanel() {
         severity={snackbar.severity}
       />
 
-      <PanelHeader title="Lugares registrados" onCreate={() => setOpen(true)} />
+      <PanelHeader title="Lugares registrados" onCreate={() => setOpen(true)}>
+        Crear lugar
+      </PanelHeader>
 
       {/* Filtros */}
       <Box mb={2} textAlign="right">

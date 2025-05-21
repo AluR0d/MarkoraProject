@@ -206,7 +206,9 @@ export default function UserAdminPanel() {
         severity={snackbar.severity}
       />
 
-      <PanelHeader title="Lista de usuarios" onCreate={() => setOpen(true)} />
+      <PanelHeader title="Lista de usuarios" onCreate={() => setOpen(true)}>
+        Crear usuario
+      </PanelHeader>
 
       <UserFormModal
         open={open}

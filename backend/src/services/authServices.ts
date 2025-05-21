@@ -5,6 +5,9 @@ import { User } from '../models/User';
 import { defaultValues } from '../constants/defaultValues';
 import { generateToken } from '../utils/jwt';
 import { ApiError } from '../utils/ApiError';
+import { sendPasswordResetEmail } from './emailService';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 export class AuthService {
   static async registerUser(data: CreateUserDTO) {
@@ -57,5 +60,36 @@ export class AuthService {
         roles: payload.roles,
       },
     };
+  }
+
+  static async forgotPassword(email: string) {
+    const user = await User.findOne({ where: { email } });
+    if (!user) return;
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_RESET_SECRET!, {
+      expiresIn: '1h',
+    });
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    await sendPasswordResetEmail(user.email, resetLink);
+  }
+
+  static async resetPassword(token: string, newPassword: string) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_RESET_SECRET!) as {
+        userId: number;
+      };
+      const user = await User.findByPk(decoded.userId);
+
+      if (!user) {
+        throw new ApiError('Usuario no encontrado', 404);
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+    } catch (err: any) {
+      throw new ApiError('Token inválido o expirado', 400);
+    }
   }
 }
