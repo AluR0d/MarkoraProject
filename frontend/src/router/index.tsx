@@ -13,14 +13,29 @@ import ResetPasswordPage from '../components/pages/ResetPasswordPage';
 import ForgotPasswordPage from '../components/pages/ForgotPasswordPage';
 import CreateCampaignPage from '../components/pages/CreateCampaignPage';
 import MyCampaignsPage from '../components/pages/MyCampaignsPage';
+import PublicRoute from './PublicRoute';
 
 function AppRouter() {
   return (
     <Router>
       <Routes>
-        {/* Rutas públicas */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <RegisterPage />
+            </PublicRoute>
+          }
+        />
 
         {/* Rutas con layout y navbar */}
         <Route element={<GlobalLayout />}>

@@ -14,6 +14,7 @@ import PlaceFilterForm from '../../components/molecules/PlaceFilterForm';
 import { Place } from '../../types/Place';
 import { PlaceService } from '../../services/placeService';
 import axios from 'axios';
+import { useUser } from '../../context/UserContext';
 
 export default function CreateCampaignPage() {
   const [places, setPlaces] = useState<Place[]>([]);
@@ -31,6 +32,7 @@ export default function CreateCampaignPage() {
     ratingOrder?: 'asc' | 'desc';
   }>({});
   const [showFilters, setShowFilters] = useState(false);
+  const { user, setUser } = useUser();
 
   const loadPlaces = async () => {
     try {
@@ -87,6 +89,11 @@ export default function CreateCampaignPage() {
       );
 
       alert('Campaña creada correctamente');
+
+      if (user) {
+        setUser({ ...user, balance: user.balance - 5 }); // ✅ actualiza localmente
+      }
+
       setTitle('');
       setMessage('');
       setSelectedPlaceIds([]);
@@ -101,7 +108,9 @@ export default function CreateCampaignPage() {
       <Typography variant="h4" gutterBottom>
         Crear nueva campaña
       </Typography>
-
+      <Typography variant="h6" sx={{ mb: 2 }}>
+        💰 Balance actual: {user?.balance ?? 'Cargando...'} créditos
+      </Typography>
       <TextField
         fullWidth
         label="Título"
@@ -109,7 +118,6 @@ export default function CreateCampaignPage() {
         onChange={(e) => setTitle(e.target.value)}
         margin="normal"
       />
-
       <TextField
         fullWidth
         multiline
@@ -119,7 +127,6 @@ export default function CreateCampaignPage() {
         onChange={(e) => setMessage(e.target.value)}
         margin="normal"
       />
-
       <Box textAlign="right" mb={2}>
         <Button
           variant="outlined"
@@ -128,7 +135,6 @@ export default function CreateCampaignPage() {
           {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
         </Button>
       </Box>
-
       <Collapse in={showFilters}>
         <PlaceFilterForm
           onFilter={(newFilters) => {
@@ -137,7 +143,6 @@ export default function CreateCampaignPage() {
           }}
         />
       </Collapse>
-
       <Paper sx={{ mt: 2, p: 2 }}>
         {places.length === 0 ? (
           <Typography align="center" sx={{ mt: 3 }}>
@@ -173,7 +178,6 @@ export default function CreateCampaignPage() {
           </>
         )}
       </Paper>
-
       <Button
         variant="contained"
         sx={{ mt: 4 }}

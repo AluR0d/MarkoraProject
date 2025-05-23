@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { getUserFromToken } from '../../utils/jwt';
 import RedirectLink from '../atoms/RedirectLink';
+import { getUserById, getUserRolesById } from '../../services/userService';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,11 +20,19 @@ export default function LoginPage() {
     setIsLoading(true);
     setErrorMessage('');
     try {
-      await login(data.email, data.password);
-      const token = localStorage.getItem('token');
-      const loggedUser = token ? getUserFromToken(token) : null;
+      await login(data.email, data.password); // guarda el token en localStorage
 
-      setUser(loggedUser);
+      const token = localStorage.getItem('token');
+      const payload = token ? getUserFromToken(token) : null;
+
+      if (!payload?.id) throw new Error('Token inválido');
+
+      const [userData, roles] = await Promise.all([
+        getUserById(payload.id),
+        getUserRolesById(payload.id),
+      ]);
+
+      setUser({ ...userData, roles }); // ✅ user completo y válido
       navigate('/home');
     } catch (error: any) {
       setErrorMessage(error.message);

@@ -10,6 +10,8 @@ type Props = {
 };
 
 export default function UserPanel({ name, email, roles }: Props) {
+  console.log('🧪 Props:', { name, email, roles });
+
   return (
     <Box mt={6}>
       <Typography variant="h4" gutterBottom>

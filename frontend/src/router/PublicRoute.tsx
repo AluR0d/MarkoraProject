@@ -6,14 +6,12 @@ type Props = {
   children: React.ReactNode;
 };
 
-export const AdminRoute = ({ children }: Props) => {
+export default function PublicRoute({ children }: Props) {
   const { user, isLoading } = useUser();
 
   if (isLoading) return <Loader />;
 
-  const isAdmin = user?.roles?.includes('Administrator');
-
-  if (!isAdmin) return <Navigate to="/unauthorized" />;
+  if (user) return <Navigate to="/home" />;
 
   return <>{children}</>;
-};
+}
