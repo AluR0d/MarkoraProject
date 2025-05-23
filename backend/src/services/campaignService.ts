@@ -4,36 +4,60 @@ import { CreateCampaignDTO } from '../schemas/Campaign/createCampaignSchema';
 import { Place } from '../models/Place';
 import { ApiError } from '../utils/ApiError';
 import { sendEmail } from './emailService';
-import { Op } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 import { scheduleCampaign, stopCampaign } from '../utils/campaignScheduler'; // ✅ nuevo
+import { sequelize } from '../config/database';
+import { User } from '../models/User';
+import { defaultValues } from '../constants/defaultValues';
 
 export class CampaignService {
-  static async createCampaign(data: CreateCampaignDTO, userId: number) {
-    const existingPlaces = await Place.findAll({
-      where: {
-        id: data.place_ids,
-      },
-    });
+  static async createCampaign(
+    data: CreateCampaignDTO,
+    userId: number
+  ): Promise<Campaign> {
+    return await sequelize.transaction(
+      async (t: Transaction): Promise<Campaign> => {
+        const existingPlaces = await Place.findAll({
+          where: { id: data.place_ids },
+          transaction: t,
+        });
 
-    if (existingPlaces.length !== data.place_ids.length) {
-      throw new ApiError('Uno o más places seleccionados no existen', 400);
-    }
+        if (existingPlaces.length !== data.place_ids.length) {
+          throw new ApiError('Uno o más places seleccionados no existen', 400);
+        }
 
-    const campaign = await Campaign.create({
-      title: data.title,
-      message_template: data.message_template,
-      user_id: userId,
-      frequency: data.frequency ?? null,
-    });
+        const user = await User.findByPk(userId, { transaction: t });
+        if (!user) throw new ApiError('Usuario no encontrado', 404);
 
-    const campaignPlaces = data.place_ids.map((place_id) => ({
-      campaign_id: campaign.id,
-      place_id,
-    }));
+        const balance = parseFloat(user.balance.toString());
 
-    await CampaignPlace.bulkCreate(campaignPlaces);
+        if (balance < defaultValues.CAMPAIGN_COST) {
+          throw new ApiError('Saldo insuficiente para crear la campaña', 400);
+        }
 
-    return campaign;
+        const campaign = await Campaign.create(
+          {
+            title: data.title,
+            message_template: data.message_template,
+            user_id: userId,
+            frequency: data.frequency ?? null,
+          },
+          { transaction: t }
+        );
+
+        const campaignPlaces = data.place_ids.map((place_id) => ({
+          campaign_id: campaign.id,
+          place_id,
+        }));
+
+        await CampaignPlace.bulkCreate(campaignPlaces, { transaction: t });
+
+        user.balance = balance - defaultValues.CAMPAIGN_COST;
+        await user.save({ transaction: t });
+
+        return campaign;
+      }
+    );
   }
 
   static async getAllCampaigns() {

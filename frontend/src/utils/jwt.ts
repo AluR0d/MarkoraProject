@@ -5,6 +5,7 @@ type TokenPayload = {
   name: string;
   email: string;
   roles: string[];
+  balance: number;
   exp: number;
   iat: number;
 };
@@ -14,13 +15,14 @@ export function getUserFromToken(token: string) {
     const decoded = jwtDecode<TokenPayload>(token);
     console.log('Token decodificado:', decoded);
 
-    const { id, name, email, roles } = decoded;
+    const { id, name, email, roles, balance } = decoded;
 
     return {
       id,
       name,
       email,
       roles,
+      balance,
     };
   } catch (error) {
     console.error(' Error al decodificar token:', error);

@@ -1,4 +1,4 @@
-// ✅ Nuevo archivo completo: MyCampaignsPage.tsx
+// ✅ Nuevo archivo completo: MyCampaignsPage.tsx con loader visual
 import { useEffect, useState } from 'react';
 import {
   Container,
@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  CircularProgress,
 } from '@mui/material';
 import axios from 'axios';
 import { Campaign } from '../../types/Campaign';
@@ -29,6 +30,9 @@ export default function MyCampaignsPage() {
     open: boolean;
     campaignId: number | null;
   }>({ open: false, campaignId: null });
+  const [loadingCampaignId, setLoadingCampaignId] = useState<number | null>(
+    null
+  );
 
   const loadCampaigns = async () => {
     try {
@@ -58,6 +62,7 @@ export default function MyCampaignsPage() {
   }, []);
 
   const handleSendCampaign = async (id: number) => {
+    setLoadingCampaignId(id);
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/campaigns/${id}/send`,
@@ -82,6 +87,8 @@ export default function MyCampaignsPage() {
           'Error al enviar los correos de la campaña',
         severity: 'error',
       });
+    } finally {
+      setLoadingCampaignId(null);
     }
   };
 
@@ -100,17 +107,6 @@ export default function MyCampaignsPage() {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
-      );
-
-      setCampaigns((prev) =>
-        prev.map((c) =>
-          c.id === campaign.id
-            ? {
-                ...c,
-                active: !c.active,
-              }
-            : c
-        )
       );
 
       setSnackbar({
@@ -143,24 +139,6 @@ export default function MyCampaignsPage() {
           },
         }
       );
-
-      setCampaigns((prev) =>
-        prev.map((c) =>
-          c.id === id
-            ? {
-                ...c,
-                active: true,
-                campaignPlaces: c.campaignPlaces.map((cp) => ({
-                  ...cp,
-                  status: 'PENDING',
-                  send_count: 0,
-                  sent_at: null,
-                })),
-              }
-            : c
-        )
-      );
-
       setSnackbar({
         open: true,
         message: res.data.message,
@@ -231,13 +209,21 @@ export default function MyCampaignsPage() {
         ))}
 
         {campaign.active && hasPending ? (
-          <Button
-            variant="contained"
-            sx={{ mt: 2, mr: 1 }}
-            onClick={() => handleSendCampaign(campaign.id)}
-          >
-            Enviar campaña ahora
-          </Button>
+          <Box sx={{ mt: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => handleSendCampaign(campaign.id)}
+              disabled={loadingCampaignId === campaign.id}
+            >
+              {loadingCampaignId === campaign.id ? (
+                <>
+                  <CircularProgress size={20} sx={{ mr: 1 }} /> Enviando...
+                </>
+              ) : (
+                'Enviar campaña ahora'
+              )}
+            </Button>
+          </Box>
         ) : campaign.active ? (
           <Typography
             variant="body2"
@@ -292,7 +278,6 @@ export default function MyCampaignsPage() {
         severity={snackbar.severity}
       />
 
-      {/* Confirmación de reactivación */}
       <Dialog
         open={confirmDialog.open}
         onClose={() => setConfirmDialog({ open: false, campaignId: null })}

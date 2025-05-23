@@ -6,6 +6,7 @@ type User = {
   name: string;
   email: string;
   roles: string[];
+  balance: number;
 };
 
 type UserContextType = {

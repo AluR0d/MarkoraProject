@@ -37,6 +37,9 @@ export class User extends Model<User, CreateUserDTO> {
   @Column(DataType.STRING(100))
   password!: string;
 
+  @Column({ type: DataType.DECIMAL(10, 2), defaultValue: 100 })
+  balance!: number;
+
   readonly createdAt?: Date | null;
   readonly updatedAt?: Date | null;
 

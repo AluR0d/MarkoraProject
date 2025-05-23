@@ -46,6 +46,7 @@ export class AuthService {
       name: user.name,
       email: user.email,
       roles: user.roles.map((role) => role.name),
+      balance: user.balance,
     };
     const token = await generateToken(payload, process.env.JWT_SECRET!, {
       expiresIn: '7d',
@@ -58,6 +59,7 @@ export class AuthService {
         name: user.name,
         email: user.email,
         roles: payload.roles,
+        balance: user.balance,
       },
     };
   }

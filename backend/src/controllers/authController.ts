@@ -4,6 +4,8 @@ import { createUserSchema } from '../schemas/User/createUserSchema';
 import { loginUserSchema } from '../schemas/User/loginUserSchema';
 import { UserService } from '../services/userService';
 import { ApiError } from '../utils/ApiError';
+import { AuthRequest } from '../middlewares/authenticateJWT';
+import { User } from '../models/User';
 
 export class AuthController {
   register = async (req: Request, res: Response) => {
@@ -70,5 +72,27 @@ export class AuthController {
 
     await AuthService.resetPassword(token, newPassword);
     res.status(200).json({ message: 'Contraseña actualizada correctamente' });
+  };
+
+  getCurrentUser = async (req: AuthRequest, res: Response) => {
+    try {
+      const user = await User.findByPk(req.user!.userId);
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+
+      res.json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        roles: user.roles,
+        balance: parseFloat(user.balance.toString() || '0'),
+      });
+      return;
+    } catch (err) {
+      console.error('❌ Error en /auth/me:', err);
+      res.status(500).json({ message: 'Error interno' });
+      return;
+    }
   };
 }

@@ -20,7 +20,6 @@ export default function CreateCampaignPage() {
   const [selectedPlaceIds, setSelectedPlaceIds] = useState<string[]>([]);
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
-  const [frequency, setFrequency] = useState<number>(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
@@ -79,7 +78,6 @@ export default function CreateCampaignPage() {
           title,
           message_template: message,
           place_ids: selectedPlaceIds,
-          frequency: frequency > 0 ? frequency : null,
         },
         {
           headers: {
@@ -91,7 +89,6 @@ export default function CreateCampaignPage() {
       alert('Campaña creada correctamente');
       setTitle('');
       setMessage('');
-      setFrequency(0);
       setSelectedPlaceIds([]);
     } catch (err: any) {
       console.error(err);
@@ -121,17 +118,6 @@ export default function CreateCampaignPage() {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         margin="normal"
-      />
-
-      <TextField
-        fullWidth
-        type="number"
-        label="Frecuencia de reenvío (segundos)"
-        value={frequency}
-        onChange={(e) => setFrequency(Number(e.target.value))}
-        margin="normal"
-        InputProps={{ inputProps: { min: 0 } }}
-        helperText="Introduce cada cuántos segundos reenviar los correos. 0 = sin reenvío automático."
       />
 
       <Box textAlign="right" mb={2}>
