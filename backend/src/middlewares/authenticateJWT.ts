@@ -24,7 +24,7 @@ export const authenticateJWT = async (req: any, res: any, next: any) => {
     const decoded = await verifyToken(token, process.env.JWT_SECRET!);
 
     req.user = {
-      userId: decoded.userId,
+      userId: decoded.id,
       roles: decoded.roles,
     };
 

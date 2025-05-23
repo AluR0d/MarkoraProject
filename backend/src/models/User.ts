@@ -8,12 +8,14 @@ import {
   Unique,
   AllowNull,
   BelongsToMany,
+  HasMany,
 } from 'sequelize-typescript';
 import { CreationOptional } from 'sequelize';
 import { tableNames } from '../constants/tableNames';
 import { Role } from './Role';
 import { UserRole } from './UserRole';
 import { CreateUserDTO } from '../schemas/User/createUserSchema';
+import { Campaign } from './Campaign';
 
 @Table({ tableName: tableNames.USERS, timestamps: true })
 export class User extends Model<User, CreateUserDTO> {
@@ -40,4 +42,7 @@ export class User extends Model<User, CreateUserDTO> {
 
   @BelongsToMany(() => Role, () => UserRole)
   roles!: Role[];
+
+  @HasMany(() => Campaign)
+  campaigns!: Campaign[];
 }

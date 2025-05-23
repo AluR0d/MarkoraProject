@@ -20,3 +20,19 @@ export async function sendPasswordResetEmail(to: string, resetLink: string) {
     `,
   });
 }
+
+export async function sendEmail(to: string, subject: string, body: string) {
+  try {
+    const info = await transporter.sendMail({
+      from: `"Markora" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      text: body,
+    });
+
+    console.log(`📨 Email enviado a ${to}: ${info.messageId}`);
+  } catch (error) {
+    console.error(`❌ Error enviando a ${to}:`, error);
+    throw error;
+  }
+}

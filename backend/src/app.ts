@@ -8,6 +8,7 @@ import roleRouter from './routes/roleRoutes';
 import authRoutes from './routes/authRoutes';
 import { ApiError } from './utils/ApiError';
 import { Request, Response, NextFunction } from 'express';
+import campaignRoutes from './routes/campaignRoutes';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/places', placeRoutes);
 app.use('/owners', ownerRoutes);
 app.use('/roles', roleRouter);
 app.use('/auth', authRoutes);
+app.use('/campaigns', campaignRoutes);
 
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof ApiError) {

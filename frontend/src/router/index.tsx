@@ -11,6 +11,8 @@ import PlaceDetailPage from '../components/pages/PlaceDetailPage';
 import GlobalLayout from '../components/layouts/GlobalLayout';
 import ResetPasswordPage from '../components/pages/ResetPasswordPage';
 import ForgotPasswordPage from '../components/pages/ForgotPasswordPage';
+import CreateCampaignPage from '../components/pages/CreateCampaignPage';
+import MyCampaignsPage from '../components/pages/MyCampaignsPage';
 
 function AppRouter() {
   return (
@@ -56,9 +58,13 @@ function AppRouter() {
           />
         </Route>
 
+        <Route path="/campaign/create" element={<CreateCampaignPage />} />
+
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        <Route path="/my-campaigns" element={<MyCampaignsPage />} />
 
         <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>
