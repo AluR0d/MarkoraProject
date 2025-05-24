@@ -1,4 +1,3 @@
-// src/app/components/places/PlaceDetailCard.tsx
 import { Place } from '../../types/Place';
 import { Paper, Typography } from '@mui/material';
 

@@ -1,0 +1,273 @@
+{
+  "login": {
+    "title": "Iniciar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "submit": "Entrar",
+    "loading": "Cargando...",
+    "success_registered": "¡Cuenta creada correctamente!",
+    "errors": {
+      "empty_email": "Email vacío, por favor rellene el campo",
+      "invalid_email": "Formato de email inválido",
+      "empty_password": "Contraseña vacía, por favor rellene el campo",
+      "invalid_credentials": "Credenciales incorrectas",
+      "unknown": "Error desconocido"
+    },
+    "redirects": {
+      "no_account": "¿No tienes una cuenta?",
+      "forgot_password": "¿Has olvidado tu contraseña?"
+    }
+  },
+  "register": {
+    "title": "Crear cuenta",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "submit": "Registrarse",
+    "loading": "Registrando...",
+    "errors": {
+      "empty_name": "El nombre es obligatorio",
+      "name_too_long": "El nombre no puede tener más de 50 caracteres",
+      "empty_email": "Email vacío, por favor rellene el campo",
+      "email_too_long": "El email no puede tener más de 50 caracteres",
+      "invalid_email": "Formato de email inválido",
+      "empty_password": "Contraseña vacía, por favor rellene el campo",
+      "password_too_long": "La contraseña no puede tener más de 64 caracteres",
+      "password_too_short": "La contraseña debe tener al menos 6 caracteres",
+      "password_invalid_range": "La contraseña no puede estar vacía ni contener solo espacios",
+      "USER_ALREADY_EXISTS": "Ya existe una cuenta con este email",
+      "register.errors.unknown": "Error desconocido al registrarse",
+      "unknown": "Error desconocido"
+    },
+    "redirects": {
+      "already_have_account": "¿Ya tienes una cuenta?"
+    }
+  },
+  "forgot": {
+    "title": "Recuperar contraseña",
+    "description": "Introduce tu correo y te enviaremos un enlace para restablecer tu contraseña.",
+    "email_label": "Correo electrónico",
+    "send_button": "Enviar correo",
+    "loading": "Enviando...",
+    "back_to_login": "¿Te has equivocado?",
+    "success_message": "Si existe una cuenta, se ha enviado un correo con instrucciones.",
+    "errors": {
+      "empty_email": "Por favor, introduce tu correo",
+      "invalid_email": "Formato de correo inválido",
+      "email_too_long": "El correo no puede tener más de 50 caracteres"
+    }
+  },
+  "reset": {
+    "title": "Restablecer contraseña",
+    "password": "Nueva contraseña",
+    "confirm_password": "Confirmar nueva contraseña",
+    "submit": "Guardar nueva contraseña",
+    "loading": "Guardando...",
+    "success": "Contraseña actualizada correctamente",
+    "errors": {
+      "password_too_short": "La contraseña debe tener al menos 6 caracteres",
+      "password_too_long": "La contraseña no puede tener más de 64 caracteres",
+      "password_invalid_range": "La contraseña no puede estar vacía ni contener solo espacios",
+      "passwords_do_not_match": "Las contraseñas no coinciden",
+      "unknown": "Error al actualizar la contraseña"
+    }
+  },
+  "profile": {
+    "title": "Perfil de usuario",
+    "success": "Datos actualizados correctamente",
+    "balance": "Saldo disponible",
+    "errors": {
+      "empty_name": "El nombre es obligatorio",
+      "name_too_long": "El nombre no puede tener más de 50 caracteres",
+      "empty_email": "Email vacío, por favor rellene el campo",
+      "email_too_long": "El email no puede tener más de 50 caracteres",
+      "invalid_email": "Formato de email inválido",
+      "password_invalid_range": "La contraseña no puede estar vacía ni contener solo espacios",
+      "unknown": "Error desconocido al actualizar el perfil"
+    }
+  },
+  "user": {
+    "errors": {
+      "empty_name": "El nombre es obligatorio",
+      "name_too_long": "El nombre no puede tener más de 50 caracteres",
+      "empty_email": "El email es obligatorio",
+      "email_too_long": "El email no puede tener más de 50 caracteres",
+      "invalid_email": "Formato de email inválido",
+      "password_too_short": "La contraseña debe tener al menos 6 caracteres",
+      "password_too_long": "La contraseña no puede tener más de 64 caracteres",
+      "password_invalid_range": "La contraseña no puede estar vacía ni contener solo espacios",
+      "empty_roles": "Debes asignar al menos un rol al usuario"
+    }
+  },
+  "admin": {
+    "title": "Panel de administración",
+    "enable_password": "Activar campo de contraseña",
+    "disable_password": "Desactivar campo de contraseña",
+    "table_headers": {
+      "id": "ID",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "roles": "Roles",
+      "actions": "Acciones"
+    },
+    "tabs": {
+      "users": "Usuarios",
+      "places": "Lugares",
+      "dashboard": "Panel de control"
+    },
+    "create_user": "Crear nuevo usuario",
+    "edit_user": "Editar usuario",
+    "new_password": "Nueva contraseña",
+    "user_created_successfully": "Usuario creado correctamente.",
+    "user_updated_successfully": "Usuario actualizado correctamente.",
+    "user_deleted_successfully": "Usuario eliminado correctamente.",
+    "places": {
+      "edit_place": "Editar lugar",
+      "create_place": "Crear nuevo lugar",
+      "place_created_successfully": "El lugar se ha creado correctamente.",
+      "place_updated_successfully": "El lugar se ha actualizado correctamente.",
+      "place_deleted_successfully": "El lugar ha sido eliminado correctamente.",
+      "errors": {
+        "create_failed": "No se pudo crear el lugar.",
+        "update_failed": "No se pudo actualizar el lugar.",
+        "delete_failed": "No se pudo eliminar el lugar.",
+        "load_failed": "Error al cargar lugares.",
+        "required": "Este campo es obligatorio",
+        "max_50": "No puede tener más de 50 caracteres",
+        "max_20": "No puede tener más de 20 caracteres",
+        "invalid_phone": "Debe contener exactamente 9 números",
+        "invalid_email": "Correo electrónico inválido",
+        "rating_range": "Debe estar entre 0.0 y 5.0",
+        "rating_total_min": "Debe ser mayor o igual a 0",
+        "rating_total_max": "No puede superar 100000",
+        "types_required": "Introduce al menos un tipo",
+        "coords_invalid": "Debes introducir dos coordenadas válidas",
+        "form_invalid": "El formulario contiene errores, por favor corrígelos antes de guardar",
+        "invalid_coords": "Este campo debe tener el formato número, número"
+      },
+      "confirm_delete": {
+        "title": "¿Eliminar lugar?",
+        "message": "Esta acción eliminará el lugar de forma permanente. ¿Deseas continuar?"
+      },
+      "filters": {
+        "rating_out_of_range": "La puntuación debe estar entre 0 y 5",
+        "title": "Filtros de búsqueda",
+        "name": "Nombre",
+        "zone": "Zona",
+        "min_rating": "Puntuación mínima",
+        "rating_order": "Orden de puntuación",
+        "no_order": "Sin orden",
+        "high_to_low": "Mayor a menor",
+        "low_to_high": "Menor a mayor",
+        "active": "¿Lugar activo?",
+        "all": "Todos",
+        "only_active": "Solo activos",
+        "only_inactive": "Solo inactivos",
+        "apply": "Filtrar",
+        "clear": "Limpiar"
+      },
+      "table_headers": {
+        "id": "ID",
+        "name": "Nombre",
+        "zone": "Zona",
+        "rating": "Puntuación",
+        "active": "Activo",
+        "actions": "Acciones"
+      },
+      "fields": {
+        "name": "Nombre",
+        "zone": "Zona",
+        "address": "Dirección",
+        "phone": "Teléfono",
+        "second_phone": "Segundo teléfono",
+        "email": "Email (separado por comas)",
+        "website": "Web",
+        "opening_hours": "Horario",
+        "rating": "Puntuación (0.0 - 5.0)",
+        "user_ratings_total": "Valoraciones totales",
+        "types": "Tipos (separados por comas)",
+        "coords": "Coordenadas (lat, lng)",
+        "owner_id": "ID del propietario",
+        "active": "¿Lugar activo?"
+      },
+      "show_filters": "Mostrar filtros",
+      "hide_filters": "Ocultar filtros",
+      "no_results": "No se encontraron lugares que coincidan con la búsqueda."
+    },
+    "errors": {
+      "empty_roles": "Selecciona al menos un rol",
+      "create_failed": "No se pudo crear el usuario. Intenta de nuevo.",
+      "update_failed": "No se pudo actualizar el usuario.",
+      "delete_failed": "No se pudo eliminar el usuario.",
+      "load_users_failed": "Error al cargar usuarios.",
+      "load_roles_failed": "Error al cargar roles.",
+      "unknown": "Ha ocurrido un error desconocido."
+    },
+    "confirm_delete": {
+      "title": "¿Eliminar usuario?",
+      "message": "Esta acción eliminará al usuario de forma permanente. ¿Deseas continuar?"
+    }
+  },
+  "dashboard": {
+    "title": "Resumen estadístico — MARKORA",
+    "general_stats": "Estadísticas generales",
+    "total_campaigns": "Campañas creadas",
+    "average_places_per_campaign": "Media de lugares por campaña",
+    "total_credit_spent": "Créditos gastados",
+    "total_emails_sent": "Emails enviados",
+    "error_loading_data": "No se pudieron cargar las estadísticas.",
+    "date_range": "Rango de fechas",
+    "all_data": "Todos los datos",
+    "last_30_days": "Últimos 30 días",
+    "last_7_days": "Últimos 7 días",
+    "export_as_pdf": "Exportar como PDF",
+    "report_title": "Informe de estadísticas generales",
+    "range_last_7_days": "Rango: Últimos 7 días",
+    "range_last_30_days": "Rango: Últimos 30 días"
+  },
+  "navbar": {
+    "welcome": "Bienvenido",
+    "home": "Inicio",
+    "profile": "Perfil",
+    "admin": "Admin",
+    "logout": "Cerrar sesión"
+  },
+  "campaign": {
+    "create_new": "Crear nueva campaña",
+    "create_title": "Crear nueva campaña",
+    "balance": "Balance actual",
+    "title_label": "Título",
+    "message_body": "Cuerpo del mensaje",
+    "message_placeholder": "Escribe el contenido del mensaje...",
+    "frequency_label": "Frecuencia (en segundos)",
+    "frequency_helper": "Pon 0 para desactivar los envíos automáticos",
+    "show_filters": "Mostrar filtros",
+    "hide_filters": "Ocultar filtros",
+    "no_places_found": "No se encontraron lugares que coincidan con la búsqueda.",
+    "create_button": "Crear campaña",
+    "success_message": "Campaña creada con éxito",
+    "success_dialog_title": "¡Campaña creada correctamente!",
+    "success_dialog_message": "¿Deseas ver tu campaña ahora?"
+  },
+  "selectable_place": {
+    "selected_places": "Lugares seleccionados",
+    "name": "Nombre",
+    "zone": "Zona",
+    "rating": "Puntuación",
+    "active": "Activo"
+  },
+  "common": {
+    "create": "Crear",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "page": "Página",
+    "of": "de",
+    "no": "No",
+    "yes": "Sí",
+    "loading": "Cargando...",
+    "credits": "Créditos"
+  }
+}

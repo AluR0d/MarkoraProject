@@ -12,7 +12,13 @@ import bcrypt from 'bcrypt';
 export class AuthService {
   static async registerUser(data: CreateUserDTO) {
     const existing = await UserService.getUserByEmail(data.email);
-    if (existing) throw new Error('User already exists');
+    if (existing) {
+      throw new ApiError(
+        'Ya existe un usuario con este email',
+        409,
+        'USER_ALREADY_EXISTS'
+      );
+    }
 
     const user = await UserService.createUser(data);
     const defaultRole = await Role.findOne({

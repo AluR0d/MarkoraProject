@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TableContainer, Paper } from '@mui/material';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 import NotificationSnackbar from '../atoms/NotificationSnackbar';
 import ConfirmDialog from '../atoms/ConfirmDialog';
@@ -11,6 +12,8 @@ import { User } from '../../types/User';
 import { Role } from '../../types/Role';
 
 export default function UserAdminPanel() {
+  const { t } = useTranslation();
+
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [open, setOpen] = useState(false);
@@ -51,7 +54,7 @@ export default function UserAdminPanel() {
       setUsers(response.data);
     } catch (error) {
       console.error('Error al cargar usuarios', error);
-      showSnackbar('Error al cargar usuarios', 'error');
+      showSnackbar(t('admin.errors.load_users_failed'), 'error');
     }
   };
 
@@ -67,7 +70,7 @@ export default function UserAdminPanel() {
       setRoles(response.data);
     } catch (error) {
       console.error('Error al cargar roles', error);
-      showSnackbar('Error al cargar roles', 'error');
+      showSnackbar(t('admin.errors.load_roles_failed'), 'error');
     }
   };
 
@@ -90,7 +93,6 @@ export default function UserAdminPanel() {
       const newUser = response.data;
       setUsers((prev) => [...prev, newUser]);
       setOpen(false);
-      showSnackbar(`Se ha creado el usuario ${newUser.name}`, 'success');
     } catch (error: any) {
       console.error('Error al crear el usuario', error);
       setOpen(false);
@@ -106,10 +108,7 @@ export default function UserAdminPanel() {
         message = error.response.data.message;
       }
 
-      showSnackbar(
-        message || 'No se pudo crear el usuario. Intenta de nuevo.',
-        'error'
-      );
+      showSnackbar(message || t('admin.errors.create_failed'), 'error');
     }
   };
 
@@ -136,7 +135,6 @@ export default function UserAdminPanel() {
         prev.map((u) => (u.id === updatedUser.id ? updatedUser : u))
       );
       setEditUser(null);
-      showSnackbar('Usuario actualizado correctamente.', 'success');
     } catch (error: any) {
       console.error('Error actualizando usuario:', error);
       setEditUser(null);
@@ -152,7 +150,7 @@ export default function UserAdminPanel() {
         message = error.response.data.message;
       }
 
-      showSnackbar(message || 'No se pudo actualizar el usuario.', 'error');
+      showSnackbar(message || t('admin.errors.update_failed'), 'error');
     }
   };
 
@@ -173,10 +171,10 @@ export default function UserAdminPanel() {
       );
 
       setUsers((prev) => prev.filter((u) => u.id !== confirmDialog.userId));
-      showSnackbar('El usuario ha sido eliminado correctamente.', 'success');
+      showSnackbar(t('admin.user_deleted_successfully'), 'success');
     } catch (error: any) {
       console.error('Error al eliminar usuario:', error);
-      showSnackbar('No se pudo eliminar el usuario.', 'error');
+      showSnackbar(t('admin.errors.delete_failed'), 'error');
     } finally {
       setConfirmDialog({ open: false });
     }
@@ -189,16 +187,14 @@ export default function UserAdminPanel() {
 
   return (
     <TableContainer component={Paper} sx={{ mt: 2, p: 2 }}>
-      {/* Confirmación visual para eliminar */}
       <ConfirmDialog
         open={confirmDialog.open}
-        title="¿Eliminar usuario?"
-        message="Esta acción eliminará al usuario de forma permanente. ¿Deseas continuar?"
+        title={t('admin.confirm_delete.title')}
+        message={t('admin.confirm_delete.message')}
         onConfirm={confirmDelete}
         onCancel={() => setConfirmDialog({ open: false })}
       />
 
-      {/* Snackbar para notificaciones */}
       <NotificationSnackbar
         open={snackbar.open}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
@@ -206,8 +202,8 @@ export default function UserAdminPanel() {
         severity={snackbar.severity}
       />
 
-      <PanelHeader title="Lista de usuarios" onCreate={() => setOpen(true)}>
-        Crear usuario
+      <PanelHeader title={t('admin.tabs.users')} onCreate={() => setOpen(true)}>
+        {t('admin.create_user')}
       </PanelHeader>
 
       <UserFormModal

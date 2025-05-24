@@ -7,8 +7,13 @@ import {
   Button,
   FormControlLabel,
   Checkbox,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ZodError } from 'zod';
+import { placeSchema } from '../../schemas/placeFormSchema';
 import { Place } from '../../types/Place';
 
 type Props = {
@@ -26,6 +31,8 @@ export default function PlaceFormModal({
   initialData,
   isEditing = false,
 }: Props) {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState<Partial<Place>>({
     name: '',
     zone: '',
@@ -40,12 +47,30 @@ export default function PlaceFormModal({
     types: [],
     active: true,
     coords: { type: 'Point', coordinates: [0, 0] },
-    owner_id: 0,
+  });
+
+  const [typesInput, setTypesInput] = useState('');
+  const [coordsInput, setCoordsInput] = useState('0,0');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'error' as 'success' | 'error',
   });
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        ...initialData,
+        rating:
+          typeof initialData.rating === 'number'
+            ? initialData.rating
+            : parseFloat(
+                (initialData.rating as any).toString().replace(',', '.')
+              ),
+      });
+      setTypesInput(initialData.types?.join(', ') || '');
+      setCoordsInput(initialData.coords?.coordinates?.join(', ') || '0,0');
     } else {
       setFormData({
         name: '',
@@ -61,76 +86,118 @@ export default function PlaceFormModal({
         types: [],
         active: true,
         coords: { type: 'Point', coordinates: [0, 0] },
-        owner_id: 0,
       });
+      setTypesInput('');
+      setCoordsInput('0,0');
     }
+    setErrors({});
   }, [initialData, open]);
 
-  const isValid =
-    !!formData.name?.trim() &&
-    !!formData.zone?.trim() &&
-    !!formData.address?.trim() &&
-    !!formData.types &&
-    formData.types.length > 0;
-
   const handleSubmit = () => {
-    const cleanData = Object.fromEntries(
-      Object.entries(formData).filter(([_, v]) => v !== null)
-    );
-    onSubmit(cleanData);
+    try {
+      const coordsMatch = coordsInput.match(
+        /^\s*(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)\s*$/
+      );
+
+      const coordinates: [number, number] = coordsMatch
+        ? [parseFloat(coordsMatch[1]), parseFloat(coordsMatch[3])]
+        : [0, 0]; // fallback, aunque esto no debería ocurrir si hay validación previa
+
+      const trimmedData = {
+        ...formData,
+        name: formData.name?.trim() || '',
+        zone: formData.zone?.trim() || '',
+        address: formData.address?.trim() || '',
+        website: formData.website?.trim() || '',
+        opening_hours: formData.opening_hours?.trim() || '',
+        email: formData.email?.filter((e) => e.trim()) || [],
+        types: typesInput
+          .split(',')
+          .map((t) => t.trim())
+          .filter((t) => t),
+        coords: {
+          type: 'Point',
+          coordinates,
+        },
+      };
+
+      const parsed = placeSchema.parse(trimmedData);
+      onSubmit(parsed as any);
+    } catch (err: any) {
+      if (err instanceof ZodError) {
+        const fieldErrors: Partial<Record<keyof Place, string>> = {};
+        err.errors.forEach((e) => {
+          const field = e.path[0] as keyof Place;
+          fieldErrors[field] = t(e.message);
+        });
+        setErrors(fieldErrors);
+      }
+    }
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>
-        {isEditing ? 'Editar lugar' : 'Crear nuevo lugar'}
+        {isEditing
+          ? t('admin.places.edit_place')
+          : t('admin.places.create_place')}
       </DialogTitle>
       <DialogContent>
         <TextField
           fullWidth
-          label="Nombre"
+          label={t('admin.places.fields.name')}
           required
           margin="normal"
           value={formData.name || ''}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          error={!!errors.name}
+          helperText={errors.name && t(errors.name)}
         />
         <TextField
           fullWidth
-          label="Zona"
+          label={t('admin.places.fields.zone')}
           required
           margin="normal"
           value={formData.zone || ''}
           onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
+          error={!!errors.zone}
+          helperText={errors.zone && t(errors.zone)}
         />
         <TextField
           fullWidth
-          label="Dirección"
+          label={t('admin.places.fields.address')}
           required
           margin="normal"
           value={formData.address || ''}
           onChange={(e) =>
             setFormData({ ...formData, address: e.target.value })
           }
+          error={!!errors.address}
+          helperText={errors.address && t(errors.address)}
         />
         <TextField
           fullWidth
-          label="Teléfono"
+          label={t('admin.places.fields.phone')}
           margin="normal"
           value={formData.phone || ''}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          error={!!errors.phone}
+          helperText={errors.phone && t(errors.phone)}
         />
         <TextField
           fullWidth
-          label="Segundo teléfono"
+          label={t('admin.places.fields.second_phone')}
           margin="normal"
           value={formData.second_phone || ''}
           onChange={(e) =>
             setFormData({ ...formData, second_phone: e.target.value })
           }
+          error={!!errors.second_phone}
+          helperText={errors.second_phone && t(errors.second_phone)}
         />
         <TextField
           fullWidth
-          label="Email (separado por comas)"
+          label={t('admin.places.fields.email')}
           margin="normal"
           value={(formData.email || []).join(', ')}
           onChange={(e) =>
@@ -139,39 +206,50 @@ export default function PlaceFormModal({
               email: e.target.value.split(',').map((e) => e.trim()),
             })
           }
+          error={!!errors.email}
+          helperText={errors.email && t(errors.email)}
         />
         <TextField
           fullWidth
-          label="Web"
+          label={t('admin.places.fields.website')}
           margin="normal"
           value={formData.website || ''}
           onChange={(e) =>
             setFormData({ ...formData, website: e.target.value })
           }
+          error={!!errors.website}
+          helperText={errors.website && t(errors.website)}
         />
         <TextField
           fullWidth
-          label="Horario"
+          label={t('admin.places.fields.opening_hours')}
           margin="normal"
           value={formData.opening_hours || ''}
           onChange={(e) =>
             setFormData({ ...formData, opening_hours: e.target.value })
           }
+          error={!!errors.opening_hours}
+          helperText={errors.opening_hours && t(errors.opening_hours)}
         />
         <TextField
           fullWidth
-          label="Rating (0.0 - 5.0)"
+          label={t('admin.places.fields.rating')}
           margin="normal"
           type="number"
           inputProps={{ step: 0.1, min: 0, max: 5 }}
           value={formData.rating ?? 0}
           onChange={(e) =>
-            setFormData({ ...formData, rating: parseFloat(e.target.value) })
+            setFormData({
+              ...formData,
+              rating: parseFloat(e.target.value.replace(',', '.')),
+            })
           }
+          error={!!errors.rating}
+          helperText={errors.rating && t(errors.rating)}
         />
         <TextField
           fullWidth
-          label="Valoraciones totales"
+          label={t('admin.places.fields.user_ratings_total')}
           type="number"
           margin="normal"
           value={formData.user_ratings_total ?? 0}
@@ -181,48 +259,32 @@ export default function PlaceFormModal({
               user_ratings_total: parseInt(e.target.value),
             })
           }
+          error={!!errors.user_ratings_total}
+          helperText={errors.user_ratings_total && t(errors.user_ratings_total)}
         />
         <TextField
           fullWidth
-          label="Tipos (separados por comas)"
           required
+          label={t('admin.places.fields.types')}
           margin="normal"
-          value={(formData.types || []).join(', ')}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              types: e.target.value
-                .split(',')
-                .map((t) => t.trim())
-                .filter((t) => t),
-            })
-          }
+          value={typesInput}
+          onChange={(e) => setTypesInput(e.target.value)}
+          error={!!errors.types}
+          helperText={errors.types && t(errors.types)}
         />
         <TextField
           fullWidth
-          label="Coordenadas (lat, lng)"
+          label={t('admin.places.fields.coords')}
           margin="normal"
-          value={formData.coords?.coordinates?.join(', ') || ''}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              coords: {
-                type: 'Point',
-                coordinates: e.target.value
-                  .split(',')
-                  .map((v) => parseFloat(v.trim())) as [number, number],
-              },
-            })
-          }
-        />
-        <TextField
-          fullWidth
-          label="ID del propietario"
-          margin="normal"
-          type="number"
-          value={formData.owner_id || ''}
-          onChange={(e) =>
-            setFormData({ ...formData, owner_id: parseInt(e.target.value) })
+          value={coordsInput}
+          onChange={(e) => setCoordsInput(e.target.value)}
+          error={!!errors.coords}
+          helperText={
+            errors.coords
+              ? t(errors.coords)
+              : !/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(coordsInput)
+                ? t('admin.places.errors.invalid_coords')
+                : ''
           }
         />
         <FormControlLabel
@@ -234,15 +296,25 @@ export default function PlaceFormModal({
               }
             />
           }
-          label="¿Lugar activo?"
+          label={t('admin.places.fields.active')}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button variant="contained" onClick={handleSubmit} disabled={!isValid}>
-          {isEditing ? 'Guardar' : 'Crear'}
+        <Button onClick={onClose}>{t('common.cancel')}</Button>
+        <Button variant="contained" onClick={handleSubmit}>
+          {isEditing ? t('common.save') : t('common.create')}
         </Button>
       </DialogActions>
+      <Snackbar
+        open={snackbar.open}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 }

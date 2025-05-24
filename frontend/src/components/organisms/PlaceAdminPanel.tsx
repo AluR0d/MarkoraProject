@@ -8,6 +8,7 @@ import {
   Collapse,
 } from '@mui/material';
 
+import { useTranslation } from 'react-i18next';
 import NotificationSnackbar from '../atoms/NotificationSnackbar';
 import ConfirmDialog from '../atoms/ConfirmDialog';
 import { Place } from '../../types/Place';
@@ -18,6 +19,8 @@ import PlaceTable from '../molecules/PlaceTable';
 import PlaceFilterForm from '../molecules/PlaceFilterForm';
 
 export default function PlaceAdminPanel() {
+  const { t } = useTranslation();
+
   const [places, setPlaces] = useState<Place[]>([]);
   const [open, setOpen] = useState(false);
   const [editPlace, setEditPlace] = useState<Place | null>(null);
@@ -77,7 +80,7 @@ export default function PlaceAdminPanel() {
       setTotalPages(res.totalPages);
     } catch (err) {
       console.error('Error cargando lugares', err);
-      showSnackbar('Error al cargar lugares', 'error');
+      showSnackbar(t('admin.places.errors.load_failed'), 'error');
     }
   };
 
@@ -85,12 +88,12 @@ export default function PlaceAdminPanel() {
     try {
       await PlaceService.create(newData);
       setOpen(false);
-      showSnackbar('El lugar se ha creado correctamente', 'success');
+      showSnackbar(t('admin.places.place_created_successfully'), 'success');
       loadPlaces();
     } catch (err: any) {
       console.error('Error creando lugar', err);
       showSnackbar(
-        err.response?.data?.message || 'No se pudo crear el lugar',
+        err.response?.data?.message || t('admin.places.errors.create_failed'),
         'error'
       );
     }
@@ -101,12 +104,12 @@ export default function PlaceAdminPanel() {
     try {
       await PlaceService.update(editPlace.id, data);
       setEditPlace(null);
-      showSnackbar('El lugar se ha actualizado correctamente', 'success');
+      showSnackbar(t('admin.places.place_updated_successfully'), 'success');
       loadPlaces();
     } catch (err: any) {
       console.error('Error actualizando lugar', err);
       showSnackbar(
-        err.response?.data?.message || 'No se pudo actualizar el lugar',
+        err.response?.data?.message || t('admin.places.errors.update_failed'),
         'error'
       );
     }
@@ -121,11 +124,11 @@ export default function PlaceAdminPanel() {
 
     try {
       await PlaceService.delete(confirmDialog.placeId);
-      showSnackbar('El lugar ha sido eliminado correctamente.', 'success');
+      showSnackbar(t('admin.places.place_deleted_successfully'), 'success');
       loadPlaces();
     } catch (err: any) {
       console.error('Error eliminando lugar', err);
-      showSnackbar('No se pudo eliminar el lugar.', 'error');
+      showSnackbar(t('admin.places.errors.delete_failed'), 'error');
     } finally {
       setConfirmDialog({ open: false });
     }
@@ -137,16 +140,14 @@ export default function PlaceAdminPanel() {
 
   return (
     <TableContainer component={Paper} sx={{ mt: 2, p: 2 }}>
-      {/* Confirmación de eliminación */}
       <ConfirmDialog
         open={confirmDialog.open}
-        title="¿Eliminar lugar?"
-        message="Esta acción eliminará el lugar de forma permanente. ¿Deseas continuar?"
+        title={t('admin.places.confirm_delete.title')}
+        message={t('admin.places.confirm_delete.message')}
         onConfirm={confirmDelete}
         onCancel={() => setConfirmDialog({ open: false })}
       />
 
-      {/* Snackbar */}
       <NotificationSnackbar
         open={snackbar.open}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
@@ -154,17 +155,21 @@ export default function PlaceAdminPanel() {
         severity={snackbar.severity}
       />
 
-      <PanelHeader title="Lugares registrados" onCreate={() => setOpen(true)}>
-        Crear lugar
+      <PanelHeader
+        title={t('admin.tabs.places')}
+        onCreate={() => setOpen(true)}
+      >
+        {t('admin.places.create_place')}
       </PanelHeader>
 
-      {/* Filtros */}
       <Box mb={2} textAlign="right">
         <Button
           variant="outlined"
           onClick={() => setShowFilters((prev) => !prev)}
         >
-          {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
+          {showFilters
+            ? t('admin.places.hide_filters')
+            : t('admin.places.show_filters')}
         </Button>
       </Box>
 
@@ -177,7 +182,6 @@ export default function PlaceAdminPanel() {
         />
       </Collapse>
 
-      {/* Modales */}
       <PlaceFormModal
         open={open}
         onClose={() => setOpen(false)}
@@ -193,10 +197,9 @@ export default function PlaceAdminPanel() {
         isEditing
       />
 
-      {/* Tabla o mensaje vacío */}
       {places.length === 0 ? (
         <Typography variant="body1" align="center" mt={4}>
-          No se encontraron lugares que coincidan con la búsqueda.
+          {t('admin.places.no_results')}
         </Typography>
       ) : (
         <>
@@ -212,17 +215,17 @@ export default function PlaceAdminPanel() {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
             >
-              ⬅ Anterior
+              ⬅ {t('common.previous')}
             </Button>
             <Typography variant="body1" sx={{ mt: 1 }}>
-              Página {page} de {totalPages}
+              {t('common.page')} {page} {t('common.of')} {totalPages}
             </Typography>
             <Button
               variant="outlined"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
             >
-              Siguiente ➡
+              {t('common.next')} ➡
             </Button>
           </Box>
         </>

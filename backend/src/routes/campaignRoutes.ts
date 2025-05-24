@@ -1,6 +1,8 @@
 import express from 'express';
 import { CampaignController } from '../controllers/CampaignController';
 import { authenticateJWT } from '../middlewares/authenticateJWT';
+import { requireAdmin } from '../middlewares/requireAdmin';
+import { getAdminDashboard } from '../controllers/adminController';
 
 const router = express.Router();
 
@@ -11,6 +13,12 @@ router.post(
   '/send-scheduled',
   authenticateJWT,
   CampaignController.sendScheduled
+);
+router.get(
+  '/admin/dashboard',
+  authenticateJWT,
+  requireAdmin,
+  getAdminDashboard
 );
 router.get('/:id', CampaignController.getOne);
 router.post('/:id/send', authenticateJWT, CampaignController.sendEmails);

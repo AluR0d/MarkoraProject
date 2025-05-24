@@ -15,17 +15,20 @@ export async function login(email: string, password: string) {
 
     return user;
   } catch (error: any) {
-    let message = '';
     const zodError = error.response?.data?.errors;
 
     if (zodError) {
       const firstKey = Object.keys(zodError)[0];
       const firstMessage = zodError[firstKey][0];
-      message = firstMessage;
-    } else if (error.response?.data?.message) {
-      message = error.response.data.message;
+      throw new Error(firstMessage);
     }
-    throw new Error(message);
+
+    const code = error.response?.data?.message;
+    if (typeof code === 'string') {
+      throw new Error(code); // Será traducido en el componente
+    }
+
+    throw new Error('login.errors.unknown');
   }
 }
 
@@ -46,6 +49,8 @@ export async function register(name: string, email: string, password: string) {
       const firstKey = Object.keys(zodError)[0];
       const firstMessage = zodError[firstKey][0];
       message = firstMessage;
+    } else if (error.response?.data?.code) {
+      message = error.response.data.code; // <-- usamos la clave
     } else if (error.response?.data?.message) {
       message = error.response.data.message;
     }

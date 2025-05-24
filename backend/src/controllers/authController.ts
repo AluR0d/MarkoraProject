@@ -17,7 +17,11 @@ export class AuthController {
 
     const existing = await UserService.getUserByEmail(result.data.email);
     if (existing) {
-      throw new ApiError('User already exists', 409);
+      throw new ApiError(
+        'Existing account with same email',
+        400,
+        'USER_ALREADY_EXISTS'
+      );
     }
     const user = await AuthService.registerUser(result.data);
     res.status(201).json({ user });
@@ -33,7 +37,7 @@ export class AuthController {
 
     const existing = await UserService.getUserByEmail(result.data.email);
     if (existing === null) {
-      throw new ApiError('User not found', 404);
+      throw new ApiError('Credenciales incorrectos', 404);
     }
 
     const loggedUser = await AuthService.loginUser(result.data);
@@ -78,7 +82,8 @@ export class AuthController {
     try {
       const user = await User.findByPk(req.user!.userId);
       if (!user) {
-        return res.status(404).json({ message: 'Usuario no encontrado' });
+        res.status(404).json({ message: 'Usuario no encontrado' });
+        return;
       }
 
       res.json({

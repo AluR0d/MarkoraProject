@@ -7,20 +7,29 @@ import {
   Paper,
   Collapse,
   Box,
+  Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
-
+import { useNavigate } from 'react-router-dom';
 import SelectablePlaceTable from '../../components/molecules/SelectablePlaceTable';
 import PlaceFilterForm from '../../components/molecules/PlaceFilterForm';
 import { Place } from '../../types/Place';
 import { PlaceService } from '../../services/placeService';
 import axios from 'axios';
 import { useUser } from '../../context/UserContext';
+import ReactQuill from 'react-quill-new';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 export default function CreateCampaignPage() {
+  const { t } = useTranslation(); // Initialize translation hook
   const [places, setPlaces] = useState<Place[]>([]);
   const [selectedPlaceIds, setSelectedPlaceIds] = useState<string[]>([]);
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
+  const [frequency, setFrequency] = useState<number>(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
@@ -33,6 +42,10 @@ export default function CreateCampaignPage() {
   }>({});
   const [showFilters, setShowFilters] = useState(false);
   const { user, setUser } = useUser();
+  const navigate = useNavigate();
+
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const loadPlaces = async () => {
     try {
@@ -72,6 +85,14 @@ export default function CreateCampaignPage() {
     );
   };
 
+  const handleToggleSelectAll = (ids: string[], selectAll: boolean) => {
+    setSelectedPlaceIds((prev) =>
+      selectAll
+        ? [...new Set([...prev, ...ids])]
+        : prev.filter((id) => !ids.includes(id))
+    );
+  };
+
   const handleSubmit = async () => {
     try {
       await axios.post(
@@ -80,6 +101,7 @@ export default function CreateCampaignPage() {
           title,
           message_template: message,
           place_ids: selectedPlaceIds,
+          frequency: frequency === 0 ? null : frequency,
         },
         {
           headers: {
@@ -88,53 +110,78 @@ export default function CreateCampaignPage() {
         }
       );
 
-      alert('Campaña creada correctamente');
-
       if (user) {
-        setUser({ ...user, balance: user.balance - 5 }); // ✅ actualiza localmente
+        setUser({ ...user, balance: user.balance - 5 });
       }
 
       setTitle('');
       setMessage('');
+      setFrequency(0);
       setSelectedPlaceIds([]);
+
+      setSnackbarOpen(true);
+      setTimeout(() => setSuccessDialogOpen(true), 300);
     } catch (err: any) {
       console.error(err);
-      alert('Error al crear la campaña');
+      alert(t('campaign.create_error'));
     }
   };
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Crear nueva campaña
+        {t('campaign.create_title')}
       </Typography>
       <Typography variant="h6" sx={{ mb: 2 }}>
-        💰 Balance actual: {user?.balance ?? 'Cargando...'} créditos
+        {t('campaign.balance')}: {user?.balance ?? t('common.loading')}{' '}
+        {t('common.credits')}
       </Typography>
+
       <TextField
         fullWidth
-        label="Título"
+        label={t('campaign.title_label')}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         margin="normal"
       />
+
+      <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+        {t('campaign.message_body')}
+      </Typography>
+
+      <ReactQuill
+        theme="snow"
+        value={message}
+        onChange={setMessage}
+        placeholder={t('campaign.message_placeholder')}
+        style={{ minHeight: '150px' }}
+      />
+
       <TextField
         fullWidth
-        multiline
-        minRows={4}
-        label="Mensaje"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        type="number"
+        label={t('campaign.frequency_label')}
+        value={frequency}
+        onChange={(e) => {
+          const value = parseInt(e.target.value);
+          setFrequency(isNaN(value) ? 0 : Math.max(0, value));
+        }}
         margin="normal"
+        inputProps={{ min: 0 }}
+        helperText={t('campaign.frequency_helper')}
       />
+
       <Box textAlign="right" mb={2}>
         <Button
           variant="outlined"
           onClick={() => setShowFilters((prev) => !prev)}
         >
-          {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
+          {showFilters
+            ? t('campaign.hide_filters')
+            : t('campaign.show_filters')}
         </Button>
       </Box>
+
       <Collapse in={showFilters}>
         <PlaceFilterForm
           onFilter={(newFilters) => {
@@ -143,10 +190,11 @@ export default function CreateCampaignPage() {
           }}
         />
       </Collapse>
+
       <Paper sx={{ mt: 2, p: 2 }}>
         {places.length === 0 ? (
           <Typography align="center" sx={{ mt: 3 }}>
-            No se encontraron lugares que coincidan con la búsqueda.
+            {t('campaign.no_places_found')}
           </Typography>
         ) : (
           <>
@@ -154,6 +202,7 @@ export default function CreateCampaignPage() {
               places={places}
               selectedIds={selectedPlaceIds}
               onToggleSelect={togglePlace}
+              onToggleSelectAll={handleToggleSelectAll}
             />
 
             <Box display="flex" justifyContent="center" mt={2} gap={2}>
@@ -162,30 +211,57 @@ export default function CreateCampaignPage() {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
               >
-                ⬅ Anterior
+                ⬅ {t('common.previous')}
               </Button>
               <Typography variant="body1" sx={{ mt: 1 }}>
-                Página {page} de {totalPages}
+                {t('common.page')} {page} {t('common.of')} {totalPages}
               </Typography>
               <Button
                 variant="outlined"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
               >
-                Siguiente ➡
+                {t('common.next')} ➡
               </Button>
             </Box>
           </>
         )}
       </Paper>
+
       <Button
         variant="contained"
         sx={{ mt: 4 }}
         disabled={!title || !message || selectedPlaceIds.length === 0}
         onClick={handleSubmit}
       >
-        Crear campaña
+        {t('campaign.create_button')}
       </Button>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        message={t('campaign.success_message')}
+      />
+
+      {/* Diálogo de redirección */}
+      <Dialog
+        open={successDialogOpen}
+        onClose={() => setSuccessDialogOpen(false)}
+      >
+        <DialogTitle>{t('campaign.success_dialog_title')}</DialogTitle>
+        <DialogContent>
+          <Typography>{t('campaign.success_dialog_message')}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSuccessDialogOpen(false)}>
+            {t('common.no')}
+          </Button>
+          <Button variant="contained" onClick={() => navigate('/my-campaigns')}>
+            {t('common.yes')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

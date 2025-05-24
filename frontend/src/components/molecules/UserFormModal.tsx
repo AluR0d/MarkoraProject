@@ -9,8 +9,17 @@ import {
   Select,
   MenuItem,
   Button,
+  FormHelperText,
+  Switch,
+  FormControlLabel,
+  Snackbar,
+  Alert,
+  Box,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ZodError, z } from 'zod';
+import { createUserSchema, baseUserSchema } from '../../schemas/userFormSchema';
 
 export type Role = {
   id: number;
@@ -44,11 +53,24 @@ export default function UserFormModal({
   roles,
   isEditing = false,
 }: UserFormModalProps) {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     roles: [] as number[],
+  });
+
+  const [enablePassword, setEnablePassword] = useState(false);
+  const [errors, setErrors] = useState<
+    Partial<Record<'name' | 'email' | 'password' | 'roles', string>>
+  >({});
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error',
   });
 
   useEffect(() => {
@@ -62,90 +84,221 @@ export default function UserFormModal({
     } else {
       setFormData({ name: '', email: '', password: '', roles: [] });
     }
+    setErrors({});
+    setEnablePassword(false);
   }, [initialData, open]);
 
-  const isValid =
-    formData.name.trim() !== '' &&
-    formData.email.trim() !== '' &&
-    formData.roles.length > 0;
+  const handleInputChange =
+    (field: keyof typeof formData) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData({ ...formData, [field]: e.target.value });
+      setErrors({ ...errors, [field]: '' });
+    };
 
-  const handleSubmit = () => {
-    onSubmit({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password || undefined,
-      roles: formData.roles,
+  const handleSelectChange = (e: any) => {
+    const value = e.target.value;
+    setFormData({ ...formData, roles: value as number[] });
+    setErrors({ ...errors, roles: '' });
+  };
+
+  const handleTogglePassword = () => {
+    setEnablePassword((prev) => {
+      const newState = !prev;
+      if (!newState) {
+        setFormData((prevData) => ({ ...prevData, password: '' }));
+        setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
+      }
+      return newState;
     });
   };
 
+  const handleSubmit = () => {
+    const trimmedData = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      password: formData.password.trim(),
+      roles: formData.roles,
+    };
+
+    try {
+      let schema;
+      if (isEditing) {
+        schema = baseUserSchema.extend({
+          password: enablePassword
+            ? z
+                .string()
+                .trim()
+                .nonempty('register.errors.empty_password')
+                .min(6, 'register.errors.password_too_short')
+                .max(64, 'register.errors.password_too_long')
+            : z
+                .string()
+                .transform((val) => val.trim())
+                .refine(
+                  (val) => val === '' || (val.length >= 6 && val.length <= 64),
+                  {
+                    message: 'user.errors.password_invalid_range',
+                  }
+                )
+                .optional(),
+        });
+      } else {
+        schema = createUserSchema;
+      }
+
+      schema.parse(trimmedData);
+      setErrors({});
+      onSubmit({
+        name: trimmedData.name,
+        email: trimmedData.email,
+        password: trimmedData.password || undefined,
+        roles: trimmedData.roles,
+      });
+
+      setSnackbar({
+        open: true,
+        message: isEditing
+          ? t('admin.user_updated_successfully')
+          : t('admin.user_created_successfully'),
+        severity: 'success',
+      });
+
+      onClose();
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        const fieldErrors: Partial<
+          Record<'name' | 'email' | 'password' | 'roles', string>
+        > = {};
+        error.errors.forEach((err) => {
+          const field = err.path[0] as keyof typeof formData;
+          fieldErrors[field] = t(err.message);
+        });
+        setErrors(fieldErrors);
+        return;
+      }
+
+      const message =
+        error.response?.data?.message || t('admin.errors.unknown');
+      setSnackbar({ open: true, message, severity: 'error' });
+    }
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        {isEditing ? 'Editar usuario' : 'Crear nuevo usuario'}
-      </DialogTitle>
-      <DialogContent>
-        <TextField
-          fullWidth
-          label="Nombre"
-          margin="normal"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-        />
-        <TextField
-          fullWidth
-          label="Email"
-          type="email"
-          margin="normal"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-        />
-        <TextField
-          fullWidth
-          label={isEditing ? 'Nueva contraseña' : 'Contraseña'}
-          type="password"
-          margin="normal"
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
-        />
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="roles-label">Roles</InputLabel>
-          <Select
-            labelId="roles-label"
-            id="roles-select"
-            label="Roles"
-            multiple
-            value={formData.roles}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                roles:
-                  typeof e.target.value === 'string'
-                    ? e.target.value.split(',').map(Number)
-                    : e.target.value,
-              })
-            }
-            renderValue={(selected) =>
-              roles
-                .filter((r) => selected.includes(r.id))
-                .map((r) => r.name)
-                .join(', ')
-            }
+    <>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+        <DialogTitle>
+          {isEditing ? t('admin.edit_user') : t('admin.create_user')}
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label={t('register.name')}
+            margin="normal"
+            value={formData.name}
+            onChange={handleInputChange('name')}
+            error={!!errors.name}
+            helperText={errors.name}
+          />
+          <TextField
+            fullWidth
+            label={t('register.email')}
+            type="email"
+            margin="normal"
+            value={formData.email}
+            onChange={handleInputChange('email')}
+            error={!!errors.email}
+            helperText={errors.email}
+          />
+
+          {isEditing ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
+              <TextField
+                fullWidth
+                label={t('admin.new_password')}
+                type="password"
+                value={formData.password}
+                onChange={handleInputChange('password')}
+                disabled={!enablePassword}
+                error={!!errors.password}
+                helperText={errors.password}
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={enablePassword}
+                    onChange={handleTogglePassword}
+                    color="primary"
+                  />
+                }
+                label={
+                  enablePassword
+                    ? t('admin.disable_password')
+                    : t('admin.enable_password')
+                }
+                labelPlacement="end"
+              />
+            </Box>
+          ) : (
+            <TextField
+              fullWidth
+              label={t('register.password')}
+              type="password"
+              margin="normal"
+              value={formData.password}
+              onChange={handleInputChange('password')}
+              error={!!errors.password}
+              helperText={errors.password}
+              sx={{ mt: 2 }}
+            />
+          )}
+
+          <FormControl
+            fullWidth
+            margin="normal"
+            error={!!errors.roles}
+            variant="outlined"
           >
-            {roles.map((role) => (
-              <MenuItem key={role.id} value={role.id}>
-                {role.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button variant="contained" onClick={handleSubmit} disabled={!isValid}>
-          {isEditing ? 'Guardar' : 'Crear'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+            <InputLabel id="roles-label">Roles</InputLabel>
+            <Select
+              labelId="roles-label"
+              multiple
+              value={formData.roles}
+              onChange={handleSelectChange}
+              label="Roles"
+              renderValue={(selected) =>
+                roles
+                  .filter((r) => (selected as number[]).includes(r.id))
+                  .map((r) => r.name)
+                  .join(', ')
+              }
+            >
+              {roles.map((role) => (
+                <MenuItem key={role.id} value={role.id}>
+                  {role.name}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.roles && <FormHelperText>{errors.roles}</FormHelperText>}
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>{t('common.cancel')}</Button>
+          <Button variant="contained" onClick={handleSubmit}>
+            {isEditing ? t('common.save') : t('common.create')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert severity={snackbar.severity} variant="filled">
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }

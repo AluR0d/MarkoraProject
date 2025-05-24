@@ -5,6 +5,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { Place } from '../../types/Place';
 import PlaceRow from './PlaceRow';
 
@@ -15,16 +16,18 @@ type Props = {
 };
 
 export default function PlaceTable({ places, onEdit, onDelete }: Props) {
+  const { t } = useTranslation();
+
   return (
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>ID</TableCell>
-          <TableCell>Nombre</TableCell>
-          <TableCell>Zona</TableCell>
-          <TableCell>Puntuación</TableCell>
-          <TableCell>Activo</TableCell>
-          <TableCell>Acciones</TableCell>
+          <TableCell>{t('admin.places.table_headers.id')}</TableCell>
+          <TableCell>{t('admin.places.table_headers.name')}</TableCell>
+          <TableCell>{t('admin.places.table_headers.zone')}</TableCell>
+          <TableCell>{t('admin.places.table_headers.rating')}</TableCell>
+          <TableCell>{t('admin.places.table_headers.active')}</TableCell>
+          <TableCell>{t('admin.places.table_headers.actions')}</TableCell>
         </TableRow>
       </TableHead>
 

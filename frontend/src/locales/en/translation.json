@@ -1,0 +1,273 @@
+{
+  "login": {
+    "title": "Log In",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Enter",
+    "loading": "Loading...",
+    "success_registered": "Account successfully created!",
+    "errors": {
+      "empty_email": "Empty email, please fill in the field",
+      "invalid_email": "Invalid email format",
+      "empty_password": "Empty password, please fill in the field",
+      "invalid_credentials": "Incorrect credentials",
+      "unknown": "Unknown error"
+    },
+    "redirects": {
+      "no_account": "Don't have an account?",
+      "forgot_password": "Forgot your password?"
+    }
+  },
+  "register": {
+    "title": "Create Account",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Register",
+    "loading": "Registering...",
+    "errors": {
+      "empty_name": "Name is required",
+      "name_too_long": "Name cannot exceed 50 characters",
+      "empty_email": "Empty email, please fill in the field",
+      "email_too_long": "Email cannot exceed 50 characters",
+      "invalid_email": "Invalid email format",
+      "empty_password": "Empty password, please fill in the field",
+      "password_too_long": "Password cannot exceed 64 characters",
+      "password_too_short": "Password must be at least 6 characters",
+      "password_invalid_range": "Password cannot be empty or contain only spaces",
+      "USER_ALREADY_EXISTS": "An account with this email already exists",
+      "register.errors.unknown": "Unknown error during registration",
+      "unknown": "Unknown error"
+    },
+    "redirects": {
+      "already_have_account": "Already have an account?"
+    }
+  },
+  "forgot": {
+    "title": "Recover Password",
+    "description": "Enter your email and we will send you a link to reset your password.",
+    "email_label": "Email",
+    "send_button": "Send Email",
+    "loading": "Sending...",
+    "back_to_login": "Changed your mind?",
+    "success_message": "If an account exists, an email with instructions has been sent.",
+    "errors": {
+      "empty_email": "Please enter your email",
+      "invalid_email": "Invalid email format",
+      "email_too_long": "Email cannot exceed 50 characters"
+    }
+  },
+  "reset": {
+    "title": "Reset Password",
+    "password": "New Password",
+    "confirm_password": "Confirm New Password",
+    "submit": "Save New Password",
+    "loading": "Saving...",
+    "success": "Password successfully updated",
+    "errors": {
+      "password_too_short": "Password must be at least 6 characters",
+      "password_too_long": "Password cannot exceed 64 characters",
+      "password_invalid_range": "Password cannot be empty or contain only spaces",
+      "passwords_do_not_match": "Passwords do not match",
+      "unknown": "Error updating password"
+    }
+  },
+  "profile": {
+    "title": "User Profile",
+    "success": "Data successfully updated",
+    "balance": "Available Balance",
+    "errors": {
+      "empty_name": "Name is required",
+      "name_too_long": "Name cannot exceed 50 characters",
+      "empty_email": "Empty email, please fill in the field",
+      "email_too_long": "Email cannot exceed 50 characters",
+      "invalid_email": "Invalid email format",
+      "password_invalid_range": "Password cannot be empty or contain only spaces",
+      "unknown": "Unknown error updating profile"
+    }
+  },
+  "user": {
+    "errors": {
+      "empty_name": "Name is required",
+      "name_too_long": "Name cannot exceed 50 characters",
+      "empty_email": "Email is required",
+      "email_too_long": "Email cannot exceed 50 characters",
+      "invalid_email": "Invalid email format",
+      "password_too_short": "Password must be at least 6 characters",
+      "password_too_long": "Password cannot exceed 64 characters",
+      "password_invalid_range": "Password cannot be empty or contain only spaces",
+      "empty_roles": "You must assign at least one role to the user"
+    }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "enable_password": "Enable Password Field",
+    "disable_password": "Disable Password Field",
+    "table_headers": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "roles": "Roles",
+      "actions": "Actions"
+    },
+    "tabs": {
+      "users": "Users",
+      "places": "Places",
+      "dashboard": "Dashboard"
+    },
+    "create_user": "Create New User",
+    "edit_user": "Edit User",
+    "new_password": "New Password",
+    "user_created_successfully": "User successfully created.",
+    "user_updated_successfully": "User successfully updated.",
+    "user_deleted_successfully": "User successfully deleted.",
+    "places": {
+      "edit_place": "Edit Place",
+      "create_place": "Create New Place",
+      "place_created_successfully": "Place successfully created.",
+      "place_updated_successfully": "Place successfully updated.",
+      "place_deleted_successfully": "Place successfully deleted.",
+      "errors": {
+        "create_failed": "Failed to create place.",
+        "update_failed": "Failed to update place.",
+        "delete_failed": "Failed to delete place.",
+        "load_failed": "Error loading places.",
+        "required": "This field is required",
+        "max_50": "Cannot exceed 50 characters",
+        "max_20": "Cannot exceed 20 characters",
+        "invalid_phone": "Must contain exactly 9 digits",
+        "invalid_email": "Invalid email",
+        "rating_range": "Must be between 0.0 and 5.0",
+        "rating_total_min": "Must be greater than or equal to 0",
+        "rating_total_max": "Cannot exceed 100000",
+        "types_required": "Enter at least one type",
+        "coords_invalid": "You must enter two valid coordinates",
+        "form_invalid": "The form contains errors, please correct them before saving",
+        "invalid_coords": "This field must be in the format number, number"
+      },
+      "confirm_delete": {
+        "title": "Delete Place?",
+        "message": "This action will permanently delete the place. Do you wish to continue?"
+      },
+      "filters": {
+        "rating_out_of_range": "Rating must be between 0 and 5",
+        "title": "Search Filters",
+        "name": "Name",
+        "zone": "Zone",
+        "min_rating": "Minimum Rating",
+        "rating_order": "Rating Order",
+        "no_order": "No Order",
+        "high_to_low": "High to Low",
+        "low_to_high": "Low to High",
+        "active": "Is Place Active?",
+        "all": "All",
+        "only_active": "Only Active",
+        "only_inactive": "Only Inactive",
+        "apply": "Filter",
+        "clear": "Clear"
+      },
+      "table_headers": {
+        "id": "ID",
+        "name": "Name",
+        "zone": "Zone",
+        "rating": "Rating",
+        "active": "Active",
+        "actions": "Actions"
+      },
+      "fields": {
+        "name": "Name",
+        "zone": "Zone",
+        "address": "Address",
+        "phone": "Phone",
+        "second_phone": "Second Phone",
+        "email": "Email (comma-separated)",
+        "website": "Website",
+        "opening_hours": "Opening Hours",
+        "rating": "Rating (0.0 - 5.0)",
+        "user_ratings_total": "Total Ratings",
+        "types": "Types (comma-separated)",
+        "coords": "Coordinates (lat, lng)",
+        "owner_id": "Owner ID",
+        "active": "Is Place Active?"
+      },
+      "show_filters": "Show Filters",
+      "hide_filters": "Hide Filters",
+      "no_results": "No places matching the search were found."
+    },
+    "errors": {
+      "empty_roles": "Select at least one role",
+      "create_failed": "Failed to create user. Please try again.",
+      "update_failed": "Failed to update user.",
+      "delete_failed": "Failed to delete user.",
+      "load_users_failed": "Error loading users.",
+      "load_roles_failed": "Error loading roles.",
+      "unknown": "An unknown error occurred."
+    },
+    "confirm_delete": {
+      "title": "Delete User?",
+      "message": "This action will permanently delete the user. Do you wish to continue?"
+    }
+  },
+  "dashboard": {
+    "title": "Statistical Summary — MARKORA",
+    "general_stats": "General Statistics",
+    "total_campaigns": "Total Campaigns",
+    "average_places_per_campaign": "Average Places per Campaign",
+    "total_credit_spent": "Total Credit Spent",
+    "total_emails_sent": "Total Emails Sent",
+    "error_loading_data": "Failed to load statistics.",
+    "date_range": "Date Range",
+    "all_data": "All Data",
+    "last_30_days": "Last 30 Days",
+    "last_7_days": "Last 7 Days",
+    "export_as_pdf": "Export as PDF",
+    "report_title": "General Statistics Report",
+    "range_last_7_days": "Range: Last 7 Days",
+    "range_last_30_days": "Range: Last 30 Days"
+  },
+  "navbar": {
+    "welcome": "Welcome",
+    "home": "Home",
+    "profile": "Profile",
+    "admin": "Admin",
+    "logout": "Logout"
+  },
+  "campaign": {
+    "create_new": "Create new campaign",
+    "create_title": "Create New Campaign",
+    "balance": "Current Balance",
+    "title_label": "Title",
+    "message_body": "Message Body",
+    "message_placeholder": "Write the content of the message...",
+    "frequency_label": "Frequency (in seconds)",
+    "frequency_helper": "Set 0 to disable automatic sending",
+    "show_filters": "Show Filters",
+    "hide_filters": "Hide Filters",
+    "no_places_found": "No places found matching the search.",
+    "create_button": "Create Campaign",
+    "success_message": "Campaign created successfully",
+    "success_dialog_title": "Campaign Created Successfully!",
+    "success_dialog_message": "Would you like to view your campaign now?"
+  },
+  "selectable_place": {
+    "selected_places": "Selected places",
+    "name": "Name",
+    "zone": "Zone",
+    "rating": "Rating",
+    "active": "Active"
+  },
+  "common": {
+    "create": "Create",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of",
+    "no": "No",
+    "yes": "Yes",
+    "loading": "Loading...",
+    "credits": "Credits"
+  }
+}

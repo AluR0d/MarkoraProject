@@ -5,6 +5,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import UserRow from '../atoms/UserRow';
 import { User } from '../../types/User';
 
@@ -15,15 +16,17 @@ type Props = {
 };
 
 export default function UserTable({ users, onEdit, onDelete }: Props) {
+  const { t } = useTranslation();
+
   return (
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>ID</TableCell>
-          <TableCell>Nombre</TableCell>
-          <TableCell>Email</TableCell>
-          <TableCell>Roles</TableCell>
-          <TableCell>Acciones</TableCell>
+          <TableCell>{t('admin.table_headers.id')}</TableCell>
+          <TableCell>{t('admin.table_headers.name')}</TableCell>
+          <TableCell>{t('admin.table_headers.email')}</TableCell>
+          <TableCell>{t('admin.table_headers.roles')}</TableCell>
+          <TableCell>{t('admin.table_headers.actions')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

@@ -34,7 +34,7 @@ app.use('/campaigns', campaignRoutes);
 
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof ApiError) {
-    res.status(err.statusCode).json({ message: err.message });
+    res.status(err.statusCode).json({ message: err.message, code: err.code });
     return;
   }
 

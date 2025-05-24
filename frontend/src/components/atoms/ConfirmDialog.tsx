@@ -1,11 +1,12 @@
 import {
   Dialog,
-  DialogActions,
+  DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogTitle,
+  DialogActions,
   Button,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   open: boolean;
@@ -22,6 +23,8 @@ export default function ConfirmDialog({
   onConfirm,
   onCancel,
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <Dialog open={open} onClose={onCancel}>
       <DialogTitle>{title}</DialogTitle>
@@ -29,11 +32,9 @@ export default function ConfirmDialog({
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel} color="inherit">
-          Cancelar
-        </Button>
+        <Button onClick={onCancel}>{t('common.cancel')}</Button>
         <Button onClick={onConfirm} color="error" variant="contained">
-          Eliminar
+          {t('common.delete')}
         </Button>
       </DialogActions>
     </Dialog>

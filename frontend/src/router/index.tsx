@@ -37,6 +37,17 @@ function AppRouter() {
           }
         />
 
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPasswordPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+
         {/* Rutas con layout y navbar */}
         <Route element={<GlobalLayout />}>
           <Route
@@ -71,15 +82,10 @@ function AppRouter() {
               </PrivateRoute>
             }
           />
+          <Route path="/campaign/create" element={<CreateCampaignPage />} />
+
+          <Route path="/my-campaigns" element={<MyCampaignsPage />} />
         </Route>
-
-        <Route path="/campaign/create" element={<CreateCampaignPage />} />
-
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-
-        <Route path="/my-campaigns" element={<MyCampaignsPage />} />
 
         <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>

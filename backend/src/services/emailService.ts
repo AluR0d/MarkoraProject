@@ -27,7 +27,7 @@ export async function sendEmail(to: string, subject: string, body: string) {
       from: `"Markora" <${process.env.EMAIL_USER}>`,
       to,
       subject,
-      text: body,
+      html: body,
     });
 
     console.log(`📨 Email enviado a ${to}: ${info.messageId}`);

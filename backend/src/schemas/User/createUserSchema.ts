@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 export const createUserSchema = z.object({
-  name: z.string().min(1, 'name is required'),
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(6, 'Password must be atleast 6.'),
+  name: z.string().min(1, 'El nombre es obligatorio'),
+  email: z.string().email('Formato de correo inválido'),
+  password: z.string().min(6, 'Credenciales incorrectos'),
   roles: z.array(z.number()).optional(),
 });
 

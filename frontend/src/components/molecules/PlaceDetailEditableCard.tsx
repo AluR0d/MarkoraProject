@@ -1,4 +1,3 @@
-// src/pages/admin/places/PlaceDetailEditableCard.tsx
 import { useState } from 'react';
 import {
   Paper,
@@ -8,13 +7,16 @@ import {
   Box,
   Snackbar,
   Alert,
-  Switch,
+  MenuItem,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { Place } from '../../types/Place';
 import axios from 'axios';
+import { placeSchema } from '../../schemas/placeFormSchema';
+import { ZodError } from 'zod';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   place: Place;
@@ -24,6 +26,7 @@ type Props = {
 type EditableField = keyof Place | null;
 
 export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
+  const { t } = useTranslation();
   const [editingField, setEditingField] = useState<EditableField>(null);
   const [tempValue, setTempValue] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -50,50 +53,55 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
   };
 
   const isValid = (field: keyof Place, value: string): string | null => {
-    if (value.trim() === '') {
-      if (field === 'zone') return 'La zona es obligatoria';
-      if (field === 'name') return 'El nombre es obligatorio';
-      if (field === 'address') return 'La dirección es obligatoria';
-      if (field === 'types') return 'Debes indicar al menos un tipo';
-      return null;
-    }
+    try {
+      let parsedValue: any;
 
-    switch (field) {
-      case 'zone':
-        return value.length > 50 ? 'Máximo 50 caracteres' : null;
-      case 'address':
-        return value.length > 100 ? 'Máximo 100 caracteres' : null;
-      case 'phone':
-      case 'second_phone':
-        return /^\d{9}$/.test(value)
-          ? null
-          : 'Debe tener exactamente 9 dígitos';
-      case 'email':
-        return value
-          .split(',')
-          .some((e) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim()))
-          ? 'Formato de email inválido en alguno de los valores'
-          : null;
-      case 'types':
-        const array = value
-          .split(',')
-          .map((e) => e.trim())
-          .filter(Boolean);
-        return array.length === 0 ? 'Debes indicar al menos un tipo' : null;
-      case 'rating':
-        const rating = parseFloat(value);
-        return isNaN(rating) || rating < 0 || rating > 5
-          ? 'Debe ser un número entre 0 y 5'
-          : null;
-      case 'user_ratings_total':
-        return !/^\d+$/.test(value) ? 'Debe ser un número entero ≥ 0' : null;
-      case 'coords':
-        const parts = value.split(',').map((p) => parseFloat(p.trim()));
-        return parts.length === 2 && parts.every((n) => !isNaN(n))
-          ? null
-          : 'Debes escribir latitud y longitud separados por coma';
-      default:
-        return null;
+      switch (field) {
+        case 'email':
+        case 'types':
+          parsedValue = value
+            .split(',')
+            .map((e) => e.trim())
+            .filter(Boolean);
+          break;
+        case 'rating':
+        case 'user_ratings_total':
+          parsedValue = Number(value);
+          break;
+        case 'coords':
+          const parts = value.split(',').map((p) => parseFloat(p.trim()));
+          if (parts.length !== 2 || parts.some((n) => isNaN(n))) {
+            throw new ZodError([
+              {
+                path: ['coords'],
+                message: 'admin.places.errors.invalid_coords',
+                code: 'custom',
+              },
+            ]);
+          }
+          parsedValue = {
+            type: 'Point',
+            coordinates: [parts[1], parts[0]],
+          };
+          break;
+
+        case 'active':
+          parsedValue = value === 'true';
+          break;
+        default:
+          parsedValue = value.trim();
+      }
+
+      placeSchema
+        .pick({ [field]: true } as any)
+        .parse({ [field]: parsedValue });
+      return null;
+    } catch (err) {
+      if (err instanceof ZodError) {
+        const key = err.errors[0]?.message;
+        return key ? t(key) : t('admin.errors.unknown');
+      }
+      return t('admin.errors.unknown');
     }
   };
 
@@ -140,11 +148,11 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
       );
       onUpdate(res.data);
       setEditingField(null);
-      setSuccessMessage('Campo actualizado correctamente.');
+      setSuccessMessage(t('admin.places.place_updated_successfully'));
     } catch (err: any) {
       console.error('Error al guardar el cambio', err);
       setErrorMessage(
-        err?.response?.data?.message || 'No se pudo guardar el cambio.'
+        err?.response?.data?.message || t('admin.errors.update_failed')
       );
     }
   };
@@ -187,10 +195,17 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
         {editingField === field ? (
           isBoolean ? (
             <>
-              <Switch
-                checked={tempValue === 'true'}
-                onChange={(e) => setTempValue(e.target.checked.toString())}
-              />
+              <TextField
+                select
+                label={t('admin.places.fields.active')}
+                value={tempValue}
+                onChange={(e) => setTempValue(e.target.value)}
+                fullWidth
+                size="small"
+              >
+                <MenuItem value="true">{t('common.yes')}</MenuItem>
+                <MenuItem value="false">{t('common.no')}</MenuItem>
+              </TextField>
               <IconButton onClick={saveField}>
                 <SaveIcon />
               </IconButton>
@@ -203,6 +218,18 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
               <TextField
                 size="small"
                 fullWidth
+                type={
+                  ['rating', 'user_ratings_total'].includes(field)
+                    ? 'number'
+                    : 'text'
+                }
+                inputProps={
+                  field === 'rating'
+                    ? { step: 0.1, min: 0, max: 5 }
+                    : field === 'user_ratings_total'
+                      ? { step: 1, min: 0 }
+                      : undefined
+                }
                 value={tempValue}
                 placeholder={getPlaceholder(field)}
                 onChange={(e) => setTempValue(e.target.value)}
@@ -245,20 +272,23 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
   return (
     <>
       <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
-        {renderField('Nombre', 'name')}
-        {renderField('Zona', 'zone')}
-        {renderField('Dirección', 'address')}
-        {renderField('Teléfono', 'phone')}
-        {renderField('Segundo Teléfono', 'second_phone')}
-        {renderField('Emails (separadas por coma)', 'email')}
-        {renderField('Web', 'website')}
-        {renderField('Horario', 'opening_hours')}
-        {renderField('Valoración', 'rating')}
-        {renderField('Total valoraciones', 'user_ratings_total')}
-        {renderField('Tipos (separados por coma)', 'types')}
-        {renderField('Activo', 'active', true)}
-        {renderField('Coordenadas (latitud, longitud)', 'coords')}
-        {renderField('Propietario ID', 'owner_id')}
+        {renderField(t('admin.places.fields.name'), 'name')}
+        {renderField(t('admin.places.fields.zone'), 'zone')}
+        {renderField(t('admin.places.fields.address'), 'address')}
+        {renderField(t('admin.places.fields.phone'), 'phone')}
+        {renderField(t('admin.places.fields.second_phone'), 'second_phone')}
+        {renderField(t('admin.places.fields.email'), 'email')}
+        {renderField(t('admin.places.fields.website'), 'website')}
+        {renderField(t('admin.places.fields.opening_hours'), 'opening_hours')}
+        {renderField(t('admin.places.fields.rating'), 'rating')}
+        {renderField(
+          t('admin.places.fields.user_ratings_total'),
+          'user_ratings_total'
+        )}
+        {renderField(t('admin.places.fields.types'), 'types')}
+        {renderField(t('admin.places.fields.active'), 'active', true)}
+        {renderField(t('admin.places.fields.coords'), 'coords')}
+        {renderField(t('admin.places.fields.owner_id'), 'owner_id')}
       </Paper>
 
       <Snackbar
