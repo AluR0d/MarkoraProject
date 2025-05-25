@@ -10,10 +10,10 @@ import {
 import { LatLng, LatLngExpression } from 'leaflet';
 import { useEffect } from 'react';
 import { Place } from '../../types/Place';
+
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// 👇 Solución para evitar error de TypeScript
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
 L.Icon.Default.mergeOptions({
