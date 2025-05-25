@@ -1,20 +1,20 @@
-# Utiliza una imagen oficial de Node.js
+# Usar la imagen oficial de Node.js
 FROM node:18
 
-# Establece el directorio de trabajo
+# Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copia los archivos package.json y package-lock.json
+# Copiar el package.json y package-lock.json
 COPY package*.json ./
 
-# Instala las dependencias
+# Instalar las dependencias
 RUN npm install
 
-# Copia todo el código fuente del backend
+# Copiar todo el código fuente
 COPY . .
 
-# Expón el puerto en el que el backend correrá (3000)
+# Exponer el puerto en el que corre el backend
 EXPOSE 3000
 
-# Define el comando para ejecutar el backend
+# Comando para iniciar la aplicación
 CMD ["npm", "run", "start"]

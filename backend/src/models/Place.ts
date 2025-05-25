@@ -10,7 +10,6 @@ import {
   ForeignKey,
   BeforeCreate,
 } from 'sequelize-typescript';
-import { nanoid } from 'nanoid';
 import { tableNames } from '../constants/tableNames';
 import { Owner } from './Owner';
 
@@ -74,7 +73,9 @@ export class Place extends Model {
   owner!: Owner;
 
   @BeforeCreate
-  static generateId(place: Place) {
+  static async generateId(place: Place) {
+    // Usamos import() dinámico para cargar nanoid solo cuando sea necesario
+    const { nanoid } = await import('nanoid');
     place.id = nanoid(27);
   }
 }
