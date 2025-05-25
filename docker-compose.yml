@@ -1,3 +1,5 @@
+version: "3.7"
+
 services:
   db:
     image: postgres:17
@@ -23,6 +25,18 @@ services:
       - ./database/pgadmin_backups:/var/lib/pgadmin/storage/
     depends_on:
       - db
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend-container
+    environment:
+      DATABASE_URL: postgres://postgres:password@db:5432/Markora
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    command: npm run dev
 
 volumes:
   postgres_data:
