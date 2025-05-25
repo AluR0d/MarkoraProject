@@ -19,6 +19,7 @@ import ForgotPasswordPage from '../components/pages/ForgotPasswordPage';
 import CreateCampaignPage from '../components/pages/CreateCampaignPage';
 import MyCampaignsPage from '../components/pages/MyCampaignsPage';
 import PublicRoute from './PublicRoute';
+import NotFoundPage from '../components/pages/NotFoundPage';
 
 function AppRouter() {
   return (
@@ -94,6 +95,8 @@ function AppRouter() {
 
           <Route path="/my-campaigns" element={<MyCampaignsPage />} />
         </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
 
         <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>
