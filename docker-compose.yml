@@ -1,16 +1,20 @@
+version: "3"
+
 services:
+  # Servicio de la base de datos
   db:
     image: postgres:17
     container_name: postgres-container
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: Markora
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
+  # Servicio de pgAdmin (opcional, si necesitas una UI para la base de datos)
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin-container
@@ -23,6 +27,37 @@ services:
       - ./database/pgadmin_backups:/var/lib/pgadmin/storage/
     depends_on:
       - db
+
+  # Servicio del backend (Node.js con TypeScript)
+  backend:
+    build: ./backend
+    container_name: backend-container
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+      JWT_RESET_SECRET: ${JWT_RESET_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  # Servicio del frontend (React con Vite)
+  frontend:
+    build: ./frontend
+    container_name: frontend-container
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
