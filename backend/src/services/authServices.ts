@@ -78,7 +78,7 @@ export class AuthService {
       expiresIn: '1h',
     });
 
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const resetLink = `${process.env.FRONTEND_URL}reset-password?token=${token}`;
     await sendPasswordResetEmail(user.email, resetLink);
   }
 
