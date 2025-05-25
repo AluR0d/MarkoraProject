@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import LoginPage from '../components/pages/LoginPage';
 import RegisterPage from '../components/pages/RegisterPage';
 import HomePage from '../components/pages/HomePage';
@@ -19,6 +24,9 @@ function AppRouter() {
   return (
     <Router>
       <Routes>
+        {/* Redirigir a /login cuando el usuario acceda a la página principal */}
+        <Route path="/" element={<Navigate to="/login" />} />
+
         <Route
           path="/login"
           element={
