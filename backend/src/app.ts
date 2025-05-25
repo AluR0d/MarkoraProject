@@ -12,7 +12,10 @@ import campaignRoutes from './routes/campaignRoutes';
 
 const app = express();
 
-const allowedOrigins = ['https://markora-frontend.onrender.com'];
+const allowedOrigins = [
+  'https://markora-frontend.onrender.com',
+  'http://localhost:5173',
+];
 
 app.use(
   cors({
