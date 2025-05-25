@@ -26,43 +26,5 @@ services:
     depends_on:
       - db
 
-  backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-    container_name: backend-container
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      JWT_SECRET: ${JWT_SECRET}
-      EMAIL_USER: ${EMAIL_USER}
-      EMAIL_PASS: ${EMAIL_PASS}
-      JWT_RESET_SECRET: ${JWT_RESET_SECRET}
-      FRONTEND_URL: ${FRONTEND_URL}
-    ports:
-      - "3000:3000"
-    depends_on:
-      - db
-    command: npm run dev
-    volumes:
-      - ./backend:/app
-    working_dir: /app
-
-  frontend:
-    build:
-      context: .
-      dockerfile: ./frontend/Dockerfile
-    container_name: frontend-container
-    ports:
-      - "4200:4200"
-    depends_on:
-      - backend
-    environment:
-      REACT_APP_API_URL: ${FRONTEND_URL}
-    command: npm run dev
-
 volumes:
   postgres_data:
