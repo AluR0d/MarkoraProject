@@ -143,7 +143,8 @@
         "types_required": "Enter at least one type",
         "coords_invalid": "You must enter two valid coordinates",
         "form_invalid": "The form contains errors, please correct them before saving",
-        "invalid_coords": "This field must be in the format number, number"
+        "invalid_coords": "This field must be in the format number, number",
+        "email_required": "Atleast one email is required"
       },
       "confirm_delete": {
         "title": "Delete Place?",
@@ -248,7 +249,13 @@
     "create_button": "Create Campaign",
     "success_message": "Campaign created successfully",
     "success_dialog_title": "Campaign Created Successfully!",
-    "success_dialog_message": "Would you like to view your campaign now?"
+    "success_dialog_message": "Would you like to view your campaign now?",
+    "errors": {
+      "error_missing_fields": "Please fill in all required fields.",
+      "create_error": "Failed to create campaign. Please try again.",
+      "message_required": "Message body is required.",
+      "message_max": "Message body cannot exceed 200 characters."
+    }
   },
   "selectable_place": {
     "selected_places": "Selected places",

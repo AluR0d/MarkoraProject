@@ -143,7 +143,8 @@
         "types_required": "Introduce al menos un tipo",
         "coords_invalid": "Debes introducir dos coordenadas válidas",
         "form_invalid": "El formulario contiene errores, por favor corrígelos antes de guardar",
-        "invalid_coords": "Este campo debe tener el formato número, número"
+        "invalid_coords": "Este campo debe tener el formato número, número",
+        "email_required": "Al menos un email es obligatorio"
       },
       "confirm_delete": {
         "title": "¿Eliminar lugar?",
@@ -248,7 +249,13 @@
     "create_button": "Crear campaña",
     "success_message": "Campaña creada con éxito",
     "success_dialog_title": "¡Campaña creada correctamente!",
-    "success_dialog_message": "¿Deseas ver tu campaña ahora?"
+    "success_dialog_message": "¿Deseas ver tu campaña ahora?",
+    "errors": {
+      "error_missing_fields": "Por favor, rellena el título y el mensaje.",
+      "create_error": "Hubo un error al crear la campaña.",
+      "message_required": "El mensaje es obligatorio.",
+      "message_max": "El mensaje no puede tener más de 200 caracteres."
+    }
   },
   "selectable_place": {
     "selected_places": "Lugares seleccionados",

@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Alert,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SelectablePlaceTable from '../../components/molecules/SelectablePlaceTable';
@@ -21,14 +22,18 @@ import { PlaceService } from '../../services/placeService';
 import axios from 'axios';
 import { useUser } from '../../context/UserContext';
 import ReactQuill from 'react-quill-new';
-import { useTranslation } from 'react-i18next'; // Import translation hook
+import { useTranslation } from 'react-i18next';
+import { createCampaignSchema } from '../../schemas/createCampaignSchema';
+import { ZodError } from 'zod';
 
 export default function CreateCampaignPage() {
-  const { t } = useTranslation(); // Initialize translation hook
+  const { t } = useTranslation();
   const [places, setPlaces] = useState<Place[]>([]);
   const [selectedPlaceIds, setSelectedPlaceIds] = useState<string[]>([]);
-  const [title, setTitle] = useState('');
-  const [message, setMessage] = useState('');
+  const [formData, setFormData] = useState({ title: '', message: '' });
+  const [errors, setErrors] = useState<{ title?: string; message?: string }>(
+    {}
+  );
   const [frequency, setFrequency] = useState<number>(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -46,6 +51,10 @@ export default function CreateCampaignPage() {
 
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>(
+    'success'
+  );
 
   const loadPlaces = async () => {
     try {
@@ -95,11 +104,18 @@ export default function CreateCampaignPage() {
 
   const handleSubmit = async () => {
     try {
+      const plainMessage = formData.message.replace(/<[^>]+>/g, '').trim();
+      const trimmedData = {
+        title: formData.title.trim(),
+        message: plainMessage,
+      };
+      const validated = createCampaignSchema.parse(trimmedData);
+
       await axios.post(
         `${import.meta.env.VITE_API_URL}/campaigns`,
         {
-          title,
-          message_template: message,
+          title: validated.title,
+          message_template: formData.message,
           place_ids: selectedPlaceIds,
           frequency: frequency === 0 ? null : frequency,
         },
@@ -114,16 +130,33 @@ export default function CreateCampaignPage() {
         setUser({ ...user, balance: user.balance - 5 });
       }
 
-      setTitle('');
-      setMessage('');
+      setFormData({ title: '', message: '' });
       setFrequency(0);
       setSelectedPlaceIds([]);
+      setErrors({});
 
+      setSnackbarMessage(t('campaign.success_message'));
+      setSnackbarSeverity('success');
       setSnackbarOpen(true);
       setTimeout(() => setSuccessDialogOpen(true), 300);
     } catch (err: any) {
-      console.error(err);
-      alert(t('campaign.create_error'));
+      if (err instanceof ZodError) {
+        const fieldErrors: { title?: string; message?: string } = {};
+        err.errors.forEach((e) => {
+          if (e.path[0] === 'title' || e.path[0] === 'message') {
+            fieldErrors[e.path[0]] = e.message;
+          }
+        });
+        setErrors(fieldErrors);
+        setSnackbarMessage(t('campaign.errors.create_error'));
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      } else {
+        console.error(err);
+        setSnackbarMessage(t('campaign.errors.create_error'));
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
     }
   };
 
@@ -140,9 +173,15 @@ export default function CreateCampaignPage() {
       <TextField
         fullWidth
         label={t('campaign.title_label')}
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        value={formData.title}
+        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
         margin="normal"
+        inputProps={{ maxLength: 50 }}
+        error={!!errors.title}
+        helperText={
+          errors.title ? t(errors.title) : `${formData.title.length}/50`
+        }
+        required
       />
 
       <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
@@ -151,11 +190,28 @@ export default function CreateCampaignPage() {
 
       <ReactQuill
         theme="snow"
-        value={message}
-        onChange={setMessage}
+        value={formData.message}
+        onChange={(value) => setFormData({ ...formData, message: value })}
         placeholder={t('campaign.message_placeholder')}
         style={{ minHeight: '150px' }}
       />
+
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mt={1}
+      >
+        <Typography
+          variant="caption"
+          color={errors.message ? 'error' : 'text.secondary'}
+        >
+          {errors.message ? t(errors.message) : ''}
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          {formData.message.replace(/<[^>]+>/g, '').trim().length}/200
+        </Typography>
+      </Box>
 
       <TextField
         fullWidth
@@ -231,7 +287,7 @@ export default function CreateCampaignPage() {
       <Button
         variant="contained"
         sx={{ mt: 4 }}
-        disabled={!title || !message || selectedPlaceIds.length === 0}
+        disabled={selectedPlaceIds.length === 0}
         onClick={handleSubmit}
       >
         {t('campaign.create_button')}
@@ -241,10 +297,13 @@ export default function CreateCampaignPage() {
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
-        message={t('campaign.success_message')}
-      />
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
 
-      {/* Diálogo de redirección */}
       <Dialog
         open={successDialogOpen}
         onClose={() => setSuccessDialogOpen(false)}

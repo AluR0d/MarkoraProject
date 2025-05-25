@@ -35,7 +35,7 @@ export const placeSchema = z.object({
 
   email: z
     .array(z.string().email('admin.places.errors.invalid_email'))
-    .optional(),
+    .min(1, 'admin.places.errors.email_required'),
 
   website: z.string().max(50, 'admin.places.errors.max_50').optional(),
 

@@ -25,7 +25,6 @@ function AppRouter() {
   return (
     <Router>
       <Routes>
-        {/* Redirigir a /login cuando el usuario acceda a la página principal */}
         <Route path="/" element={<Navigate to="/login" />} />
 
         <Route
@@ -57,7 +56,6 @@ function AppRouter() {
 
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-        {/* Rutas con layout y navbar */}
         <Route element={<GlobalLayout />}>
           <Route
             path="/home"
