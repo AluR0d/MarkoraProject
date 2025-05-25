@@ -12,6 +12,7 @@ import {
 } from 'sequelize-typescript';
 import { tableNames } from '../constants/tableNames';
 import { Owner } from './Owner';
+import { nanoid } from 'nanoid';
 
 @Table({ tableName: tableNames.PLACES, timestamps: true })
 export class Place extends Model {
@@ -74,8 +75,6 @@ export class Place extends Model {
 
   @BeforeCreate
   static async generateId(place: Place) {
-    // Usamos import() dinámico para cargar nanoid solo cuando sea necesario
-    const { nanoid } = await import('nanoid');
     place.id = nanoid(27);
   }
 }

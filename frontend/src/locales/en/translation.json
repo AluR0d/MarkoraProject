@@ -223,7 +223,8 @@
     "export_as_pdf": "Export as PDF",
     "report_title": "General Statistics Report",
     "range_last_7_days": "Range: Last 7 Days",
-    "range_last_30_days": "Range: Last 30 Days"
+    "range_last_30_days": "Range: Last 30 Days",
+    "generated_on": "Generated on"
   },
   "navbar": {
     "welcome": "Welcome",
