@@ -12,7 +12,7 @@ import campaignRoutes from './routes/campaignRoutes';
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:5173'];
+const allowedOrigins = ['*'];
 
 app.use(
   cors({
