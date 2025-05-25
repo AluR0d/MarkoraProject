@@ -1,13 +1,11 @@
-version: "3.7"
-
 services:
   db:
     image: postgres:17
     container_name: postgres-container
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: Markora
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
