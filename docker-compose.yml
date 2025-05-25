@@ -54,7 +54,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: ./frontend/Dockerfile
     container_name: frontend-container
     ports:
       - "4200:4200"
@@ -62,7 +62,7 @@ services:
       - backend
     environment:
       REACT_APP_API_URL: ${FRONTEND_URL}
-    command: npm run dev
+    command: npm start
 
 volumes:
   postgres_data:
