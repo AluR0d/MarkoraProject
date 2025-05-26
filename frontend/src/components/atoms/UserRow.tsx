@@ -1,4 +1,4 @@
-import { IconButton, TableCell, TableRow } from '@mui/material';
+import { IconButton, TableCell, TableRow, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { User } from '../../types/User';
@@ -11,22 +11,42 @@ type Props = {
 
 export default function UserRow({ user, onEdit, onDelete }: Props) {
   return (
-    <TableRow>
-      <TableCell>{user.id}</TableCell>
-      <TableCell>{user.name}</TableCell>
-      <TableCell>{user.email}</TableCell>
-      <TableCell>
+    <TableRow hover className="transition-all hover:bg-gray-50">
+      <TableCell className="font-mono text-sm text-gray-700">
+        {user.id}
+      </TableCell>
+      <TableCell className="text-[var(--color-dark)] font-medium">
+        {user.name}
+      </TableCell>
+      <TableCell className="text-gray-700">{user.email}</TableCell>
+      <TableCell className="text-gray-600">
         {user.roles?.length > 0
           ? user.roles.map((r) => r.name).join(', ')
           : 'Sin roles'}
       </TableCell>
       <TableCell>
-        <IconButton onClick={onEdit}>
-          <EditIcon />
-        </IconButton>
-        <IconButton color="error" onClick={onDelete}>
-          <DeleteIcon />
-        </IconButton>
+        <div className="flex items-center gap-2">
+          <Tooltip title="Editar">
+            <IconButton
+              onClick={onEdit}
+              className="cursor-pointer"
+              size="small"
+              color="primary"
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Eliminar">
+            <IconButton
+              onClick={onDelete}
+              className="cursor-pointer"
+              size="small"
+              color="error"
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </div>
       </TableCell>
     </TableRow>
   );

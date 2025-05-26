@@ -4,11 +4,10 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Button,
-  FormControlLabel,
-  Checkbox,
   Snackbar,
   Alert,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -101,7 +100,7 @@ export default function PlaceFormModal({
 
       const coordinates: [number, number] = coordsMatch
         ? [parseFloat(coordsMatch[1]), parseFloat(coordsMatch[3])]
-        : [0, 0]; // fallback, aunque esto no debería ocurrir si hay validación previa
+        : [0, 0];
 
       const trimmedData = {
         ...formData,
@@ -136,185 +135,194 @@ export default function PlaceFormModal({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>
-        {isEditing
-          ? t('admin.places.edit_place')
-          : t('admin.places.create_place')}
-      </DialogTitle>
-      <DialogContent>
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.name')}
-          required
-          margin="normal"
-          value={formData.name || ''}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          error={!!errors.name}
-          helperText={errors.name && t(errors.name)}
-        />
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.zone')}
-          required
-          margin="normal"
-          value={formData.zone || ''}
-          onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
-          error={!!errors.zone}
-          helperText={errors.zone && t(errors.zone)}
-        />
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.address')}
-          required
-          margin="normal"
-          value={formData.address || ''}
-          onChange={(e) =>
-            setFormData({ ...formData, address: e.target.value })
-          }
-          error={!!errors.address}
-          helperText={errors.address && t(errors.address)}
-        />
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.phone')}
-          margin="normal"
-          value={formData.phone || ''}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          error={!!errors.phone}
-          helperText={errors.phone && t(errors.phone)}
-        />
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.second_phone')}
-          margin="normal"
-          value={formData.second_phone || ''}
-          onChange={(e) =>
-            setFormData({ ...formData, second_phone: e.target.value })
-          }
-          error={!!errors.second_phone}
-          helperText={errors.second_phone && t(errors.second_phone)}
-        />
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.email')}
-          margin="normal"
-          value={(formData.email || []).join(', ')}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              email: e.target.value.split(',').map((e) => e.trim()),
-            })
-          }
-          error={!!errors.email}
-          helperText={errors.email && t(errors.email)}
-        />
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.website')}
-          margin="normal"
-          value={formData.website || ''}
-          onChange={(e) =>
-            setFormData({ ...formData, website: e.target.value })
-          }
-          error={!!errors.website}
-          helperText={errors.website && t(errors.website)}
-        />
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.opening_hours')}
-          margin="normal"
-          value={formData.opening_hours || ''}
-          onChange={(e) =>
-            setFormData({ ...formData, opening_hours: e.target.value })
-          }
-          error={!!errors.opening_hours}
-          helperText={errors.opening_hours && t(errors.opening_hours)}
-        />
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.rating')}
-          margin="normal"
-          type="number"
-          inputProps={{ step: 0.1, min: 0, max: 5 }}
-          value={formData.rating ?? 0}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              rating: parseFloat(e.target.value.replace(',', '.')),
-            })
-          }
-          error={!!errors.rating}
-          helperText={errors.rating && t(errors.rating)}
-        />
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.user_ratings_total')}
-          type="number"
-          margin="normal"
-          value={formData.user_ratings_total ?? 0}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              user_ratings_total: parseInt(e.target.value),
-            })
-          }
-          error={!!errors.user_ratings_total}
-          helperText={errors.user_ratings_total && t(errors.user_ratings_total)}
-        />
-        <TextField
-          fullWidth
-          required
-          label={t('admin.places.fields.types')}
-          margin="normal"
-          value={typesInput}
-          onChange={(e) => setTypesInput(e.target.value)}
-          error={!!errors.types}
-          helperText={errors.types && t(errors.types)}
-        />
-        <TextField
-          fullWidth
-          label={t('admin.places.fields.coords')}
-          margin="normal"
-          value={coordsInput}
-          onChange={(e) => setCoordsInput(e.target.value)}
-          error={!!errors.coords}
-          helperText={
-            errors.coords
-              ? t(errors.coords)
-              : !/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(coordsInput)
-                ? t('admin.places.errors.invalid_coords')
-                : ''
-          }
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={formData.active ?? true}
+    <>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        <DialogTitle className="text-[var(--color-primary)] text-xl font-bold">
+          {isEditing
+            ? t('admin.places.edit_place')
+            : t('admin.places.create_place')}
+        </DialogTitle>
+
+        <DialogContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.name')}
+              value={formData.name || ''}
               onChange={(e) =>
-                setFormData({ ...formData, active: e.target.checked })
+                setFormData({ ...formData, name: e.target.value })
+              }
+              error={!!errors.name}
+              helperText={errors.name && t(errors.name)}
+            />
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.zone')}
+              value={formData.zone || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, zone: e.target.value })
+              }
+              error={!!errors.zone}
+              helperText={errors.zone && t(errors.zone)}
+            />
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.address')}
+              value={formData.address || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
+              error={!!errors.address}
+              helperText={errors.address && t(errors.address)}
+            />
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.phone')}
+              value={formData.phone || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+              error={!!errors.phone}
+              helperText={errors.phone && t(errors.phone)}
+            />
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.second_phone')}
+              value={formData.second_phone || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, second_phone: e.target.value })
+              }
+              error={!!errors.second_phone}
+              helperText={errors.second_phone && t(errors.second_phone)}
+            />
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.email')}
+              value={(formData.email || []).join(', ')}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  email: e.target.value.split(',').map((e) => e.trim()),
+                })
+              }
+              error={!!errors.email}
+              helperText={errors.email && t(errors.email)}
+            />
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.website')}
+              value={formData.website || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, website: e.target.value })
+              }
+              error={!!errors.website}
+              helperText={errors.website && t(errors.website)}
+            />
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.opening_hours')}
+              value={formData.opening_hours || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, opening_hours: e.target.value })
+              }
+              error={!!errors.opening_hours}
+              helperText={errors.opening_hours && t(errors.opening_hours)}
+            />
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.rating')}
+              type="number"
+              inputProps={{ step: 0.1, min: 0, max: 5 }}
+              value={formData.rating ?? 0}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  rating: parseFloat(e.target.value.replace(',', '.')),
+                })
+              }
+              error={!!errors.rating}
+              helperText={errors.rating && t(errors.rating)}
+            />
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.user_ratings_total')}
+              type="number"
+              value={formData.user_ratings_total ?? 0}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  user_ratings_total: parseInt(e.target.value),
+                })
+              }
+              error={!!errors.user_ratings_total}
+              helperText={
+                errors.user_ratings_total && t(errors.user_ratings_total)
               }
             />
-          }
-          label={t('admin.places.fields.active')}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>{t('common.cancel')}</Button>
-        <Button variant="contained" onClick={handleSubmit}>
-          {isEditing ? t('common.save') : t('common.create')}
-        </Button>
-      </DialogActions>
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.types')}
+              value={typesInput}
+              onChange={(e) => setTypesInput(e.target.value)}
+              error={!!errors.types}
+              helperText={errors.types && t(errors.types)}
+            />
+            <TextField
+              fullWidth
+              label={t('admin.places.fields.coords')}
+              value={coordsInput}
+              onChange={(e) => setCoordsInput(e.target.value)}
+              error={!!errors.coords}
+              helperText={
+                errors.coords
+                  ? t(errors.coords)
+                  : !/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(
+                        coordsInput
+                      )
+                    ? t('admin.places.errors.invalid_coords')
+                    : ''
+              }
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={formData.active ?? true}
+                  onChange={(e) =>
+                    setFormData({ ...formData, active: e.target.checked })
+                  }
+                />
+              }
+              label={t('admin.places.fields.active')}
+            />
+          </div>
+        </DialogContent>
+
+        <DialogActions className="px-6 pb-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition text-sm cursor-pointer"
+          >
+            {t('common.cancel')}
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-accent)] transition text-sm font-medium cursor-pointer"
+          >
+            {isEditing ? t('common.save') : t('common.create')}
+          </button>
+        </DialogActions>
+      </Dialog>
+
       <Snackbar
         open={snackbar.open}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         autoHideDuration={4000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
       >
-        <Alert severity={snackbar.severity} sx={{ width: '100%' }}>
+        <Alert severity={snackbar.severity} variant="filled">
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Dialog>
+    </>
   );
 }

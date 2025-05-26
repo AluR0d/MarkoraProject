@@ -8,13 +8,11 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Button,
   FormHelperText,
   Switch,
   FormControlLabel,
   Snackbar,
   Alert,
-  Box,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -121,30 +119,28 @@ export default function UserFormModal({
     };
 
     try {
-      let schema;
-      if (isEditing) {
-        schema = baseUserSchema.extend({
-          password: enablePassword
-            ? z
-                .string()
-                .trim()
-                .nonempty('register.errors.empty_password')
-                .min(6, 'register.errors.password_too_short')
-                .max(64, 'register.errors.password_too_long')
-            : z
-                .string()
-                .transform((val) => val.trim())
-                .refine(
-                  (val) => val === '' || (val.length >= 6 && val.length <= 64),
-                  {
-                    message: 'user.errors.password_invalid_range',
-                  }
-                )
-                .optional(),
-        });
-      } else {
-        schema = createUserSchema;
-      }
+      const schema = isEditing
+        ? baseUserSchema.extend({
+            password: enablePassword
+              ? z
+                  .string()
+                  .trim()
+                  .nonempty('register.errors.empty_password')
+                  .min(6, 'register.errors.password_too_short')
+                  .max(64, 'register.errors.password_too_long')
+              : z
+                  .string()
+                  .transform((val) => val.trim())
+                  .refine(
+                    (val) =>
+                      val === '' || (val.length >= 6 && val.length <= 64),
+                    {
+                      message: 'user.errors.password_invalid_range',
+                    }
+                  )
+                  .optional(),
+          })
+        : createUserSchema;
 
       schema.parse(trimmedData);
       setErrors({});
@@ -186,106 +182,108 @@ export default function UserFormModal({
   return (
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-        <DialogTitle>
+        <DialogTitle className="text-[var(--color-primary)] text-xl font-bold">
           {isEditing ? t('admin.edit_user') : t('admin.create_user')}
         </DialogTitle>
         <DialogContent>
-          <TextField
-            fullWidth
-            label={t('register.name')}
-            margin="normal"
-            value={formData.name}
-            onChange={handleInputChange('name')}
-            error={!!errors.name}
-            helperText={errors.name}
-          />
-          <TextField
-            fullWidth
-            label={t('register.email')}
-            type="email"
-            margin="normal"
-            value={formData.email}
-            onChange={handleInputChange('email')}
-            error={!!errors.email}
-            helperText={errors.email}
-          />
+          <div className="flex flex-col gap-4">
+            <TextField
+              fullWidth
+              label={t('register.name')}
+              value={formData.name}
+              onChange={handleInputChange('name')}
+              error={!!errors.name}
+              helperText={errors.name}
+            />
 
-          {isEditing ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
+            <TextField
+              fullWidth
+              label={t('register.email')}
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange('email')}
+              error={!!errors.email}
+              helperText={errors.email}
+            />
+
+            {isEditing ? (
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <TextField
+                  fullWidth
+                  label={t('admin.new_password')}
+                  type="password"
+                  value={formData.password}
+                  onChange={handleInputChange('password')}
+                  disabled={!enablePassword}
+                  error={!!errors.password}
+                  helperText={errors.password}
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={enablePassword}
+                      onChange={handleTogglePassword}
+                      color="primary"
+                    />
+                  }
+                  label={
+                    enablePassword
+                      ? t('admin.disable_password')
+                      : t('admin.enable_password')
+                  }
+                />
+              </div>
+            ) : (
               <TextField
                 fullWidth
-                label={t('admin.new_password')}
+                label={t('register.password')}
                 type="password"
                 value={formData.password}
                 onChange={handleInputChange('password')}
-                disabled={!enablePassword}
                 error={!!errors.password}
                 helperText={errors.password}
               />
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={enablePassword}
-                    onChange={handleTogglePassword}
-                    color="primary"
-                  />
-                }
-                label={
-                  enablePassword
-                    ? t('admin.disable_password')
-                    : t('admin.enable_password')
-                }
-                labelPlacement="end"
-              />
-            </Box>
-          ) : (
-            <TextField
-              fullWidth
-              label={t('register.password')}
-              type="password"
-              margin="normal"
-              value={formData.password}
-              onChange={handleInputChange('password')}
-              error={!!errors.password}
-              helperText={errors.password}
-              sx={{ mt: 2 }}
-            />
-          )}
+            )}
 
-          <FormControl
-            fullWidth
-            margin="normal"
-            error={!!errors.roles}
-            variant="outlined"
-          >
-            <InputLabel id="roles-label">Roles</InputLabel>
-            <Select
-              labelId="roles-label"
-              multiple
-              value={formData.roles}
-              onChange={handleSelectChange}
-              label="Roles"
-              renderValue={(selected) =>
-                roles
-                  .filter((r) => (selected as number[]).includes(r.id))
-                  .map((r) => r.name)
-                  .join(', ')
-              }
-            >
-              {roles.map((role) => (
-                <MenuItem key={role.id} value={role.id}>
-                  {role.name}
-                </MenuItem>
-              ))}
-            </Select>
-            {errors.roles && <FormHelperText>{errors.roles}</FormHelperText>}
-          </FormControl>
+            <FormControl fullWidth error={!!errors.roles}>
+              <InputLabel id="roles-label">Roles</InputLabel>
+              <Select
+                labelId="roles-label"
+                multiple
+                value={formData.roles}
+                onChange={handleSelectChange}
+                label="Roles"
+                renderValue={(selected) =>
+                  roles
+                    .filter((r) => (selected as number[]).includes(r.id))
+                    .map((r) => r.name)
+                    .join(', ')
+                }
+              >
+                {roles.map((role) => (
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {errors.roles && <FormHelperText>{errors.roles}</FormHelperText>}
+            </FormControl>
+          </div>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>{t('common.cancel')}</Button>
-          <Button variant="contained" onClick={handleSubmit}>
+
+        <DialogActions className="px-6 pb-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-md border border-gray-300 hover:bg-gray-100 transition text-sm cursor-pointer"
+          >
+            {t('common.cancel')}
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-accent)] transition text-sm font-medium cursor-pointer"
+          >
             {isEditing ? t('common.save') : t('common.create')}
-          </Button>
+          </button>
         </DialogActions>
       </Dialog>
 

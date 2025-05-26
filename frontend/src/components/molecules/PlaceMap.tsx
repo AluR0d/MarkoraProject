@@ -67,12 +67,8 @@ export default function PlaceMap({ place, onUpdate }: Props) {
       center={position}
       zoom={15}
       scrollWheelZoom={false}
-      style={{
-        height: '300px',
-        width: '100%',
-        marginTop: '1rem',
-        borderRadius: '12px',
-      }}
+      className="mt-6 rounded-md shadow border border-gray-200"
+      style={{ height: '300px', width: '100%' }}
     >
       <AutoRecenter coords={position} />
       <TileLayer

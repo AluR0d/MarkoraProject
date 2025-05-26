@@ -64,30 +64,32 @@ export default function PlaceFilterForm({ onFilter }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-md shadow-sm p-6 border border-gray-200 mb-6 space-y-6">
-      <h2 className="text-lg font-semibold text-[var(--color-primary)]">
+    <div className="bg-white border border-gray-200 rounded-md p-6 mb-6 shadow-sm">
+      <h2 className="text-lg font-semibold text-[var(--color-primary)] mb-4">
         {t('admin.places.filters.title')}
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Nombre */}
+        {/* Name */}
         <div>
           <label className="block text-sm font-medium mb-1">
             {t('admin.places.filters.name')}
           </label>
           <input
+            type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--color-primary)]"
           />
         </div>
 
-        {/* Zona */}
+        {/* Zone */}
         <div>
           <label className="block text-sm font-medium mb-1">
             {t('admin.places.filters.zone')}
           </label>
           <input
+            type="text"
             value={zone}
             onChange={(e) => setZone(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--color-primary)]"
@@ -110,7 +112,7 @@ export default function PlaceFilterForm({ onFilter }: Props) {
           />
         </div>
 
-        {/* Orden Rating */}
+        {/* Rating Order */}
         <div>
           <label className="block text-sm font-medium mb-1">
             {t('admin.places.filters.rating_order')}
@@ -128,7 +130,7 @@ export default function PlaceFilterForm({ onFilter }: Props) {
           </select>
         </div>
 
-        {/* Activo */}
+        {/* Active */}
         <div>
           <label className="block text-sm font-medium mb-1">
             {t('admin.places.filters.active')}
@@ -151,19 +153,19 @@ export default function PlaceFilterForm({ onFilter }: Props) {
 
       {/* Error */}
       {error && (
-        <div className="text-sm text-red-600 font-medium mt-2">{error}</div>
+        <div className="text-sm text-red-600 font-medium mt-3">{error}</div>
       )}
 
-      {/* Botones */}
-      <div className="flex gap-4 mt-4">
+      {/* Buttons */}
+      <div className="flex gap-4 mt-6">
         <button
-          className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-accent)] transition cursor-pointer"
+          className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-accent)] transition-colors cursor-pointer"
           onClick={handleSubmit}
         >
           {t('admin.places.filters.apply')}
         </button>
         <button
-          className="border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition cursor-pointer"
+          className="border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition-colors cursor-pointer"
           onClick={handleReset}
         >
           {t('admin.places.filters.clear')}

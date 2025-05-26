@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import {
-  Paper,
-  Typography,
   TextField,
   IconButton,
-  Box,
+  MenuItem,
   Snackbar,
   Alert,
-  MenuItem,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Check';
@@ -34,7 +31,6 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
 
   const startEditing = (field: EditableField, currentValue?: any) => {
     setEditingField(field);
-
     if (field === 'coords' && currentValue?.coordinates?.length === 2) {
       const [lng, lat] = currentValue.coordinates;
       setTempValue(`${lat}, ${lng}`);
@@ -55,7 +51,6 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
   const isValid = (field: keyof Place, value: string): string | null => {
     try {
       let parsedValue: any;
-
       switch (field) {
         case 'email':
         case 'types':
@@ -84,22 +79,19 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
             coordinates: [parts[1], parts[0]],
           };
           break;
-
         case 'active':
           parsedValue = value === 'true';
           break;
         default:
           parsedValue = value.trim();
       }
-
       placeSchema
         .pick({ [field]: true } as any)
         .parse({ [field]: parsedValue });
       return null;
     } catch (err) {
       if (err instanceof ZodError) {
-        const key = err.errors[0]?.message;
-        return key ? t(key) : t('admin.errors.unknown');
+        return t(err.errors[0]?.message || 'admin.errors.unknown');
       }
       return t('admin.errors.unknown');
     }
@@ -115,7 +107,6 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
     }
 
     let valueToSend: any;
-
     if (['email', 'types'].includes(editingField)) {
       valueToSend =
         tempValue.trim() === ''
@@ -125,10 +116,7 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
       valueToSend = '';
     } else if (editingField === 'coords') {
       const [lat, lng] = tempValue.split(',').map((p) => parseFloat(p.trim()));
-      valueToSend = {
-        type: 'Point',
-        coordinates: [lng, lat],
-      };
+      valueToSend = { type: 'Point', coordinates: [lng, lat] };
     } else if (
       ['rating', 'user_ratings_total', 'owner_id'].includes(editingField)
     ) {
@@ -142,9 +130,7 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
     try {
       const res = await axios.put(
         `${import.meta.env.VITE_API_URL}/places/${place.id}`,
-        {
-          [editingField]: valueToSend,
-        }
+        { [editingField]: valueToSend }
       );
       onUpdate(res.data);
       setEditingField(null);
@@ -187,14 +173,15 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
       editingField === field ? isValid(field, tempValue) : null;
 
     return (
-      <Box display="flex" alignItems="center" mb={1} key={field}>
-        <Typography sx={{ minWidth: '150px' }}>
-          <strong>{label}:</strong>
-        </Typography>
+      <div
+        key={field}
+        className="flex items-start sm:items-center mb-4 flex-col sm:flex-row gap-2 sm:gap-4"
+      >
+        <div className="w-40 text-sm font-medium text-gray-700">{label}:</div>
 
         {editingField === field ? (
-          isBoolean ? (
-            <>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:items-center">
+            {isBoolean ? (
               <TextField
                 select
                 label={t('admin.places.fields.active')}
@@ -206,15 +193,7 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
                 <MenuItem value="true">{t('common.yes')}</MenuItem>
                 <MenuItem value="false">{t('common.no')}</MenuItem>
               </TextField>
-              <IconButton onClick={saveField}>
-                <SaveIcon />
-              </IconButton>
-              <IconButton onClick={cancelEditing}>
-                <CloseIcon />
-              </IconButton>
-            </>
-          ) : (
-            <>
+            ) : (
               <TextField
                 size="small"
                 fullWidth
@@ -233,45 +212,47 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
                 value={tempValue}
                 placeholder={getPlaceholder(field)}
                 onChange={(e) => setTempValue(e.target.value)}
-                sx={{ mx: 1 }}
                 error={!!fieldError}
                 helperText={fieldError}
               />
+            )}
+
+            <div className="flex gap-1">
               <IconButton onClick={saveField} disabled={!!fieldError}>
                 <SaveIcon />
               </IconButton>
               <IconButton onClick={cancelEditing}>
                 <CloseIcon />
               </IconButton>
-            </>
-          )
+            </div>
+          </div>
         ) : (
-          <>
-            <Typography sx={{ flex: 1 }}>
+          <div className="flex justify-between items-center w-full gap-2">
+            <div className="flex-1 text-sm text-gray-800 break-all">
               {Array.isArray(place[field])
                 ? (place[field] as string[]).length > 0
                   ? (place[field] as string[]).join(', ')
-                  : 'N/A'
+                  : '—'
                 : field === 'coords' && place.coords?.coordinates
                   ? `${place.coords.coordinates[1]}, ${place.coords.coordinates[0]}`
                   : place[field] === null ||
                       place[field] === undefined ||
                       place[field] === ''
-                    ? 'N/A'
+                    ? '—'
                     : place[field]?.toString()}
-            </Typography>
+            </div>
             <IconButton onClick={() => startEditing(field, place[field])}>
               <EditIcon />
             </IconButton>
-          </>
+          </div>
         )}
-      </Box>
+      </div>
     );
   };
 
   return (
     <>
-      <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-5">
         {renderField(t('admin.places.fields.name'), 'name')}
         {renderField(t('admin.places.fields.zone'), 'zone')}
         {renderField(t('admin.places.fields.address'), 'address')}
@@ -287,9 +268,9 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
         )}
         {renderField(t('admin.places.fields.types'), 'types')}
         {renderField(t('admin.places.fields.active'), 'active', true)}
-        {renderField(t('admin.places.fields.coords'), 'coords')}
         {renderField(t('admin.places.fields.owner_id'), 'owner_id')}
-      </Paper>
+        {renderField(t('admin.places.fields.coords'), 'coords')}
+      </div>
 
       <Snackbar
         open={!!errorMessage}

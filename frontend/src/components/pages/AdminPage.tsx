@@ -1,5 +1,14 @@
 import { useState } from 'react';
-import { Box, Container, Tab, Tabs, Typography, Paper } from '@mui/material';
+import {
+  Box,
+  Container,
+  Tab,
+  Tabs,
+  Typography,
+  Paper,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import UserAdminPanel from '../organisms/UserAdminPanel';
 import PlaceAdminPanel from '../organisms/PlaceAdminPanel';
@@ -16,20 +25,37 @@ function TabPanel({ value, index, children }: any) {
 export default function AdminPage() {
   const [tab, setTab] = useState(0);
   const { t } = useTranslation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleChange = (_: any, newValue: number) => {
     setTab(newValue);
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
+    <Container
+      maxWidth="lg"
+      sx={{
+        mt: isMobile ? 10 : 12, // compensar altura del header
+        mb: 6,
+      }}
+    >
       <Paper elevation={3}>
-        <Box p={2}>
-          <Typography variant="h4" gutterBottom>
+        <Box p={3}>
+          <Typography
+            variant="h4"
+            className="text-[var(--color-primary)] font-bold mb-4"
+          >
             {t('admin.title')}
           </Typography>
 
-          <Tabs value={tab} onChange={handleChange} indicatorColor="primary">
+          <Tabs
+            value={tab}
+            onChange={handleChange}
+            indicatorColor="primary"
+            textColor="primary"
+            sx={{ mb: 2 }}
+          >
             <Tab label={t('admin.tabs.users')} />
             <Tab label={t('admin.tabs.places')} />
             <Tab label={t('admin.tabs.dashboard')} />

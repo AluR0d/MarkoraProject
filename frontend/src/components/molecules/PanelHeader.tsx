@@ -1,6 +1,3 @@
-import { Box, Button, Typography } from '@mui/material';
-import React from 'react';
-
 type Props = {
   title: string;
   onCreate: () => void;
@@ -9,16 +6,17 @@ type Props = {
 
 export default function PanelHeader({ title, onCreate, children }: Props) {
   return (
-    <Box
-      display="flex"
-      justifyContent="space-between"
-      alignItems="center"
-      mb={2}
-    >
-      <Typography variant="h6">{title}</Typography>
-      <Button variant="contained" color="primary" onClick={onCreate}>
+    <div className="flex items-center justify-between mb-6">
+      <h2 className="text-2xl font-semibold text-[var(--color-primary)]">
+        {title}
+      </h2>
+      <button
+        onClick={onCreate}
+        className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-md
+                 hover:bg-[var(--color-accent)] transition-colors cursor-pointer text-sm font-medium"
+      >
         {children}
-      </Button>
-    </Box>
+      </button>
+    </div>
   );
 }

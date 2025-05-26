@@ -1,18 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Grid,
-  Paper,
-  CircularProgress,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from '@mui/material';
-import axios from 'axios';
 import jsPDF from 'jspdf';
+import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
 type DashboardData = {
@@ -27,6 +15,7 @@ export default function DashboardAdminPanel() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [range, setRange] = useState<string>('all');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const fetchDashboardData = async (selectedRange: string) => {
     setLoading(true);
@@ -63,15 +52,12 @@ export default function DashboardAdminPanel() {
     const now = new Date();
     const formattedDate = now.toLocaleString();
 
-    // Encabezado
     doc.setFontSize(20);
     doc.text(t('dashboard.title'), 14, 20);
 
     doc.setFontSize(14);
     doc.text(t('dashboard.general_stats'), 14, 35);
 
-    // Estadísticas
-    doc.setFontSize(12);
     const stats = [
       [t('dashboard.total_campaigns'), data.totalCampaigns],
       [
@@ -82,15 +68,14 @@ export default function DashboardAdminPanel() {
       [t('dashboard.total_emails_sent'), data.totalEmailsSent],
     ];
 
+    doc.setFontSize(12);
     stats.forEach(([label, value], i) => {
       doc.text(`${label}: ${value}`, 14, 50 + i * 10);
     });
 
-    // Pie de página
     doc.setFontSize(10);
     doc.text(`${t('dashboard.generated_on')} ${formattedDate}`, 14, 105);
 
-    // Indicar rango si no es "all"
     if (range === '7d') {
       doc.text(t('dashboard.range_last_7_days'), 14, 112);
     } else if (range === '30d') {
@@ -101,84 +86,122 @@ export default function DashboardAdminPanel() {
   };
 
   return (
-    <Box mt={4}>
-      <Typography variant="h5" gutterBottom>
+    <div className="mt-6">
+      <h2 className="text-2xl font-semibold text-[var(--color-primary)] mb-4">
         📊 {t('dashboard.report_title')}
-      </Typography>
+      </h2>
 
-      <Box
-        mt={2}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel>{t('dashboard.date_range')}</InputLabel>
-          <Select
-            value={range}
-            onChange={(e) => setRange(e.target.value)}
-            label={t('dashboard.date_range')}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 w-full">
+        {/* Dropdown custom */}
+        <div className="relative w-full sm:w-auto">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="w-full sm:w-[200px] px-4 py-2 border border-gray-300 rounded-md bg-white text-sm text-gray-700 flex justify-between items-center hover:bg-gray-100"
           >
-            <MenuItem value="all">{t('dashboard.all_data')}</MenuItem>
-            <MenuItem value="30d">{t('dashboard.last_30_days')}</MenuItem>
-            <MenuItem value="7d">{t('dashboard.last_7_days')}</MenuItem>
-          </Select>
-        </FormControl>
+            {range === 'all'
+              ? t('dashboard.all_data')
+              : range === '30d'
+                ? t('dashboard.last_30_days')
+                : t('dashboard.last_7_days')}
+            <span className="ml-2">▾</span>
+          </button>
 
-        <Button variant="outlined" onClick={exportToPDF}>
+          {dropdownOpen && (
+            <ul className="absolute left-0 mt-1 z-10 w-full sm:w-[200px] bg-white border border-gray-300 rounded-md shadow-lg text-sm">
+              <li>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => {
+                    setRange('all');
+                    setDropdownOpen(false);
+                  }}
+                >
+                  {t('dashboard.all_data')}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => {
+                    setRange('30d');
+                    setDropdownOpen(false);
+                  }}
+                >
+                  {t('dashboard.last_30_days')}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={() => {
+                    setRange('7d');
+                    setDropdownOpen(false);
+                  }}
+                >
+                  {t('dashboard.last_7_days')}
+                </button>
+              </li>
+            </ul>
+          )}
+        </div>
+
+        {/* PDF Export button */}
+        <button
+          onClick={exportToPDF}
+          className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-accent)] transition text-sm font-medium w-full sm:w-auto"
+        >
           📥 {t('dashboard.export_as_pdf')}
-        </Button>
-      </Box>
+        </button>
+      </div>
 
+      {/* Content */}
       {loading ? (
-        <Box display="flex" justifyContent="center" mt={4}>
-          <CircularProgress />
-        </Box>
+        <div className="flex justify-center mt-10">
+          <span className="w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+        </div>
       ) : !data ? (
-        <Typography color="error" align="center" mt={4}>
+        <p className="text-center text-red-600 font-medium mt-6">
           {t('dashboard.error_loading_data')}
-        </Typography>
+        </p>
       ) : (
-        <Grid container spacing={3} mt={2}>
-          <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-            <Paper elevation={3} sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="h6">
-                {t('dashboard.total_campaigns')}
-              </Typography>
-              <Typography variant="h4">{data.totalCampaigns}</Typography>
-            </Paper>
-          </Grid>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-md border border-gray-200 p-4 text-center shadow-sm">
+            <p className="text-sm text-gray-500">
+              {t('dashboard.total_campaigns')}
+            </p>
+            <p className="text-3xl font-semibold text-[var(--color-primary)]">
+              {data.totalCampaigns}
+            </p>
+          </div>
 
-          <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-            <Paper elevation={3} sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="h6">
-                {t('dashboard.average_places_per_campaign')}
-              </Typography>
-              <Typography variant="h4">
-                {data.averagePlacesPerCampaign.toFixed(2)}
-              </Typography>
-            </Paper>
-          </Grid>
+          <div className="bg-white rounded-md border border-gray-200 p-4 text-center shadow-sm">
+            <p className="text-sm text-gray-500">
+              {t('dashboard.average_places_per_campaign')}
+            </p>
+            <p className="text-3xl font-semibold text-[var(--color-primary)]">
+              {data.averagePlacesPerCampaign.toFixed(2)}
+            </p>
+          </div>
 
-          <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-            <Paper elevation={3} sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="h6">
-                {t('dashboard.total_credit_spent')}
-              </Typography>
-              <Typography variant="h4">💰 {data.totalCreditSpent}</Typography>
-            </Paper>
-          </Grid>
+          <div className="bg-white rounded-md border border-gray-200 p-4 text-center shadow-sm">
+            <p className="text-sm text-gray-500">
+              {t('dashboard.total_credit_spent')}
+            </p>
+            <p className="text-3xl font-semibold text-green-600">
+              💰 {data.totalCreditSpent}
+            </p>
+          </div>
 
-          <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-            <Paper elevation={3} sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="h6">
-                {t('dashboard.total_emails_sent')}
-              </Typography>
-              <Typography variant="h4">✉️ {data.totalEmailsSent}</Typography>
-            </Paper>
-          </Grid>
-        </Grid>
+          <div className="bg-white rounded-md border border-gray-200 p-4 text-center shadow-sm">
+            <p className="text-sm text-gray-500">
+              {t('dashboard.total_emails_sent')}
+            </p>
+            <p className="text-3xl font-semibold text-blue-600">
+              ✉️ {data.totalEmailsSent}
+            </p>
+          </div>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }
