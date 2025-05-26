@@ -1,0 +1,13 @@
+.register-page {
+  background: linear-gradient(135deg, #003399 0%, #00dbff 100%);
+}
+.register-box {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+.register-box:hover {
+  transform: translateY(-4px);
+}

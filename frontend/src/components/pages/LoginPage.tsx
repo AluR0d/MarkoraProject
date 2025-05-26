@@ -1,24 +1,24 @@
 import { useState, useEffect } from 'react';
-import LoginForm from '../molecules/LoginForm';
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import { login } from '../../services/authService';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { getUserFromToken } from '../../utils/jwt';
-import RedirectLink from '../atoms/RedirectLink';
 import { getUserById, getUserRolesById } from '../../services/userService';
 import { useTranslation } from 'react-i18next';
+
+import LoginForm from '../molecules/LoginForm';
 import MinimalHeader from '../molecules/minimalHeader';
+import RedirectLink from '../atoms/RedirectLink';
+import Notification from '../atoms/Notification';
+
+import '../../styles/login.css';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [showError, setShowError] = useState(false);
+  const [notif, setNotif] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -27,14 +27,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (location.state?.registered) {
-      setShowSuccess(true);
+      setNotif({ message: t('login.success_registered'), type: 'success' });
       window.history.replaceState({}, document.title);
     }
-  }, [location.state]);
+  }, [location.state, t]);
 
   const handleLogin = async (data: { email: string; password: string }) => {
     setIsLoading(true);
-    setErrorMessage('');
     try {
       await login(data.email, data.password);
 
@@ -50,8 +49,7 @@ export default function LoginPage() {
       setUser({ ...userData, roles });
       navigate('/home');
     } catch (error: any) {
-      setErrorMessage(error.message);
-      setShowError(true);
+      setNotif({ message: t(error.message), type: 'error' });
     } finally {
       setIsLoading(false);
     }
@@ -60,52 +58,36 @@ export default function LoginPage() {
   return (
     <>
       <MinimalHeader />
-      <Container maxWidth="sm">
-        <Box mt={8}>
-          <Paper elevation={3} sx={{ padding: 4 }}>
-            <LoginForm
-              onSubmit={handleLogin}
-              isLoading={isLoading}
-              errorMessage=""
+      <div className="login-page flex justify-center items-center min-h-screen px-4">
+        <div className="login-box w-full max-w-md p-6">
+          <LoginForm
+            onSubmit={handleLogin}
+            isLoading={isLoading}
+            errorMessage=""
+          />
+
+          <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-12 mt-4 text-sm text-center">
+            <RedirectLink
+              question=""
+              linkText={t('login.redirects.no_account')}
+              to="/register"
             />
+            <RedirectLink
+              question=""
+              linkText={t('login.redirects.forgot_password')}
+              to="/forgot-password"
+            />
+          </div>
+        </div>
+      </div>
 
-            <Box display="flex" justifyContent="space-between" mt={2}>
-              <RedirectLink
-                question=""
-                linkText={t('login.redirects.no_account')}
-                to="/register"
-              />
-              <RedirectLink
-                question=""
-                linkText={t('login.redirects.forgot_password')}
-                to="/forgot-password"
-              />
-            </Box>
-          </Paper>
-        </Box>
-
-        <Snackbar
-          open={showSuccess}
-          autoHideDuration={3000}
-          onClose={() => setShowSuccess(false)}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert severity="success" variant="filled" sx={{ width: '100%' }}>
-            {t('login.success_registered')}
-          </Alert>
-        </Snackbar>
-
-        <Snackbar
-          open={showError}
-          autoHideDuration={4000}
-          onClose={() => setShowError(false)}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert severity="error" variant="filled" sx={{ width: '100%' }}>
-            {t(errorMessage)}
-          </Alert>
-        </Snackbar>
-      </Container>
+      {notif && (
+        <Notification
+          message={notif.message}
+          type={notif.type}
+          onClose={() => setNotif(null)}
+        />
+      )}
     </>
   );
 }

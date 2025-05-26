@@ -1,21 +1,15 @@
 import { useState } from 'react';
-import {
-  Box,
-  Container,
-  Paper,
-  TextField,
-  Button,
-  Typography,
-  Snackbar,
-  Alert,
-} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ZodError } from 'zod';
 import axios from 'axios';
-import RedirectLink from '../atoms/RedirectLink';
-import { forgotPasswordSchema } from '../../schemas/forgotPasswordSchema';
 import { useNavigate } from 'react-router-dom';
+
+import { forgotPasswordSchema } from '../../schemas/forgotPasswordSchema';
+import RedirectLink from '../atoms/RedirectLink';
 import MinimalHeader from '../molecules/minimalHeader';
+import Notification from '../atoms/Notification';
+
+import '../../styles/forgot.css';
 
 export default function ForgotPasswordPage() {
   const { t } = useTranslation();
@@ -23,23 +17,23 @@ export default function ForgotPasswordPage() {
 
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errorLocal, setErrorLocal] = useState('');
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'success' as 'success' | 'error',
-  });
+  const [notif, setNotif] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   const handleSubmit = async () => {
     setLoading(true);
 
     try {
       forgotPasswordSchema.parse({ email });
-      setErrorLocal('');
     } catch (error) {
       if (error instanceof ZodError) {
         const firstError = error.errors[0]?.message;
-        setErrorLocal(t(firstError || 'forgot.errors.unknown'));
+        setNotif({
+          message: t(firstError || 'forgot.errors.unknown'),
+          type: 'error',
+        });
       }
       setLoading(false);
       return;
@@ -54,10 +48,9 @@ export default function ForgotPasswordPage() {
       const elapsed = Date.now() - start;
       if (elapsed < 500) await new Promise((r) => setTimeout(r, 500));
 
-      setSnackbar({
-        open: true,
+      setNotif({
         message: t('forgot.success_message'),
-        severity: 'success',
+        type: 'success',
       });
 
       setTimeout(() => {
@@ -67,10 +60,9 @@ export default function ForgotPasswordPage() {
       const elapsed = Date.now() - start;
       if (elapsed < 500) await new Promise((r) => setTimeout(r, 500));
 
-      setSnackbar({
-        open: true,
+      setNotif({
         message: error.response?.data?.message || t('forgot.errors.unknown'),
-        severity: 'error',
+        type: 'error',
       });
 
       setTimeout(() => {
@@ -84,64 +76,58 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <MinimalHeader />
+      <div className="forgot-page flex justify-center items-center min-h-screen px-4">
+        <div className="forgot-box w-full max-w-md p-8">
+          <h2 className="text-2xl font-bold text-center text-[var(--color-primary)] mb-2">
+            {t('forgot.title')}
+          </h2>
+          <p className="text-sm text-center text-[var(--color-dark)] mb-6">
+            {t('forgot.description')}
+          </p>
 
-      <Container maxWidth="sm">
-        <Box mt={8}>
-          <Paper elevation={3} sx={{ p: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              {t('forgot.title')}
-            </Typography>
-            <Typography variant="body2" mb={2}>
-              {t('forgot.description')}
-            </Typography>
-            <TextField
-              label={t('forgot.email_label')}
-              fullWidth
-              margin="normal"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              type="email"
-              error={!!errorLocal}
-              helperText={errorLocal}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={handleSubmit}
-              disabled={loading}
-              sx={{ mt: 2 }}
-            >
-              {loading
-                ? t('forgot.loading') || 'Enviando...'
-                : t('forgot.send_button')}
-            </Button>
+          <label className="block mb-1 font-medium text-[var(--color-dark)]">
+            {t('forgot.email_label')}
+          </label>
+          <input
+            type="email"
+            className="w-full px-3 py-2 border rounded-md bg-white text-sm
+            text-[var(--color-dark)] focus:outline-none focus:ring-2
+            focus:ring-[var(--color-primary)] border-gray-300"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-            <Box mt={2}>
-              <RedirectLink
-                question=""
-                linkText={t('forgot.back_to_login')}
-                to="/login"
-              />
-            </Box>
-          </Paper>
-        </Box>
-
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={4000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert
-            severity={snackbar.severity}
-            variant="filled"
-            sx={{ width: '100%' }}
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full bg-[var(--color-primary)]
+            text-white font-medium py-2 px-4 rounded-md hover:bg-[var(--color-accent)]
+            transition-colors mt-4 disabled:opacity-50 cursor-pointer"
           >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
+            {loading
+              ? t('forgot.loading') || 'Enviando...'
+              : t('forgot.send_button')}
+          </button>
+
+          <div className="flex justify-center mt-6">
+            <RedirectLink
+              question=""
+              linkText={t('forgot.back_to_login')}
+              to="/login"
+              className="text-sm text-[var(--color-primary)]
+              hover:text-[var(--color-accent)] transition-colors"
+            />
+          </div>
+        </div>
+      </div>
+
+      {notif && (
+        <Notification
+          message={notif.message}
+          type={notif.type}
+          onClose={() => setNotif(null)}
+        />
+      )}
     </>
   );
 }

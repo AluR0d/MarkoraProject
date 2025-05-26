@@ -1,19 +1,27 @@
 import { Link } from 'react-router-dom';
-import { Typography } from '@mui/material';
 
 type Props = {
   question: string;
   linkText: string;
   to: string;
+  className?: string;
 };
 
-export default function RedirectLink({ question, linkText, to }: Props) {
+export default function RedirectLink({
+  question,
+  linkText,
+  to,
+  className = '',
+}: Props) {
   return (
-    <Typography variant="body2" mt={2}>
+    <p className={`text-sm ${className}`}>
       {question}{' '}
-      <Link to={to} style={{ textDecoration: 'none', color: '#1976d2' }}>
+      <Link
+        to={to}
+        className="text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors"
+      >
         {linkText}
       </Link>
-    </Typography>
+    </p>
   );
 }

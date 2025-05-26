@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import SubmitButton from '../atoms/SubmitButton';
-import FormTitle from '../atoms/FormTitle';
 import { loginSchema } from '../../schemas/loginSchema';
 import { ZodError } from 'zod';
-import { TextField } from '@mui/material';
+
+import SubmitButton from '../atoms/SubmitButton';
+import FormTitle from '../atoms/FormTitle';
 
 type Props = {
   onSubmit: (data: { email: string; password: string }) => void;
@@ -48,32 +48,42 @@ export default function LoginForm({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="w-full">
       <FormTitle text={t('login.title')} />
 
-      <TextField
-        label={t('login.email')}
-        name="email"
-        type="email"
-        fullWidth
-        margin="normal"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        error={!!localErrors.email}
-        helperText={localErrors.email}
-      />
+      <div className="mb-4">
+        <label className="block mb-1 font-medium text-[var(--color-dark)]">
+          {t('login.email')}
+        </label>
+        <input
+          type="email"
+          className={`w-full px-3 py-2 border rounded-md bg-white text-sm text-[var(--color-dark)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${
+            localErrors.email ? 'border-red-500' : 'border-gray-300'
+          }`}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        {localErrors.email && (
+          <p className="text-sm text-red-500 mt-1">{localErrors.email}</p>
+        )}
+      </div>
 
-      <TextField
-        label={t('login.password')}
-        name="password"
-        type="password"
-        fullWidth
-        margin="normal"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        error={!!localErrors.password}
-        helperText={localErrors.password}
-      />
+      <div className="mb-4">
+        <label className="block mb-1 font-medium text-[var(--color-dark)]">
+          {t('login.password')}
+        </label>
+        <input
+          type="password"
+          className={`w-full px-3 py-2 border rounded-md bg-white text-sm text-[var(--color-dark)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${
+            localErrors.password ? 'border-red-500' : 'border-gray-300'
+          }`}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {localErrors.password && (
+          <p className="text-sm text-red-500 mt-1">{localErrors.password}</p>
+        )}
+      </div>
 
       <SubmitButton
         label={isLoading ? t('login.loading') : t('login.submit')}
@@ -81,7 +91,7 @@ export default function LoginForm({
       />
 
       {errorMessage && (
-        <p style={{ color: 'red', textAlign: 'center', marginTop: '1rem' }}>
+        <p className="text-center text-red-600 mt-4 font-medium">
           {errorMessage}
         </p>
       )}

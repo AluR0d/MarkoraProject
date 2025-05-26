@@ -1,79 +1,77 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-
 import RegisterForm from '../molecules/RegisterForm';
 import { register } from '../../services/authService';
 import RedirectLink from '../atoms/RedirectLink';
 import { useTranslation } from 'react-i18next';
 import MinimalHeader from '../molecules/minimalHeader';
+import Notification from '../atoms/Notification';
+
+import '../../styles/register.css';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [showError, setShowError] = useState(false);
+  const [notif, setNotif] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   const handleRegister = async (data: {
     name: string;
     email: string;
     password: string;
   }) => {
-    setErrorMessage('');
     setIsLoading(true);
     try {
       await register(data.name, data.email, data.password);
-
       navigate('/login', { state: { registered: true } });
     } catch (error: any) {
-      setErrorMessage(error.message);
-      setShowError(true);
+      setNotif({
+        message: t(`register.errors.${error.message}`),
+        type: 'error',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleClearError = () => {
-    if (errorMessage) setErrorMessage('');
+    if (notif?.type === 'error') setNotif(null);
   };
 
   return (
     <>
       <MinimalHeader />
-      <Container maxWidth="sm">
-        <Box mt={8}>
-          <Paper elevation={3} sx={{ padding: 4 }}>
-            <RegisterForm
-              onSubmit={handleRegister}
-              isLoading={isLoading}
-              errorMessage={''}
-              onClearError={handleClearError}
-            />
+      <div className="register-page flex justify-center items-center min-h-screen px-4">
+        <div className="register-box w-full max-w-md p-8">
+          <RegisterForm
+            onSubmit={handleRegister}
+            isLoading={isLoading}
+            errorMessage={notif?.type === 'error' ? notif.message : ''}
+            onClearError={handleClearError}
+          />
+
+          <div className="flex justify-center mt-4">
             <RedirectLink
               question=""
               linkText={t('register.redirects.already_have_account')}
               to="/login"
+              className="text-sm text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors"
             />
-          </Paper>
-        </Box>
+          </div>
+        </div>
+      </div>
 
-        <Snackbar
-          open={showError}
-          autoHideDuration={4000}
-          onClose={() => setShowError(false)}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert severity="error" variant="filled" sx={{ width: '100%' }}>
-            {t(`register.errors.${errorMessage}`)}
-          </Alert>
-        </Snackbar>
-      </Container>
+      {notif && (
+        <Notification
+          message={notif.message}
+          type={notif.type}
+          onClose={() => setNotif(null)}
+        />
+      )}
     </>
   );
 }
