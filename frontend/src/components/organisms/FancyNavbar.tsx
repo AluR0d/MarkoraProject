@@ -151,11 +151,7 @@ export default function FancyNavbar() {
       >
         {/* Logo + Name */}
         <div className="flex items-center gap-2 text-white text-lg font-semibold">
-          <img
-            src="src/assets/fHEq2Y01.svg"
-            alt="Markora logo"
-            className="w-10 h-10"
-          />
+          <img src="/fHEq2Y01.svg" alt="Markora logo" className="w-10 h-10" />
           <span>Markora</span>
         </div>
 
