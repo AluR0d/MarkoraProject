@@ -265,6 +265,12 @@
     "rating": "Rating",
     "active": "Active"
   },
+  "home": {
+    "welcome_title": "Welcome to Markora",
+    "welcome_description": "Organize your marketing campaigns with ease and efficiency.",
+    "my_campaigns": "My Campaigns",
+    "motivational_quote": "The best way to predict the future is to create it."
+  },
   "common": {
     "create": "Create",
     "save": "Save",

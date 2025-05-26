@@ -266,6 +266,12 @@
     "rating": "Puntuación",
     "active": "Activo"
   },
+  "home": {
+    "welcome_title": "Bienvenido a Markora",
+    "welcome_description": "Organiza, lanza y gestiona tus campañas fácilmente desde un solo lugar.",
+    "my_campaigns": "Mis campañas",
+    "motivational_quote": "Una campaña bien planeada es una victoria anticipada."
+  },
   "common": {
     "create": "Crear",
     "save": "Guardar",
