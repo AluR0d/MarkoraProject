@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageToggleButton from '../atoms/LanguageToggleButton';
 import useScrollPosition from '../../hooks/useScrollPosition';
 import { JSX, useEffect, useState } from 'react';
+import logo from '../../public/fHEq2Y01.svg';
 
 type NavItemProps = {
   icon: JSX.Element;
@@ -151,7 +152,7 @@ export default function FancyNavbar() {
       >
         {/* Logo + Name */}
         <div className="flex items-center gap-2 text-white text-lg font-semibold">
-          <img src="/fHEq2Y01.svg" alt="Markora logo" className="w-10 h-10" />
+          <img src={logo} alt="Markora logo" className="w-10 h-10" />
           <span>Markora</span>
         </div>
 
