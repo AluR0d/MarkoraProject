@@ -237,6 +237,19 @@
     "logout": "Cerrar sesión"
   },
   "campaign": {
+    "sends": "Envíos",
+    "no_archived": "No hay campañas archivadas",
+    "no_active": "No hay campañas activas",
+    "confirm_reactivate": "¿Estás seguro de que quieres reactivar esta campaña?",
+    "reactivate": "Reactivar campaña",
+    "sent_at": "Enviado el",
+    "all_sent": "Cammpaña enviada",
+    "sending": "Enviando campaña",
+    "active": "Campañas activas",
+    "my_campaigns": "Mis campañas",
+    "archived": "Campañas archivadas",
+    "send_now": "Enviar ahora",
+    "archive": "Archivar campaña",
     "create_new": "Crear nueva campaña",
     "create_title": "Crear nueva campaña",
     "balance": "Balance actual",
@@ -274,6 +287,7 @@
     "motivational_quote": "Una campaña bien planeada es una victoria anticipada."
   },
   "common": {
+    "created_at": "Creado el",
     "create": "Crear",
     "save": "Guardar",
     "cancel": "Cancelar",

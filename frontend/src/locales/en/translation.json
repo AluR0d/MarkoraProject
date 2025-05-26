@@ -236,6 +236,19 @@
     "logout": "Logout"
   },
   "campaign": {
+    "sends": "Sends",
+    "no_archived": "No archived campaigns",
+    "no_active": "No active campaigns",
+    "confirm_reactivate": "Are you sure you want to reactivate this campaign?",
+    "reactivate": "Reactivate Campaign",
+    "sent_at": "Sent at",
+    "all_sent": "Campaign Sent",
+    "sending": "Sending Campaign",
+    "active": "Active Campaigns",
+    "my_campaigns": "My Campaigns",
+    "archived": "Archived Campaign",
+    "send_now": "Send Now",
+    "archive": "Archive",
     "create_new": "Create new campaign",
     "create_title": "Create New Campaign",
     "balance": "Current Balance",
@@ -273,6 +286,7 @@
     "motivational_quote": "The best way to predict the future is to create it."
   },
   "common": {
+    "created_at": "Created at",
     "create": "Create",
     "save": "Save",
     "cancel": "Cancel",
