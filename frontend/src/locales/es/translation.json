@@ -253,10 +253,11 @@
     "success_dialog_title": "¡Campaña creada correctamente!",
     "success_dialog_message": "¿Deseas ver tu campaña ahora?",
     "errors": {
+      "title_required": "El título es obligatorio.",
       "error_missing_fields": "Por favor, rellena el título y el mensaje.",
       "create_error": "Hubo un error al crear la campaña.",
       "message_required": "El mensaje es obligatorio.",
-      "message_max": "El mensaje no puede tener más de 200 caracteres."
+      "message_too_long": "El mensaje no puede tener más de 200 caracteres."
     }
   },
   "selectable_place": {

@@ -1,5 +1,4 @@
 import { useUser } from '../../context/UserContext';
-import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 export function UserBalance() {
@@ -9,9 +8,9 @@ export function UserBalance() {
   if (!user) return null;
 
   return (
-    <Typography variant="body1" sx={{ mt: 2 }}>
+    <p className="mt-4 text-sm text-[var(--color-dark)] text-center">
       {t('profile.balance')}:{' '}
       <strong>{Number(user.balance).toFixed(2)} €</strong>
-    </Typography>
+    </p>
   );
 }

@@ -1,15 +1,5 @@
 import { useState } from 'react';
-import {
-  TextField,
-  IconButton,
-  Box,
-  Typography,
-  Snackbar,
-  Alert,
-  Collapse,
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
+import { FiEdit3, FiSave } from 'react-icons/fi';
 import { useUser } from '../../context/UserContext';
 import axios from 'axios';
 import UserRolesSection from './UserRolesSection';
@@ -31,11 +21,10 @@ export default function UserEditForm() {
   const [errors, setErrors] = useState<
     Partial<Record<'name' | 'email', string>>
   >({});
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'success' as 'success' | 'error',
-  });
+  const [notif, setNotif] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   const handleChange =
     (field: 'name' | 'email') => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,15 +49,11 @@ export default function UserEditForm() {
       );
 
       if (user?.id) {
-        setUser({ ...user, ...trimmedData, id: user.id });
-        setFormData(trimmedData); // 🧼 Reflejar los datos sin espacios
+        setUser({ ...user, ...trimmedData });
+        setFormData(trimmedData);
       }
 
-      setSnackbar({
-        open: true,
-        message: t('profile.success'),
-        severity: 'success',
-      });
+      setNotif({ message: t('profile.success'), type: 'success' });
       setIsEditing(false);
     } catch (error: any) {
       if (error instanceof ZodError) {
@@ -83,72 +68,90 @@ export default function UserEditForm() {
 
       const message =
         error.response?.data?.message || t('profile.errors.unknown');
-      setSnackbar({ open: true, message, severity: 'error' });
+      setNotif({ message, type: 'error' });
     }
   };
 
   return (
-    <Box mt={6}>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h4">{t('profile.title')}</Typography>
-        <IconButton
+    <div className="space-y-6">
+      <div className="flex justify-between items-start">
+        <h2 className="text-3xl font-semibold text-[var(--color-primary)] tracking-tight">
+          {t('profile.title')}
+        </h2>
+        <button
           onClick={() => (isEditing ? handleSubmit() : setIsEditing(true))}
-          color="primary"
+          className="p-2 rounded-md text-white bg-[var(--color-primary)] hover:bg-[var(--color-accent)] transition"
+          aria-label="Editar perfil"
         >
-          {isEditing ? <SaveIcon /> : <EditIcon />}
-        </IconButton>
-      </Box>
+          {isEditing ? <FiSave size={20} /> : <FiEdit3 size={20} />}
+        </button>
+      </div>
 
-      <Box mt={3}>
-        <Collapse in={!isEditing} timeout={300} unmountOnExit>
-          <Box>
-            <Typography>
-              <strong>{t('register.name')}:</strong> {formData.name}
-            </Typography>
-            <Typography>
-              <strong>{t('register.email')}:</strong> {formData.email}
-            </Typography>
-          </Box>
-        </Collapse>
-
-        <Collapse in={isEditing} timeout={300} unmountOnExit>
-          <Box>
-            <TextField
-              label={t('register.name')}
+      {!isEditing ? (
+        <div className="space-y-3 text-[var(--color-dark)]">
+          <p className="text-lg">
+            <strong>Nombre:</strong>{' '}
+            <span className="font-mono">{formData.name}</span>
+          </p>
+          <p className="text-lg">
+            <strong>Correo electrónico:</strong>{' '}
+            <span className="font-mono">{formData.email}</span>
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div>
+            <label className="block mb-1 font-medium">
+              {t('register.name')}
+            </label>
+            <input
               value={formData.name}
               onChange={handleChange('name')}
-              fullWidth
-              margin="normal"
-              error={!!errors.name}
-              helperText={errors.name}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${
+                errors.name ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
-            <TextField
-              label={t('register.email')}
+            {errors.name && (
+              <p className="text-sm text-red-500 mt-1">{errors.name}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">
+              {t('register.email')}
+            </label>
+            <input
               value={formData.email}
               onChange={handleChange('email')}
-              fullWidth
-              margin="normal"
-              error={!!errors.email}
-              helperText={errors.email}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
-          </Box>
-        </Collapse>
-      </Box>
+            {errors.email && (
+              <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+            )}
+          </div>
+        </div>
+      )}
 
-      <Box mt={3}>
-        <UserRolesSection roles={user?.roles || []} />
-      </Box>
+      <UserRolesSection roles={user?.roles || []} />
 
-      <Snackbar
-        open={snackbar.open}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      >
-        <Alert severity={snackbar.severity} variant="filled">
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+      {notif && (
+        <div
+          className={`mt-4 p-3 rounded-md text-sm ${
+            notif.type === 'success'
+              ? 'bg-green-100 text-green-700'
+              : 'bg-red-100 text-red-700'
+          }`}
+        >
+          <div className="flex justify-between items-center">
+            <span>{notif.message}</span>
+            <button onClick={() => setNotif(null)} className="font-bold">
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,22 +1,21 @@
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import RoleChip from '../atoms/RoleChip';
-
 type Props = {
   roles: string[];
 };
 
 export default function UserRolesSection({ roles }: Props) {
   return (
-    <>
-      <Typography variant="body1" mt={2}>
-        <strong>Roles:</strong>
-      </Typography>
-      <Stack direction="row" spacing={1} mt={1}>
+    <div>
+      <p className="text-sm font-medium text-[var(--color-dark)]">Roles:</p>
+      <div className="flex flex-wrap gap-2 mt-2">
         {roles.map((role) => (
-          <RoleChip key={role} role={role} />
+          <span
+            key={role}
+            className="px-2 py-1 text-xs rounded-full bg-[var(--color-primary)] text-white"
+          >
+            {role}
+          </span>
         ))}
-      </Stack>
-    </>
+      </div>
+    </div>
   );
 }

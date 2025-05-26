@@ -1,16 +1,4 @@
 import { useState } from 'react';
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Snackbar,
-  Alert,
-} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 type Props = {
@@ -35,12 +23,7 @@ export default function PlaceFilterForm({ onFilter }: Props) {
   const [ratingOrder, setRatingOrder] = useState<'asc' | 'desc' | 'none'>(
     'none'
   );
-
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'error' as 'error' | 'success',
-  });
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = () => {
     const trimmedName = name.trim();
@@ -51,11 +34,7 @@ export default function PlaceFilterForm({ onFilter }: Props) {
       numericRating !== undefined &&
       (numericRating < 0 || numericRating > 5)
     ) {
-      setSnackbar({
-        open: true,
-        message: t('admin.places.filters.rating_out_of_range'),
-        severity: 'error',
-      });
+      setError(t('admin.places.filters.rating_out_of_range'));
       return;
     }
 
@@ -70,6 +49,8 @@ export default function PlaceFilterForm({ onFilter }: Props) {
       rating: numericRating,
       ratingOrder: ratingOrder !== 'none' ? ratingOrder : undefined,
     });
+
+    setError(null);
   };
 
   const handleReset = () => {
@@ -79,97 +60,115 @@ export default function PlaceFilterForm({ onFilter }: Props) {
     setActiveStatus('all');
     setRatingOrder('none');
     onFilter({});
+    setError(null);
   };
 
   return (
-    <>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4 }}>
-        <Typography variant="h6">{t('admin.places.filters.title')}</Typography>
+    <div className="bg-white rounded-md shadow-sm p-6 border border-gray-200 mb-6 space-y-6">
+      <h2 className="text-lg font-semibold text-[var(--color-primary)]">
+        {t('admin.places.filters.title')}
+      </h2>
 
-        <TextField
-          label={t('admin.places.filters.name')}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <TextField
-          label={t('admin.places.filters.zone')}
-          value={zone}
-          onChange={(e) => setZone(e.target.value)}
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Nombre */}
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('admin.places.filters.name')}
+          </label>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--color-primary)]"
+          />
+        </div>
 
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-          <TextField
-            label={t('admin.places.filters.min_rating')}
+        {/* Zona */}
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('admin.places.filters.zone')}
+          </label>
+          <input
+            value={zone}
+            onChange={(e) => setZone(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--color-primary)]"
+          />
+        </div>
+
+        {/* Rating */}
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('admin.places.filters.min_rating')}
+          </label>
+          <input
             type="number"
-            inputProps={{ min: 0, max: 5, step: 0.1 }}
+            min={0}
+            max={5}
+            step={0.1}
             value={rating}
             onChange={(e) => setRating(e.target.value)}
-            sx={{ flex: 1 }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[var(--color-primary)]"
           />
+        </div>
 
-          <FormControl sx={{ minWidth: 180 }}>
-            <InputLabel id="order-label">
-              {t('admin.places.filters.rating_order')}
-            </InputLabel>
-            <Select
-              labelId="order-label"
-              value={ratingOrder}
-              label={t('admin.places.filters.rating_order')}
-              onChange={(e) => setRatingOrder(e.target.value as any)}
-            >
-              <MenuItem value="none">
-                {t('admin.places.filters.no_order')}
-              </MenuItem>
-              <MenuItem value="desc">
-                {t('admin.places.filters.high_to_low')}
-              </MenuItem>
-              <MenuItem value="asc">
-                {t('admin.places.filters.low_to_high')}
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
-        <FormControl>
-          <InputLabel id="active-label">
-            {t('admin.places.filters.active')}
-          </InputLabel>
-          <Select
-            labelId="active-label"
-            value={activeStatus}
-            label={t('admin.places.filters.active')}
-            onChange={(e) => setActiveStatus(e.target.value as any)}
+        {/* Orden Rating */}
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('admin.places.filters.rating_order')}
+          </label>
+          <select
+            value={ratingOrder}
+            onChange={(e) => setRatingOrder(e.target.value as any)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer"
           >
-            <MenuItem value="all">{t('admin.places.filters.all')}</MenuItem>
-            <MenuItem value="true">
+            <option value="none">{t('admin.places.filters.no_order')}</option>
+            <option value="desc">
+              {t('admin.places.filters.high_to_low')}
+            </option>
+            <option value="asc">{t('admin.places.filters.low_to_high')}</option>
+          </select>
+        </div>
+
+        {/* Activo */}
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            {t('admin.places.filters.active')}
+          </label>
+          <select
+            value={activeStatus}
+            onChange={(e) => setActiveStatus(e.target.value as any)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-[var(--color-primary)] cursor-pointer"
+          >
+            <option value="all">{t('admin.places.filters.all')}</option>
+            <option value="true">
               {t('admin.places.filters.only_active')}
-            </MenuItem>
-            <MenuItem value="false">
+            </option>
+            <option value="false">
               {t('admin.places.filters.only_inactive')}
-            </MenuItem>
-          </Select>
-        </FormControl>
+            </option>
+          </select>
+        </div>
+      </div>
 
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button variant="contained" onClick={handleSubmit}>
-            {t('admin.places.filters.apply')}
-          </Button>
-          <Button variant="outlined" onClick={handleReset}>
-            {t('admin.places.filters.clear')}
-          </Button>
-        </Box>
-      </Box>
+      {/* Error */}
+      {error && (
+        <div className="text-sm text-red-600 font-medium mt-2">{error}</div>
+      )}
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity={snackbar.severity} sx={{ width: '100%' }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </>
+      {/* Botones */}
+      <div className="flex gap-4 mt-4">
+        <button
+          className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-accent)] transition cursor-pointer"
+          onClick={handleSubmit}
+        >
+          {t('admin.places.filters.apply')}
+        </button>
+        <button
+          className="border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition cursor-pointer"
+          onClick={handleReset}
+        >
+          {t('admin.places.filters.clear')}
+        </button>
+      </div>
+    </div>
   );
 }

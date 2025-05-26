@@ -1,7 +1,7 @@
-import Container from '@mui/material/Container';
 import { useUser } from '../../context/UserContext';
 import UserEditForm from '../molecules/UserEditForm';
 import { UserBalance } from '../atoms/UserBalance';
+import '../../styles/profile.css';
 
 export default function UserPanelPage() {
   const { user } = useUser();
@@ -9,9 +9,11 @@ export default function UserPanelPage() {
   if (!user) return null;
 
   return (
-    <Container maxWidth="sm">
-      <UserEditForm />
-      <UserBalance />
-    </Container>
+    <div className="profile-page">
+      <div className="profile-box">
+        <UserEditForm />
+        <UserBalance />
+      </div>
+    </div>
   );
 }

@@ -252,10 +252,11 @@
     "success_dialog_title": "Campaign Created Successfully!",
     "success_dialog_message": "Would you like to view your campaign now?",
     "errors": {
+      "title_required": "Title is required.",
       "error_missing_fields": "Please fill in all required fields.",
       "create_error": "Failed to create campaign. Please try again.",
       "message_required": "Message body is required.",
-      "message_max": "Message body cannot exceed 200 characters."
+      "message_too_long": "Message body cannot exceed 200 characters."
     }
   },
   "selectable_place": {

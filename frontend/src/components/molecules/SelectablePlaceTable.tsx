@@ -1,15 +1,5 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Checkbox,
-  Typography,
-  Box,
-} from '@mui/material';
 import { Place } from '../../types/Place';
-import { useTranslation } from 'react-i18next'; // Import translation hook
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   places: Place[];
@@ -29,69 +19,68 @@ export default function SelectablePlaceTable({
   const allSelected = places.every((p) => selectedIds.includes(p.id));
   const someSelected = places.some((p) => selectedIds.includes(p.id));
 
+  const handleSelectAll = () => {
+    const pageIds = places.map((p) => p.id);
+    const shouldSelect = !(someSelected || allSelected);
+    onToggleSelectAll(pageIds, shouldSelect);
+  };
+
   return (
-    <Box>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={1}
-      >
-        <Typography variant="subtitle1">
-          {t('selectable_place.selected_places')}: {selectedIds.length}
-        </Typography>
-      </Box>
+    <div className="overflow-x-auto">
+      <div className="mb-2 text-sm text-gray-700 font-medium">
+        {t('selectable_place.selected_places')}: {selectedIds.length}
+      </div>
 
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <Checkbox
+      <table className="min-w-full text-sm border border-gray-200 rounded-md overflow-hidden">
+        <thead className="bg-[var(--color-primary)] text-white">
+          <tr>
+            <th className="p-2 text-left">
+              <input
+                type="checkbox"
                 checked={allSelected}
-                indeterminate={!allSelected && someSelected}
-                onChange={() => {
-                  const pageIds = places.map((p) => p.id);
-                  const isPartiallySelected = places.some((p) =>
-                    selectedIds.includes(p.id)
-                  );
-                  const isFullySelected = places.every((p) =>
-                    selectedIds.includes(p.id)
-                  );
-
-                  if (isFullySelected || isPartiallySelected) {
-                    onToggleSelectAll(pageIds, false);
-                  } else {
-                    onToggleSelectAll(pageIds, true);
-                  }
+                ref={(input) => {
+                  if (input) input.indeterminate = someSelected && !allSelected;
                 }}
+                onChange={handleSelectAll}
+                className="cursor-pointer"
               />
-            </TableCell>
-            <TableCell>{t('selectable_place.name')}</TableCell>
-            <TableCell>{t('selectable_place.zone')}</TableCell>
-            <TableCell>{t('selectable_place.rating')}</TableCell>
-            <TableCell>{t('selectable_place.active')}</TableCell>
-          </TableRow>
-        </TableHead>
+            </th>
+            <th className="p-2 text-left">{t('selectable_place.name')}</th>
+            <th className="p-2 text-left">{t('selectable_place.zone')}</th>
+            <th className="p-2 text-left">{t('selectable_place.rating')}</th>
+            <th className="p-2 text-left">{t('selectable_place.active')}</th>
+          </tr>
+        </thead>
 
-        <TableBody>
+        <tbody className="divide-y divide-gray-200">
           {places.map((place) => (
-            <TableRow key={place.id}>
-              <TableCell>
-                <Checkbox
+            <tr key={place.id} className="hover:bg-gray-50 transition">
+              <td className="p-2">
+                <input
+                  type="checkbox"
                   checked={selectedIds.includes(place.id)}
                   onChange={() => onToggleSelect(place.id)}
+                  className="cursor-pointer"
                 />
-              </TableCell>
-              <TableCell>{place.name}</TableCell>
-              <TableCell>{place.zone}</TableCell>
-              <TableCell>{place.rating}</TableCell>
-              <TableCell>
-                {place.active ? t('common.yes') : t('common.no')}
-              </TableCell>
-            </TableRow>
+              </td>
+              <td className="p-2">{place.name}</td>
+              <td className="p-2">{place.zone}</td>
+              <td className="p-2">{place.rating}</td>
+              <td className="p-2">
+                {place.active ? (
+                  <span className="text-green-600 font-medium">
+                    {t('common.yes')}
+                  </span>
+                ) : (
+                  <span className="text-red-500 font-medium">
+                    {t('common.no')}
+                  </span>
+                )}
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
-    </Box>
+        </tbody>
+      </table>
+    </div>
   );
 }

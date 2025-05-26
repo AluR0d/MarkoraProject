@@ -1,33 +1,21 @@
-import { useEffect, useState } from 'react';
-import {
-  Container,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  Collapse,
-  Box,
-  Snackbar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Alert,
-} from '@mui/material';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+
+import { useUser } from '../../context/UserContext';
+import { createCampaignSchema } from '../../schemas/createCampaignSchema';
 import SelectablePlaceTable from '../../components/molecules/SelectablePlaceTable';
 import PlaceFilterForm from '../../components/molecules/PlaceFilterForm';
-import { Place } from '../../types/Place';
 import { PlaceService } from '../../services/placeService';
-import axios from 'axios';
-import { useUser } from '../../context/UserContext';
+import { Place } from '../../types/Place';
 import ReactQuill from 'react-quill-new';
-import { useTranslation } from 'react-i18next';
-import { createCampaignSchema } from '../../schemas/createCampaignSchema';
-import { ZodError } from 'zod';
 
 export default function CreateCampaignPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user, setUser } = useUser();
+
   const [places, setPlaces] = useState<Place[]>([]);
   const [selectedPlaceIds, setSelectedPlaceIds] = useState<string[]>([]);
   const [formData, setFormData] = useState({ title: '', message: '' });
@@ -41,88 +29,97 @@ export default function CreateCampaignPage() {
   const [filters, setFilters] = useState<{
     name?: string;
     zone?: string;
-    active?: boolean;
     rating?: number;
+    active?: boolean;
     ratingOrder?: 'asc' | 'desc';
   }>({});
   const [showFilters, setShowFilters] = useState(false);
-  const { user, setUser } = useUser();
-  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
-  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>(
-    'success'
-  );
-
-  const loadPlaces = async () => {
-    try {
-      const queryParams = new URLSearchParams({
-        page: String(page),
-        limit: String(limit),
-        ...(filters.name && { name: filters.name }),
-        ...(filters.zone && { zone: filters.zone }),
-        ...(filters.rating !== undefined
-          ? { rating: String(filters.rating) }
-          : {}),
-        ...(filters.active !== undefined
-          ? { active: String(filters.active) }
-          : {}),
-        ...(filters.ratingOrder
-          ? { orderBy: 'rating', order: filters.ratingOrder }
-          : {}),
-      }).toString();
-
-      const res = await PlaceService.getFiltered(queryParams);
-      setPlaces(res.data);
-      setTotalPages(res.totalPages);
-    } catch (err) {
-      console.error('Error al cargar lugares', err);
-    }
-  };
+  const plainMessage = formData.message.replace(/<[^>]+>/g, '').trim();
 
   useEffect(() => {
+    const loadPlaces = async () => {
+      try {
+        const query: Record<string, string> = {
+          page: String(page),
+          limit: String(limit),
+        };
+
+        if (filters.name) query.name = filters.name;
+        if (filters.zone) query.zone = filters.zone;
+        if (filters.rating !== undefined && !isNaN(filters.rating))
+          query.rating = String(filters.rating);
+        if (filters.active !== undefined)
+          query.active = filters.active ? 'true' : 'false';
+        if (filters.ratingOrder) {
+          query.orderBy = 'rating';
+          query.order = filters.ratingOrder;
+        }
+
+        const queryParams = new URLSearchParams(query).toString();
+        const res = await PlaceService.getFiltered(queryParams);
+        setPlaces(res.data);
+        setTotalPages(res.totalPages);
+      } catch (err) {
+        console.error('Error al cargar lugares', err);
+      }
+    };
+
     loadPlaces();
   }, [filters, page]);
 
-  const togglePlace = (placeId: string) => {
-    setSelectedPlaceIds((prev) =>
-      prev.includes(placeId)
-        ? prev.filter((id) => id !== placeId)
-        : [...prev, placeId]
-    );
-  };
-
-  const handleToggleSelectAll = (ids: string[], selectAll: boolean) => {
-    setSelectedPlaceIds((prev) =>
-      selectAll
-        ? [...new Set([...prev, ...ids])]
-        : prev.filter((id) => !ids.includes(id))
-    );
-  };
+  useEffect(() => {
+    if (notification) {
+      const timeout = setTimeout(() => setNotification(null), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [notification]);
 
   const handleSubmit = async () => {
+    const trimmedTitle = formData.title.trim();
+    const newErrors: typeof errors = {};
+
+    if (trimmedTitle.length === 0)
+      newErrors.title = t('campaign.errors.title_required');
+    if (plainMessage.length === 0)
+      newErrors.message = t('campaign.errors.message_required');
+    if (plainMessage.length > 200)
+      newErrors.message = t('campaign.errors.message_too_long');
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    if (selectedPlaceIds.length === 0) {
+      setNotification({
+        message: t('campaign.errors.no_places_selected'),
+        type: 'error',
+      });
+      return;
+    }
+
     try {
-      const plainMessage = formData.message.replace(/<[^>]+>/g, '').trim();
-      const trimmedData = {
-        title: formData.title.trim(),
+      createCampaignSchema.parse({
+        title: trimmedTitle,
         message: plainMessage,
-      };
-      const validated = createCampaignSchema.parse(trimmedData);
+      });
 
       await axios.post(
         `${import.meta.env.VITE_API_URL}/campaigns`,
         {
-          title: validated.title,
+          title: trimmedTitle,
           message_template: formData.message,
           place_ids: selectedPlaceIds,
           frequency: frequency === 0 ? null : frequency,
         },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         }
       );
 
@@ -134,193 +131,230 @@ export default function CreateCampaignPage() {
       setFrequency(0);
       setSelectedPlaceIds([]);
       setErrors({});
+      setNotification({
+        message: t('campaign.success_message'),
+        type: 'success',
+      });
 
-      setSnackbarMessage(t('campaign.success_message'));
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
-      setTimeout(() => setSuccessDialogOpen(true), 300);
-    } catch (err: any) {
-      if (err instanceof ZodError) {
-        const fieldErrors: { title?: string; message?: string } = {};
-        err.errors.forEach((e) => {
-          if (e.path[0] === 'title' || e.path[0] === 'message') {
-            fieldErrors[e.path[0]] = e.message;
-          }
-        });
-        setErrors(fieldErrors);
-        setSnackbarMessage(t('campaign.errors.create_error'));
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
-      } else {
-        console.error(err);
-        setSnackbarMessage(t('campaign.errors.create_error'));
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
-      }
+      setTimeout(() => setShowModal(true), 300);
+    } catch (error) {
+      setNotification({
+        message: t('campaign.errors.create_error'),
+        type: 'error',
+      });
     }
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        {t('campaign.create_title')}
-      </Typography>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        {t('campaign.balance')}: {user?.balance ?? t('common.loading')}{' '}
-        {t('common.credits')}
-      </Typography>
+    <div className="min-h-screen bg-[var(--color-light)] py-10 px-4 flex justify-center">
+      <div className="w-full max-w-5xl space-y-8 relative z-40">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-semibold text-[var(--color-primary)]">
+            {t('campaign.create_title')}
+          </h1>
+          <p className="text-sm text-gray-700">
+            {t('campaign.balance')}: <strong>{user?.balance ?? '...'}</strong>{' '}
+            {t('common.credits')}
+          </p>
+        </div>
 
-      <TextField
-        fullWidth
-        label={t('campaign.title_label')}
-        value={formData.title}
-        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        margin="normal"
-        inputProps={{ maxLength: 50 }}
-        error={!!errors.title}
-        helperText={
-          errors.title ? t(errors.title) : `${formData.title.length}/50`
-        }
-        required
-      />
+        <div>
+          <label className="block font-medium mb-1">
+            {t('campaign.title_label')}
+          </label>
+          <input
+            className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[var(--color-primary)] ${
+              errors.title ? 'border-red-500' : 'border-gray-300'
+            }`}
+            value={formData.title}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+            maxLength={50}
+          />
+          <div className="text-sm text-gray-500 mt-1">
+            {errors.title ? (
+              <span className="text-red-500">{errors.title}</span>
+            ) : (
+              `${formData.title.length}/50`
+            )}
+          </div>
+        </div>
 
-      <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
-        {t('campaign.message_body')}
-      </Typography>
+        <div>
+          <label className="block font-medium mb-1">
+            {t('campaign.message_body')}
+          </label>
+          <ReactQuill
+            theme="snow"
+            value={formData.message}
+            onChange={(value) => setFormData({ ...formData, message: value })}
+            placeholder={t('campaign.message_placeholder')}
+            style={{ minHeight: '150px', marginBottom: '8px' }}
+          />
+          <div className="text-sm flex justify-between mt-1">
+            <span className={errors.message ? 'text-red-500' : 'text-gray-500'}>
+              {errors.message || ''}
+            </span>
+            <span className="text-gray-500">{plainMessage.length}/200</span>
+          </div>
+        </div>
 
-      <ReactQuill
-        theme="snow"
-        value={formData.message}
-        onChange={(value) => setFormData({ ...formData, message: value })}
-        placeholder={t('campaign.message_placeholder')}
-        style={{ minHeight: '150px' }}
-      />
+        <div>
+          <label className="block font-medium mb-1">
+            {t('campaign.frequency_label')}
+          </label>
+          <input
+            type="number"
+            className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-[var(--color-primary)]"
+            value={frequency}
+            onChange={(e) => {
+              const value = parseInt(e.target.value);
+              setFrequency(isNaN(value) ? 0 : Math.max(0, value));
+            }}
+            min={0}
+          />
+          <p className="text-sm text-gray-500 mt-1">
+            {t('campaign.frequency_helper')}
+          </p>
+        </div>
 
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mt={1}
-      >
-        <Typography
-          variant="caption"
-          color={errors.message ? 'error' : 'text.secondary'}
-        >
-          {errors.message ? t(errors.message) : ''}
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {formData.message.replace(/<[^>]+>/g, '').trim().length}/200
-        </Typography>
-      </Box>
+        <div className="text-right">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="text-sm text-[var(--color-primary)] hover:underline cursor-pointer"
+          >
+            {showFilters
+              ? t('campaign.hide_filters')
+              : t('campaign.show_filters')}
+          </button>
+        </div>
 
-      <TextField
-        fullWidth
-        type="number"
-        label={t('campaign.frequency_label')}
-        value={frequency}
-        onChange={(e) => {
-          const value = parseInt(e.target.value);
-          setFrequency(isNaN(value) ? 0 : Math.max(0, value));
-        }}
-        margin="normal"
-        inputProps={{ min: 0 }}
-        helperText={t('campaign.frequency_helper')}
-      />
+        {showFilters && (
+          <PlaceFilterForm
+            onFilter={(f) => {
+              setPage(1);
+              setFilters(f);
+            }}
+          />
+        )}
 
-      <Box textAlign="right" mb={2}>
-        <Button
-          variant="outlined"
-          onClick={() => setShowFilters((prev) => !prev)}
-        >
-          {showFilters
-            ? t('campaign.hide_filters')
-            : t('campaign.show_filters')}
-        </Button>
-      </Box>
-
-      <Collapse in={showFilters}>
-        <PlaceFilterForm
-          onFilter={(newFilters) => {
-            setPage(1);
-            setFilters(newFilters);
-          }}
-        />
-      </Collapse>
-
-      <Paper sx={{ mt: 2, p: 2 }}>
-        {places.length === 0 ? (
-          <Typography align="center" sx={{ mt: 3 }}>
-            {t('campaign.no_places_found')}
-          </Typography>
-        ) : (
-          <>
+        <div className="bg-white p-4 rounded-md shadow-md">
+          {places.length === 0 ? (
+            <p className="text-center text-gray-500">
+              {t('campaign.no_places_found')}
+            </p>
+          ) : (
             <SelectablePlaceTable
               places={places}
               selectedIds={selectedPlaceIds}
-              onToggleSelect={togglePlace}
-              onToggleSelectAll={handleToggleSelectAll}
+              onToggleSelect={(id) =>
+                setSelectedPlaceIds((prev) =>
+                  prev.includes(id)
+                    ? prev.filter((x) => x !== id)
+                    : [...prev, id]
+                )
+              }
+              onToggleSelectAll={(ids, all) =>
+                setSelectedPlaceIds((prev) =>
+                  all
+                    ? [...new Set([...prev, ...ids])]
+                    : prev.filter((id) => !ids.includes(id))
+                )
+              }
             />
+          )}
+        </div>
 
-            <Box display="flex" justifyContent="center" mt={2} gap={2}>
-              <Button
-                variant="outlined"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-              >
-                ⬅ {t('common.previous')}
-              </Button>
-              <Typography variant="body1" sx={{ mt: 1 }}>
-                {t('common.page')} {page} {t('common.of')} {totalPages}
-              </Typography>
-              <Button
-                variant="outlined"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-              >
-                {t('common.next')} ➡
-              </Button>
-            </Box>
-          </>
+        <div className="flex justify-center items-center gap-4">
+          <button
+            className="text-sm px-3 py-1 border rounded-md cursor-pointer"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            ⬅ {t('common.previous')}
+          </button>
+          <span className="text-sm">
+            {t('common.page')} {page} {t('common.of')} {totalPages}
+          </span>
+          <button
+            className="text-sm px-3 py-1 border rounded-md cursor-pointer"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            {t('common.next')} ➡
+          </button>
+        </div>
+
+        <div className="text-right">
+          <button
+            className={`font-medium px-5 py-2 rounded-md transition ${
+              selectedPlaceIds.length === 0
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-accent)] cursor-pointer'
+            }`}
+            disabled={selectedPlaceIds.length === 0}
+            onClick={handleSubmit}
+          >
+            {t('campaign.create_button')}
+          </button>
+        </div>
+
+        {/* Toast Notification */}
+        {notification && (
+          <div
+            className={`fixed top-6 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md shadow-md text-sm font-medium z-50 flex items-center justify-between gap-4 w-fit max-w-md ${
+              notification.type === 'success'
+                ? 'bg-green-100 text-green-700'
+                : 'bg-red-100 text-red-700'
+            }`}
+          >
+            <span>{notification.message}</span>
+            <button
+              onClick={() => setNotification(null)}
+              className="text-xs font-bold hover:opacity-70 cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
         )}
-      </Paper>
 
-      <Button
-        variant="contained"
-        sx={{ mt: 4 }}
-        disabled={selectedPlaceIds.length === 0}
-        onClick={handleSubmit}
-      >
-        {t('campaign.create_button')}
-      </Button>
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity={snackbarSeverity} sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-
-      <Dialog
-        open={successDialogOpen}
-        onClose={() => setSuccessDialogOpen(false)}
-      >
-        <DialogTitle>{t('campaign.success_dialog_title')}</DialogTitle>
-        <DialogContent>
-          <Typography>{t('campaign.success_dialog_message')}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSuccessDialogOpen(false)}>
-            {t('common.no')}
-          </Button>
-          <Button variant="contained" onClick={() => navigate('/my-campaigns')}>
-            {t('common.yes')}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+        {/* Modal Confirmación */}
+        {showModal && (
+          <div
+            className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setShowModal(false);
+            }}
+          >
+            <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-lg">
+              <h2 className="text-xl font-semibold mb-2">
+                {t('campaign.success_dialog_title')}
+              </h2>
+              <p className="text-sm text-gray-700 mb-4">
+                {t('campaign.success_dialog_message')}
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  className="px-4 py-2 text-sm text-gray-700 hover:underline cursor-pointer"
+                  onClick={() => setShowModal(false)}
+                >
+                  {t('common.no')}
+                </button>
+                <button
+                  className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-md hover:bg-[var(--color-accent)] cursor-pointer"
+                  onClick={() => {
+                    setShowModal(false);
+                    navigate('/my-campaigns');
+                  }}
+                >
+                  {t('common.yes')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
