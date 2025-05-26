@@ -1,0 +1,36 @@
+/* styles/login.css */
+.login-page {
+  background: linear-gradient(135deg, #003399 0%, #00dbff 100%);
+}
+
+.login-box {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.login-box:hover {
+  transform: translateY(-4px);
+}
+
+.login-links a {
+  color: #003399;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.login-links a:hover {
+  color: #ff4785;
+}
+
+.login-success {
+  color: #22c55e;
+  font-weight: 500;
+}
+
+.login-failure {
+  color: #ef4444;
+  font-weight: 500;
+}

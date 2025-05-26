@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+@layer theme {
+  :root {
+    --color-primary: #003399;
+    --color-accent: #ff4785;
+    --color-sky: #00dbff;
+    --color-light: #f8fafc;
+    --color-dark: #1e293b;
+  }
+}
