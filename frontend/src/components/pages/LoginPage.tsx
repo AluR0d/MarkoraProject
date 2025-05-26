@@ -49,7 +49,10 @@ export default function LoginPage() {
       setUser({ ...userData, roles });
       navigate('/home');
     } catch (error: any) {
-      setNotif({ message: t(error.message), type: 'error' });
+      setNotif({
+        message: t('login.errors.invalid_credentials'),
+        type: 'error',
+      });
     } finally {
       setIsLoading(false);
     }

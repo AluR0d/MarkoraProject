@@ -1,20 +1,14 @@
 import { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Container,
-  Paper,
-  TextField,
-  Button,
-  Typography,
-  Snackbar,
-  Alert,
-} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { resetPasswordSchema } from '../../schemas/resetPasswordSchema';
 import { ZodError } from 'zod';
 import axios from 'axios';
+
 import MinimalHeader from '../molecules/minimalHeader';
+import Notification from '../atoms/Notification';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
+import '../../styles/reset.css';
 
 export default function ResetPasswordPage() {
   const { t } = useTranslation();
@@ -24,16 +18,17 @@ export default function ResetPasswordPage() {
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{
     password?: string;
     confirmPassword?: string;
   }>({});
   const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'success' as 'success' | 'error',
-  });
+  const [notif, setNotif] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -51,10 +46,9 @@ export default function ResetPasswordPage() {
       const elapsed = Date.now() - start;
       if (elapsed < 500) await new Promise((r) => setTimeout(r, 500));
 
-      setSnackbar({
-        open: true,
+      setNotif({
         message: t('reset.success'),
-        severity: 'success',
+        type: 'success',
       });
 
       setTimeout(() => {
@@ -72,10 +66,9 @@ export default function ResetPasswordPage() {
         return;
       }
 
-      setSnackbar({
-        open: true,
+      setNotif({
         message: t('reset.errors.unknown'),
-        severity: 'error',
+        type: 'error',
       });
       setLoading(false);
     }
@@ -83,11 +76,11 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <Container maxWidth="sm">
-        <Typography mt={8} textAlign="center">
+      <div className="flex justify-center items-center h-screen px-4">
+        <p className="text-center text-[var(--color-dark)] text-lg font-medium">
           Token inválido o faltante.
-        </Typography>
-      </Container>
+        </p>
+      </div>
     );
   }
 
@@ -95,56 +88,91 @@ export default function ResetPasswordPage() {
     <>
       <MinimalHeader />
 
-      <Container maxWidth="sm">
-        <Box mt={8}>
-          <Paper sx={{ p: 4 }} elevation={3}>
-            <Typography variant="h6" gutterBottom>
-              {t('reset.title')}
-            </Typography>
-            <TextField
-              label={t('reset.password')}
-              type="password"
-              fullWidth
-              margin="normal"
+      <div className="reset-page flex justify-center items-center min-h-screen px-4">
+        <div className="reset-box w-full max-w-md p-6">
+          <h2 className="text-2xl font-bold text-center text-[var(--color-primary)] mb-2">
+            {t('reset.title')}
+          </h2>
+          <p className="text-sm text-center text-[var(--color-dark)] mb-6">
+            {t('reset.description')}
+          </p>
+
+          {/* Password */}
+          <div className="mb-4 relative">
+            <label className="block mb-1 font-medium text-[var(--color-dark)]">
+              {t('reset.password')}
+            </label>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              className={`w-full px-3 py-2 pr-10 border rounded-md bg-white text-sm text-[var(--color-dark)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${
+                errors.password ? 'border-red-500' : 'border-gray-300'
+              }`}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              error={!!errors.password}
-              helperText={errors.password}
             />
-            <TextField
-              label={t('reset.confirm_password')}
-              type="password"
-              fullWidth
-              margin="normal"
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-[2.2rem] text-gray-500 hover:text-[var(--color-primary)] cursor-pointer"
+              tabIndex={-1}
+            >
+              {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </button>
+            {errors.password && (
+              <p className="text-sm text-red-500 mt-1">{errors.password}</p>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div className="mb-4 relative">
+            <label className="block mb-1 font-medium text-[var(--color-dark)]">
+              {t('reset.confirm_password')}
+            </label>
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              className={`w-full px-3 py-2 pr-10 border rounded-md bg-white text-sm text-[var(--color-dark)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${
+                errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+              }`}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword}
             />
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={handleSubmit}
-              disabled={loading}
-              sx={{ mt: 2 }}
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="absolute right-3 top-[2.2rem] text-gray-500 hover:text-[var(--color-primary)] cursor-pointer"
+              tabIndex={-1}
             >
-              {loading ? t('reset.loading') : t('reset.submit')}
-            </Button>
-          </Paper>
-        </Box>
+              {showConfirmPassword ? (
+                <FiEyeOff size={18} />
+              ) : (
+                <FiEye size={18} />
+              )}
+            </button>
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
+          </div>
 
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={4000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert severity={snackbar.severity} variant="filled">
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Container>
+          {/* Submit */}
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full bg-[var(--color-primary)] text-white font-medium py-2 px-4 rounded-md hover:bg-[var(--color-accent)] transition-colors mt-2 disabled:opacity-50 cursor-pointer"
+          >
+            {loading ? t('reset.loading') : t('reset.submit')}
+          </button>
+        </div>
+      </div>
+
+      {notif && (
+        <Notification
+          message={notif.message}
+          type={notif.type}
+          onClose={() => setNotif(null)}
+        />
+      )}
     </>
   );
 }

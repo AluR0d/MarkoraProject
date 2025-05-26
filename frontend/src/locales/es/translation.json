@@ -18,6 +18,7 @@
       "forgot_password": "¿Has olvidado tu contraseña?"
     }
   },
+
   "register": {
     "title": "Crear cuenta",
     "name": "Nombre",
@@ -59,6 +60,7 @@
   },
   "reset": {
     "title": "Restablecer contraseña",
+    "description": "Introduce tu nueva contraseña para restablecerla.",
     "password": "Nueva contraseña",
     "confirm_password": "Confirmar nueva contraseña",
     "submit": "Guardar nueva contraseña",
