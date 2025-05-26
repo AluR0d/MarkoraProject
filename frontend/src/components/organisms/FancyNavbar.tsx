@@ -181,7 +181,7 @@ export default function FancyNavbar() {
       {/* MOBILE OVERLAY MENU */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-40 bg-[var(--color-primary)]/80 backdrop-blur-md flex flex-col items-center justify-center gap-6 px-8"
+          className="fixed inset-0 z-90 bg-[var(--color-primary)]/80 backdrop-blur-md flex flex-col items-center justify-center gap-6 px-8"
           onClick={() => setMobileMenuOpen(false)}
         >
           {navItems}
