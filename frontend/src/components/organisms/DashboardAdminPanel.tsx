@@ -45,9 +45,30 @@ export default function DashboardAdminPanel() {
     fetchDashboardData(range);
   }, [range]);
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
     if (!data) return;
 
+    try {
+      // 📝 Registrar el informe en el backend
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/reports`,
+        {
+          title: t('dashboard.title'),
+          range,
+          data_snapshot: data, // opcional, puedes quitar si quieres
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+    } catch (err) {
+      console.error('❌ Error al guardar el informe:', err);
+      // No bloqueamos la generación del PDF si falla el registro
+    }
+
+    // 🧾 Generar el PDF
     const doc = new jsPDF();
     const now = new Date();
     const formattedDate = now.toLocaleString();
@@ -148,7 +169,7 @@ export default function DashboardAdminPanel() {
         {/* PDF Export button */}
         <button
           onClick={exportToPDF}
-          className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-md hover:bg-[var(--color-accent)] transition text-sm font-medium w-full sm:w-auto"
+          className="bg-[var(--color-primary)] cursor-pointer text-white px-4 py-2 rounded-md hover:bg-[var(--color-accent)] transition text-sm font-medium w-full sm:w-auto"
         >
           📥 {t('dashboard.export_as_pdf')}
         </button>

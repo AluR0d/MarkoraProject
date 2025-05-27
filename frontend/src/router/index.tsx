@@ -20,6 +20,7 @@ import CreateCampaignPage from '../components/pages/CreateCampaignPage';
 import MyCampaignsPage from '../components/pages/MyCampaignsPage';
 import PublicRoute from './PublicRoute';
 import NotFoundPage from '../components/pages/NotFoundPage';
+import ReportHistory from '../components/molecules/ReportHistory';
 
 function AppRouter() {
   return (
@@ -78,6 +79,15 @@ function AppRouter() {
             element={
               <AdminRoute>
                 <AdminPage />
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="/profile/reports"
+            element={
+              <AdminRoute>
+                <ReportHistory />
               </AdminRoute>
             }
           />

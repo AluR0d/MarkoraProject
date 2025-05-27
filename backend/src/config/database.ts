@@ -7,6 +7,7 @@ import { Owner } from '../models/Owner';
 import { Place } from '../models/Place';
 import { Campaign } from '../models/Campaign';
 import { CampaignPlace } from '../models/CampaignPlace';
+import { Report } from '../models/Report';
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config({ path: '.env.local' });
@@ -21,7 +22,7 @@ const sequelizeConfig: any = {
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  models: [User, Role, UserRole, Owner, Place, Campaign, CampaignPlace],
+  models: [User, Role, UserRole, Owner, Place, Campaign, CampaignPlace, Report],
   logging: false,
 };
 

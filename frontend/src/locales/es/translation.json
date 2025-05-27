@@ -292,6 +292,14 @@
     "redirect": "Serás redirigido a /home automáticamente en unos segundos...",
     "manual": "Volver manualmente"
   },
+
+  "report": {
+    "history_title": "Historial de informes generados",
+    "title": "Título",
+    "range": "Rango",
+    "date": "Fecha",
+    "no_reports": "Aún no has generado ningún informe"
+  },
   "common": {
     "back": "Volver",
     "created_at": "Creado el",
