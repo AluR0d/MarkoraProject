@@ -89,13 +89,17 @@ export default function UserEditForm() {
 
       {!isEditing ? (
         <div className="space-y-3 text-[var(--color-dark)]">
-          <p className="text-lg">
+          <p className="text-lg break-all">
             <strong>Nombre:</strong>{' '}
-            <span className="font-mono">{formData.name}</span>
+            <span className="font-mono break-all whitespace-pre-wrap block">
+              {formData.name}
+            </span>
           </p>
-          <p className="text-lg">
+          <p className="text-lg break-all">
             <strong>Correo electrónico:</strong>{' '}
-            <span className="font-mono">{formData.email}</span>
+            <span className="font-mono break-all whitespace-pre-wrap block">
+              {formData.email}
+            </span>
           </p>
         </div>
       ) : (

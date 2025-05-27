@@ -286,6 +286,12 @@
     "my_campaigns": "Mis campañas",
     "motivational_quote": "Una campaña bien planeada es una victoria anticipada."
   },
+  "unauthorized": {
+    "title": "🚫 Acceso denegado",
+    "message": "No tienes permiso para acceder a esta página.",
+    "redirect": "Serás redirigido a /home automáticamente en unos segundos...",
+    "manual": "Volver manualmente"
+  },
   "common": {
     "back": "Volver",
     "created_at": "Creado el",

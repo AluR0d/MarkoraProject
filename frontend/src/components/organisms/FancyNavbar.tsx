@@ -184,6 +184,13 @@ export default function FancyNavbar() {
           className="fixed inset-0 z-90 bg-[var(--color-primary)]/80 backdrop-blur-md flex flex-col items-center justify-center gap-6 px-8"
           onClick={() => setMobileMenuOpen(false)}
         >
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="absolute top-4 right-4 text-white text-3xl p-2 hover:text-[var(--color-accent)] transition"
+            aria-label="Cerrar menú"
+          >
+            <FiX />
+          </button>
           {navItems}
         </div>
       )}

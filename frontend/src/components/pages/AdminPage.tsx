@@ -43,14 +43,16 @@ export default function AdminPage() {
       <Paper elevation={3}>
         <Box p={3}>
           <Typography
-            variant="h4"
-            className="text-[var(--color-primary)] font-bold mb-4"
+            variant={isMobile ? 'h5' : 'h4'}
+            className="text-[var(--color-primary)] font-bold mb-4 break-words leading-snug"
           >
             {t('admin.title')}
           </Typography>
 
           <Tabs
             value={tab}
+            variant="scrollable"
+            scrollButtons={isMobile ? 'auto' : false}
             onChange={handleChange}
             indicatorColor="primary"
             textColor="primary"

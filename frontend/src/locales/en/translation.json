@@ -285,6 +285,12 @@
     "my_campaigns": "My Campaigns",
     "motivational_quote": "The best way to predict the future is to create it."
   },
+  "unauthorized": {
+    "title": "🚫 Access Denied",
+    "message": "You do not have permission to access this page.",
+    "redirect": "You will be redirected to /home automatically in a few seconds...",
+    "manual": "Return manually"
+  },
   "common": {
     "back": "Back",
     "created_at": "Created at",

@@ -128,7 +128,7 @@ export default function MyCampaignsPage() {
         key={campaign.id}
         className="bg-white shadow-md border border-gray-200 rounded-lg p-4 mb-4 max-w-md w-full"
       >
-        <h3 className="text-lg font-semibold text-[var(--color-primary)]">
+        <h3 className="text-lg font-semibold text-[var(--color-primary)] break-words whitespace-pre-wrap">
           {campaign.title}
         </h3>
         <p className="text-xs text-gray-500">
@@ -146,7 +146,7 @@ export default function MyCampaignsPage() {
           {campaign.campaignPlaces.map((cp, i) => (
             <div key={i} className="text-sm mb-2">
               <span
-                className={`px-2 py-1 rounded-md font-medium border ${
+                className={`px-2 py-1 rounded-md font-medium border break-words whitespace-pre-wrap block w-full ${
                   campaign.active
                     ? cp.status === 'SENT'
                       ? 'bg-green-100 text-green-700 border-green-200'
@@ -157,6 +157,7 @@ export default function MyCampaignsPage() {
                 {cp.place.name} — {cp.status} ({cp.send_count ?? 0}{' '}
                 {t('campaign.sends')})
               </span>
+
               {cp.sent_at && (
                 <span className="text-xs text-gray-400 italic block mt-1">
                   {t('campaign.sent_at')}:{' '}
