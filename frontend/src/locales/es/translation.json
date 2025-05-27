@@ -300,6 +300,11 @@
     "date": "Fecha",
     "no_reports": "Aún no has generado ningún informe"
   },
+  "notfound": {
+    "title": "404 — Página no encontrada",
+    "description": "Lo sentimos, la página que estás buscando no existe o fue movida.",
+    "back_home": "Volver al inicio"
+  },
   "common": {
     "back": "Volver",
     "created_at": "Creado el",

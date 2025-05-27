@@ -299,6 +299,11 @@
     "date": "Date",
     "no_reports": "You haven't generated any reports yet"
   },
+  "notfound": {
+    "title": "404 — Page not found",
+    "description": "Sorry, the page you're looking for doesn't exist or has been moved.",
+    "back_home": "Go back home"
+  },
   "common": {
     "back": "Back",
     "created_at": "Created at",

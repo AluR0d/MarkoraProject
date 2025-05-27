@@ -57,6 +57,7 @@ function AppRouter() {
 
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
+        <Route path="*" element={<NotFoundPage />} />
         <Route element={<GlobalLayout />}>
           <Route
             path="/home"
@@ -103,8 +104,6 @@ function AppRouter() {
 
           <Route path="/my-campaigns" element={<MyCampaignsPage />} />
         </Route>
-
-        <Route path="*" element={<NotFoundPage />} />
 
         <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>
