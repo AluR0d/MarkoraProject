@@ -30,7 +30,7 @@ export default function RegisterPage() {
       navigate('/login', { state: { registered: true } });
     } catch (error: any) {
       setNotif({
-        message: t(`register.errors.${error.message}`),
+        message: t('USER_ALREADY_EXISTS'),
         type: 'error',
       });
     } finally {
@@ -67,7 +67,7 @@ export default function RegisterPage() {
 
       {notif && (
         <Notification
-          message={notif.message}
+          message={t('register.errors.USER_ALREADY_EXISTS')}
           type={notif.type}
           onClose={() => setNotif(null)}
         />
