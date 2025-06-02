@@ -23,5 +23,6 @@ router.get(
 router.get('/:id', CampaignController.getOne);
 router.post('/:id/send', authenticateJWT, CampaignController.sendEmails);
 router.post('/:id/toggle', authenticateJWT, CampaignController.toggleActive);
+router.delete('/:id', authenticateJWT, CampaignController.delete);
 
 export default router;

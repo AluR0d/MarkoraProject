@@ -121,7 +121,6 @@ export class CampaignService {
       );
     }
 
-    // ✅ Activar reenvío automático si aplica
     if (campaign.frequency && campaign.active) {
       scheduleCampaign(campaign.id, campaign.frequency, async () => {
         await this.sendEmails(campaign.id);
@@ -182,6 +181,22 @@ export class CampaignService {
     }
 
     return updated;
+  }
+
+  static async deleteCampaign(campaignId: number) {
+    const campaign = await Campaign.findByPk(campaignId);
+
+    if (!campaign) {
+      throw new ApiError('Campaña no encontrada', 404);
+    }
+
+    await CampaignPlace.destroy({ where: { campaign_id: campaignId } });
+
+    await campaign.destroy();
+
+    stopCampaign(campaignId);
+
+    return { message: 'Campaña eliminada correctamente.' };
   }
 
   static async sendScheduledCampaigns() {

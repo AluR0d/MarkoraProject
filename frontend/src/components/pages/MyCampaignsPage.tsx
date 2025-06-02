@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { IoIosArchive, IoIosSend } from 'react-icons/io';
 import { FaCheckCircle } from 'react-icons/fa';
 import Notification from '../../components/atoms/Notification';
+import '../../styles/campaigns.css';
 
 export default function MyCampaignsPage() {
   const { t } = useTranslation();
@@ -15,6 +16,10 @@ export default function MyCampaignsPage() {
     type: 'success' | 'error';
   } | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    campaignId: number | null;
+  }>({ open: false, campaignId: null });
+  const [confirmDelete, setConfirmDelete] = useState<{
     open: boolean;
     campaignId: number | null;
   }>({ open: false, campaignId: null });
@@ -115,6 +120,29 @@ export default function MyCampaignsPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!confirmDelete.campaignId) return;
+
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/campaigns/${confirmDelete.campaignId}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        }
+      );
+      setSnackbar({ open: true, message: res.data.message, type: 'success' });
+      loadCampaigns();
+    } catch (err: any) {
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.message || 'Error al eliminar campaña',
+        type: 'error',
+      });
+    } finally {
+      setConfirmDelete({ open: false, campaignId: null });
+    }
+  };
+
   const activeCampaigns = campaigns.filter((c) => c.active);
   const archivedCampaigns = campaigns.filter((c) => !c.active);
 
@@ -126,7 +154,7 @@ export default function MyCampaignsPage() {
     return (
       <div
         key={campaign.id}
-        className="bg-white shadow-md border border-gray-200 rounded-lg p-4 mb-4 max-w-md w-full"
+        className="relative bg-white shadow-md border border-gray-200 rounded-lg p-4 mb-4 max-w-md w-full"
       >
         <h3 className="text-lg font-semibold text-[var(--color-primary)] break-words whitespace-pre-wrap">
           {campaign.title}
@@ -140,6 +168,31 @@ export default function MyCampaignsPage() {
           <p className="text-sm font-semibold text-red-600 mt-1 flex items-center gap-1">
             <IoIosArchive /> {t('campaign.archived')}
           </p>
+        )}
+
+        {!campaign.active && (
+          <button
+            onClick={() =>
+              setConfirmDelete({ open: true, campaignId: campaign.id })
+            }
+            className="absolute top-2 right-2 text-red-500 hover:text-red-700 cursor-pointer transition"
+            title={t('campaign.delete')}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         )}
 
         <div className="mt-3 space-y-1">
@@ -205,7 +258,7 @@ export default function MyCampaignsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-light)] py-10 px-4">
+    <div className="min-h-screen bg-[var(--color-white)] py-10 px-4">
       <h1 className="text-3xl font-bold text-[var(--color-primary)] mb-6 text-center">
         {t('campaign.my_campaigns')}
       </h1>
@@ -263,6 +316,35 @@ export default function MyCampaignsPage() {
                 onClick={confirmToggle}
                 className="bg-[var(--color-primary)] text-white font-medium py-2 px-4 rounded-md
                   hover:bg-[var(--color-accent)] transition-colors cursor-pointer"
+              >
+                {t('common.yes')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmDelete.open && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg">
+            <h3 className="text-lg font-semibold mb-2">
+              {t('campaign.delete')}
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              {t('campaign.confirm_delete')}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() =>
+                  setConfirmDelete({ open: false, campaignId: null })
+                }
+                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-100 transition cursor-pointer"
+              >
+                {t('common.no')}
+              </button>
+              <button
+                onClick={handleDelete}
+                className="bg-[var(--color-primary)] text-white font-medium py-2 px-4 rounded-md hover:bg-[var(--color-accent)] transition-colors cursor-pointer"
               >
                 {t('common.yes')}
               </button>

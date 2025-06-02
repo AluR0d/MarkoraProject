@@ -110,4 +110,18 @@ export class CampaignController {
       next(error);
     }
   }
+
+  static async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const campaignId = Number(req.params.id);
+      if (isNaN(campaignId)) {
+        return next(new ApiError('ID de campaña inválido', 400));
+      }
+
+      const result = await CampaignService.deleteCampaign(campaignId);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

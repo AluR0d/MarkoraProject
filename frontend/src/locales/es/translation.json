@@ -238,6 +238,8 @@
   },
   "campaign": {
     "sends": "Envíos",
+    "delete": "Eliminar campaña",
+    "confirm_delete": "¿Estás segura de que quieres eliminar esta campaña?",
     "no_archived": "No hay campañas archivadas",
     "no_active": "No hay campañas activas",
     "confirm_reactivate": "¿Estás seguro de que quieres reactivar esta campaña?",

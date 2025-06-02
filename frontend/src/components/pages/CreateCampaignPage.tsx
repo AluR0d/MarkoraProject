@@ -146,7 +146,7 @@ export default function CreateCampaignPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-light)] py-10 px-4 flex justify-center">
+    <div className="min-h-screen bg-[var(--color-white)] py-10 px-4 flex justify-center">
       <div className="w-full max-w-5xl space-y-8 relative z-40">
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold text-[var(--color-primary)]">
