@@ -224,7 +224,7 @@ export default function CreateCampaignPage() {
         <div className="text-right">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="text-sm text-[var(--color-primary)] hover:underline cursor-pointer"
+            className="text-sm font-medium px-4 py-2 rounded-md transition bg-[var(--color-primary)] text-white hover:bg-[var(--color-accent)] cursor-pointer"
           >
             {showFilters
               ? t('campaign.hide_filters')

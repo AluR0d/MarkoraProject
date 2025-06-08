@@ -165,8 +165,17 @@ export default function PlaceAdminPanel() {
 
       <Box mb={2} textAlign="right">
         <Button
-          variant="outlined"
+          variant="contained"
           onClick={() => setShowFilters((prev) => !prev)}
+          sx={{
+            backgroundColor: 'var(--color-primary)',
+            color: 'white',
+            textTransform: 'none',
+            fontWeight: 500,
+            '&:hover': {
+              backgroundColor: 'var(--color-accent)',
+            },
+          }}
         >
           {showFilters
             ? t('admin.places.hide_filters')
