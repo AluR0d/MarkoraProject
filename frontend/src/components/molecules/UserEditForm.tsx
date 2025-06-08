@@ -150,7 +150,10 @@ export default function UserEditForm() {
         >
           <div className="flex justify-between items-center">
             <span>{notif.message}</span>
-            <button onClick={() => setNotif(null)} className="font-bold">
+            <button
+              onClick={() => setNotif(null)}
+              className="font-bold cursor-pointer"
+            >
               ✕
             </button>
           </div>

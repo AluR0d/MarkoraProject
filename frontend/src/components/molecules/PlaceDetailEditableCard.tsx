@@ -239,7 +239,11 @@ export default function PlaceDetailEditableCard({ place, onUpdate }: Props) {
                       place[field] === undefined ||
                       place[field] === ''
                     ? '—'
-                    : place[field]?.toString()}
+                    : field === 'active'
+                      ? place.active
+                        ? t('common.yes')
+                        : t('common.no')
+                      : place[field]?.toString()}
             </div>
             <IconButton onClick={() => startEditing(field, place[field])}>
               <EditIcon />

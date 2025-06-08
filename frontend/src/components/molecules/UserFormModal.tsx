@@ -166,7 +166,7 @@ export default function UserFormModal({
           {isEditing ? t('admin.edit_user') : t('admin.create_user')}
         </DialogTitle>
         <DialogContent>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 mt-2">
             <TextField
               fullWidth
               label={t('register.name')}
