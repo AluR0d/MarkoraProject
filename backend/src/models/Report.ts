@@ -32,6 +32,7 @@ export class Report extends Model {
   @Column({
     type: DataType.INTEGER,
     allowNull: false,
+    onDelete: 'CASCADE',
   })
   user_id!: number;
 
