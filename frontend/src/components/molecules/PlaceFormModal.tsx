@@ -4,8 +4,6 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Snackbar,
-  Alert,
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
@@ -51,11 +49,6 @@ export default function PlaceFormModal({
   const [typesInput, setTypesInput] = useState('');
   const [coordsInput, setCoordsInput] = useState('0,0');
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'error' as 'success' | 'error',
-  });
 
   useEffect(() => {
     if (initialData) {
@@ -312,17 +305,6 @@ export default function PlaceFormModal({
           </button>
         </DialogActions>
       </Dialog>
-
-      <Snackbar
-        open={snackbar.open}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      >
-        <Alert severity={snackbar.severity} variant="filled">
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </>
   );
 }

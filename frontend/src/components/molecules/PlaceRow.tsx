@@ -2,6 +2,7 @@ import { TableCell, TableRow, Link } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Place } from '../../types/Place';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   place: Place;
@@ -10,6 +11,8 @@ type Props = {
 };
 
 export default function PlaceRow({ place, onEdit, onDelete }: Props) {
+  const { t } = useTranslation();
+
   return (
     <TableRow
       sx={{
@@ -49,7 +52,7 @@ export default function PlaceRow({ place, onEdit, onDelete }: Props) {
         <button
           onClick={onEdit}
           className="text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors cursor-pointer"
-          title="Editar"
+          title={t('common.edit')}
         >
           <EditIcon fontSize="small" />
         </button>
@@ -57,7 +60,7 @@ export default function PlaceRow({ place, onEdit, onDelete }: Props) {
         <button
           onClick={onDelete}
           className="text-red-600 hover:text-red-800 transition-colors cursor-pointer"
-          title="Eliminar"
+          title={t('common.delete')}
         >
           <DeleteIcon fontSize="small" />
         </button>

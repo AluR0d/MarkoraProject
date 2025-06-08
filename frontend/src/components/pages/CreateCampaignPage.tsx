@@ -10,6 +10,7 @@ import PlaceFilterForm from '../../components/molecules/PlaceFilterForm';
 import { PlaceService } from '../../services/placeService';
 import { Place } from '../../types/Place';
 import ReactQuill from 'react-quill-new';
+import i18n from '../../utils/i18n';
 
 export default function CreateCampaignPage() {
   const { t } = useTranslation();
@@ -186,11 +187,12 @@ export default function CreateCampaignPage() {
             {t('campaign.message_body')}
           </label>
           <ReactQuill
+            key={i18n.language}
             theme="snow"
             value={formData.message}
             onChange={(value) => setFormData({ ...formData, message: value })}
             placeholder={t('campaign.message_placeholder')}
-            style={{ minHeight: '150px', marginBottom: '8px' }}
+            style={{ minHeight: '50px', marginBottom: '8px' }}
           />
           <div className="text-sm flex justify-between mt-1">
             <span className={errors.message ? 'text-red-500' : 'text-gray-500'}>

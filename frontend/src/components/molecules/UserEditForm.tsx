@@ -80,7 +80,7 @@ export default function UserEditForm() {
         </h2>
         <button
           onClick={() => (isEditing ? handleSubmit() : setIsEditing(true))}
-          className="p-2 rounded-md text-white bg-[var(--color-primary)] hover:bg-[var(--color-accent)] transition"
+          className="p-2 rounded-md cursor-pointer text-white bg-[var(--color-primary)] hover:bg-[var(--color-accent)] transition"
           aria-label="Editar perfil"
         >
           {isEditing ? <FiSave size={20} /> : <FiEdit3 size={20} />}
@@ -90,13 +90,13 @@ export default function UserEditForm() {
       {!isEditing ? (
         <div className="space-y-3 text-[var(--color-dark)]">
           <p className="text-lg break-all">
-            <strong>Nombre:</strong>{' '}
+            <strong>{t('register.name')}:</strong>{' '}
             <span className="font-mono break-all whitespace-pre-wrap block">
               {formData.name}
             </span>
           </p>
           <p className="text-lg break-all">
-            <strong>Correo electrónico:</strong>{' '}
+            <strong>{t('register.email')}:</strong>{' '}
             <span className="font-mono break-all whitespace-pre-wrap block">
               {formData.email}
             </span>

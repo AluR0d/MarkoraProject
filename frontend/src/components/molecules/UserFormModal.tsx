@@ -11,8 +11,6 @@ import {
   FormHelperText,
   Switch,
   FormControlLabel,
-  Snackbar,
-  Alert,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -64,12 +62,6 @@ export default function UserFormModal({
   const [errors, setErrors] = useState<
     Partial<Record<'name' | 'email' | 'password' | 'roles', string>>
   >({});
-
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'success' as 'success' | 'error',
-  });
 
   useEffect(() => {
     if (initialData) {
@@ -151,14 +143,6 @@ export default function UserFormModal({
         roles: trimmedData.roles,
       });
 
-      setSnackbar({
-        open: true,
-        message: isEditing
-          ? t('admin.user_updated_successfully')
-          : t('admin.user_created_successfully'),
-        severity: 'success',
-      });
-
       onClose();
     } catch (error: any) {
       if (error instanceof ZodError) {
@@ -172,10 +156,6 @@ export default function UserFormModal({
         setErrors(fieldErrors);
         return;
       }
-
-      const message =
-        error.response?.data?.message || t('admin.errors.unknown');
-      setSnackbar({ open: true, message, severity: 'error' });
     }
   };
 
@@ -286,17 +266,6 @@ export default function UserFormModal({
           </button>
         </DialogActions>
       </Dialog>
-
-      <Snackbar
-        open={snackbar.open}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      >
-        <Alert severity={snackbar.severity} variant="filled">
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </>
   );
 }

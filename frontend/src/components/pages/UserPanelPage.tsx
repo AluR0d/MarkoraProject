@@ -3,10 +3,12 @@ import UserEditForm from '../molecules/UserEditForm';
 import { UserBalance } from '../atoms/UserBalance';
 import '../../styles/profile.css';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function UserPanelPage() {
   const { user } = useUser();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   if (!user) return null;
 
@@ -26,7 +28,7 @@ export default function UserPanelPage() {
               className="bg-[var(--color-primary)] cursor-pointer text-white font-medium py-2 px-6
                          rounded-md hover:bg-[var(--color-accent)] transition-colors"
             >
-              Ver historial de reportes
+              {t('profile.viewReportHistory')}
             </button>
           </div>
         )}

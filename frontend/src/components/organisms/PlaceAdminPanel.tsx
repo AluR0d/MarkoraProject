@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 
 import { useTranslation } from 'react-i18next';
-import NotificationSnackbar from '../atoms/NotificationSnackbar';
+import Notification from '../atoms/Notification';
 import ConfirmDialog from '../atoms/ConfirmDialog';
 import { Place } from '../../types/Place';
 import { PlaceService } from '../../services/placeService';
@@ -148,12 +148,13 @@ export default function PlaceAdminPanel() {
         onCancel={() => setConfirmDialog({ open: false })}
       />
 
-      <NotificationSnackbar
-        open={snackbar.open}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        message={snackbar.message}
-        severity={snackbar.severity}
-      />
+      {snackbar.open && (
+        <Notification
+          message={snackbar.message}
+          type={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        />
+      )}
 
       <PanelHeader
         title={t('admin.tabs.places')}

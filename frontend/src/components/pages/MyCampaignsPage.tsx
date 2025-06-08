@@ -59,11 +59,18 @@ export default function MyCampaignsPage() {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         }
       );
-      setSnackbar({ open: true, message: res.data.message, type: 'success' });
+      const match = res.data.message.match(/\d+/);
+      const count = match ? parseInt(match[0]) : '?';
+
+      setSnackbar({
+        open: true,
+        message: t('campaign.sent_success', { count: Number(count) }),
+        type: 'success',
+      });
     } catch (err: any) {
       setSnackbar({
         open: true,
-        message: err.response?.data?.message || 'Error al enviar campaña',
+        message: t('campaign.errors.send_failed'),
         type: 'error',
       });
     } finally {
@@ -78,14 +85,21 @@ export default function MyCampaignsPage() {
     }
 
     try {
-      const res = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_URL}/campaigns/${campaign.id}/toggle`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         }
       );
-      setSnackbar({ open: true, message: res.data.message, type: 'success' });
+      setSnackbar({
+        open: true,
+        message: t(
+          campaign.active ? 'campaign.toggle_off' : 'campaign.toggle_on'
+        ),
+        type: 'success',
+      });
+
       loadCampaigns();
     } catch (err: any) {
       setSnackbar({
@@ -100,14 +114,19 @@ export default function MyCampaignsPage() {
     if (!confirmDialog.campaignId) return;
 
     try {
-      const res = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_URL}/campaigns/${confirmDialog.campaignId}/toggle`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         }
       );
-      setSnackbar({ open: true, message: res.data.message, type: 'success' });
+      setSnackbar({
+        open: true,
+        message: t('campaign.toggle_on'),
+        type: 'success',
+      });
+
       loadCampaigns();
     } catch (err: any) {
       setSnackbar({
@@ -124,18 +143,23 @@ export default function MyCampaignsPage() {
     if (!confirmDelete.campaignId) return;
 
     try {
-      const res = await axios.delete(
+      await axios.delete(
         `${import.meta.env.VITE_API_URL}/campaigns/${confirmDelete.campaignId}`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         }
       );
-      setSnackbar({ open: true, message: res.data.message, type: 'success' });
+      setSnackbar({
+        open: true,
+        message: t('campaign.delete_success'),
+        type: 'success',
+      });
+
       loadCampaigns();
     } catch (err: any) {
       setSnackbar({
         open: true,
-        message: err.response?.data?.message || 'Error al eliminar campaña',
+        message: t('campaign.delete_failed'),
         type: 'error',
       });
     } finally {

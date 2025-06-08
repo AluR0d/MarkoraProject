@@ -3,13 +3,13 @@ import { TableContainer, Paper } from '@mui/material';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
-import NotificationSnackbar from '../atoms/NotificationSnackbar';
 import ConfirmDialog from '../atoms/ConfirmDialog';
 import UserFormModal from '../molecules/UserFormModal';
 import UserTable from '../molecules/UserTable';
 import PanelHeader from '../molecules/PanelHeader';
 import { User } from '../../types/User';
 import { Role } from '../../types/Role';
+import Notification from '../atoms/Notification';
 
 export default function UserAdminPanel() {
   const { t } = useTranslation();
@@ -93,6 +93,8 @@ export default function UserAdminPanel() {
       const newUser = response.data;
       setUsers((prev) => [...prev, newUser]);
       setOpen(false);
+
+      showSnackbar(t('admin.user_created_successfully'), 'success');
     } catch (error: any) {
       console.error('Error al crear el usuario', error);
       setOpen(false);
@@ -135,9 +137,11 @@ export default function UserAdminPanel() {
         prev.map((u) => (u.id === updatedUser.id ? updatedUser : u))
       );
       setEditUser(null);
+      showSnackbar(t('admin.user_updated_successfully'), 'success');
     } catch (error: any) {
       console.error('Error actualizando usuario:', error);
       setEditUser(null);
+      showSnackbar(t('admin.user_updated_failed'), 'error');
 
       const zodError = error.response?.data?.errors;
       let message = '';
@@ -195,12 +199,13 @@ export default function UserAdminPanel() {
         onCancel={() => setConfirmDialog({ open: false })}
       />
 
-      <NotificationSnackbar
-        open={snackbar.open}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        message={snackbar.message}
-        severity={snackbar.severity}
-      />
+      {snackbar.open && (
+        <Notification
+          message={snackbar.message}
+          type={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        />
+      )}
 
       <PanelHeader title={t('admin.tabs.users')} onCreate={() => setOpen(true)}>
         {t('admin.create_user')}

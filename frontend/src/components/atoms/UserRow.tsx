@@ -2,6 +2,7 @@ import { IconButton, TableCell, TableRow, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { User } from '../../types/User';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   user: User;
@@ -10,6 +11,8 @@ type Props = {
 };
 
 export default function UserRow({ user, onEdit, onDelete }: Props) {
+  const { t } = useTranslation();
+
   return (
     <TableRow hover className="transition-all hover:bg-gray-50">
       <TableCell className="font-mono text-sm text-gray-700">
@@ -26,7 +29,7 @@ export default function UserRow({ user, onEdit, onDelete }: Props) {
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
-          <Tooltip title="Editar">
+          <Tooltip title={t('common.edit')}>
             <IconButton
               onClick={onEdit}
               className="cursor-pointer"
@@ -36,7 +39,7 @@ export default function UserRow({ user, onEdit, onDelete }: Props) {
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Eliminar">
+          <Tooltip title={t('common.delete')}>
             <IconButton
               onClick={onDelete}
               className="cursor-pointer"
