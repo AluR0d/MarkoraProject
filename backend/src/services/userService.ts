@@ -52,7 +52,6 @@ export class UserService {
     const [affectedRows] = await User.update(dataUpdated, { where: { id } });
     if (affectedRows === 0) return null;
 
-    // ✅ Asignar roles si llegan
     if (roles && Array.isArray(roles)) {
       await this.assignRolesForUser(id, roles);
     }

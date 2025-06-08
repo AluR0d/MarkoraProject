@@ -5,7 +5,7 @@ import { CampaignPlace } from '../models/CampaignPlace';
 
 export const getAdminDashboard = async (req: Request, res: Response) => {
   try {
-    const range = parseInt(req.query.range as string); // en días
+    const range = parseInt(req.query.range as string);
     const campaignWhere = range
       ? {
           created_at: {
@@ -14,10 +14,8 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
         }
       : {};
 
-    // Total de campañas creadas dentro del rango
     const totalCampaigns = await Campaign.count({ where: campaignWhere });
 
-    // Total de CampaignPlace relacionadas con campañas del rango
     const totalCampaignPlaces = await CampaignPlace.count({
       include: [
         {
@@ -27,14 +25,11 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
       ],
     });
 
-    // Media de lugares por campaña
     const averagePlacesPerCampaign =
       totalCampaigns === 0 ? 0 : totalCampaignPlaces / totalCampaigns;
 
-    // Créditos gastados (5 por campaña)
     const totalCreditSpent = totalCampaigns * 5;
 
-    // Emails enviados (suma de send_count donde campaign creada en el rango)
     const campaignPlaces = await CampaignPlace.findAll({
       include: [
         {
@@ -59,7 +54,7 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
 
     return;
   } catch (error) {
-    console.error('❌ Error generando el dashboard:', error);
+    console.error('Error generando el dashboard:', error);
     res.status(500).json({ message: 'Error interno del servidor' });
     return;
   }

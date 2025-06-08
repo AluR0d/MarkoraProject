@@ -116,24 +116,6 @@ export class UserController {
     }
   };
 
-  // getUserRoles = async (req: Request, res: Response) => {
-  //   const { id } = req.params;
-  //   try {
-  //     const roles = await UserService.getRolesForUser(Number(id));
-  //     if (!roles) {
-  //       res.status(404).json({ message: 'No user was found to show roles.' });
-  //       return;
-  //     }
-
-  //     res.status(200).json(roles);
-  //     return;
-  //   } catch (error) {
-  //     console.error(`Error fetching roles from user: ${error}`);
-  //     res.status(500).json({ message: 'Internal server error' });
-  //     return;
-  //   }
-  // };
-
   getUserRoles = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
@@ -143,7 +125,7 @@ export class UserController {
         return;
       }
 
-      const roleNames = userWithRoles.roles.map((r: any) => r.name); // 👈 solo nombres
+      const roleNames = userWithRoles.roles.map((r: any) => r.name);
       res.status(200).json(roleNames);
     } catch (error) {
       console.error(`Error fetching roles from user: ${error}`);

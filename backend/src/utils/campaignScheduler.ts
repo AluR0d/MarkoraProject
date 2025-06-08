@@ -5,7 +5,6 @@ export function scheduleCampaign(
   frequency: number,
   sendFn: () => Promise<void>
 ) {
-  // Evita duplicar timers
   if (activeSchedules.has(id)) return;
 
   const interval = setInterval(async () => {

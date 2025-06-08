@@ -13,7 +13,7 @@ export class CampaignController {
     }
 
     try {
-      console.log('🧠 req.user:', req.user);
+      console.log('req.user:', req.user);
 
       const userId = req.user!.userId;
       const campaign = await CampaignService.createCampaign(
@@ -36,7 +36,7 @@ export class CampaignController {
   }
 
   static async getOne(req: Request, res: Response, next: NextFunction) {
-    console.log('🧠 req.params.id recibido:', req.params.id);
+    console.log('req.params.id recibido:', req.params.id);
 
     const id = Number(req.params.id);
     if (isNaN(id)) {
@@ -69,7 +69,7 @@ export class CampaignController {
     next: NextFunction
   ) {
     try {
-      console.log('🧠 getMyCampaigns userId:', req.user);
+      console.log('getMyCampaigns userId:', req.user);
 
       const userId = Number(req.user!.userId);
       if (isNaN(userId)) {

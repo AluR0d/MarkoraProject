@@ -5,7 +5,7 @@ import { Place } from '../models/Place';
 import { ApiError } from '../utils/ApiError';
 import { sendEmail } from './emailService';
 import { Op, Transaction } from 'sequelize';
-import { scheduleCampaign, stopCampaign } from '../utils/campaignScheduler'; // ✅ nuevo
+import { scheduleCampaign, stopCampaign } from '../utils/campaignScheduler';
 import { sequelize } from '../config/database';
 import { User } from '../models/User';
 import { defaultValues } from '../constants/defaultValues';
@@ -108,7 +108,7 @@ export class CampaignService {
       await cp.update({
         sent_at: new Date(),
         send_count: (cp.send_count ?? 0) + 1,
-        status: 'SENT', // ✅ restaurado para que el frontend lo detecte
+        status: 'SENT',
       });
 
       sentCount++;
@@ -157,10 +157,8 @@ export class CampaignService {
     const updated = await campaign.update({ active: !campaign.active });
 
     if (isArchiving) {
-      // 🔴 Si se está archivando → detenemos el envío automático
       stopCampaign(campaign.id);
     } else {
-      // 🟢 Si se está reactivando → reiniciar estado y relanzar temporizador
       await Promise.all(
         campaign.campaignPlaces.map((cp) =>
           cp.update({
@@ -171,7 +169,6 @@ export class CampaignService {
         )
       );
 
-      // Solo programar si tiene frecuencia
       if (campaign.frequency) {
         scheduleCampaign(campaign.id, campaign.frequency, async () => {
           await CampaignService.sendEmails(campaign.id);
@@ -204,7 +201,7 @@ export class CampaignService {
 
     const campaigns = await Campaign.findAll({
       where: {
-        active: true, // 🔒 solo campañas activas
+        active: true,
         frequency: { [Op.not]: null },
       },
       include: [
@@ -218,7 +215,6 @@ export class CampaignService {
     let sentCount = 0;
 
     for (const campaign of campaigns) {
-      // doble chequeo por si el valor activo cambia entre consultas
       if (!campaign.active) continue;
 
       const lastSent = campaign.last_sent_at;
@@ -229,7 +225,7 @@ export class CampaignService {
         : Infinity;
 
       if (secondsSinceLast >= frequency) {
-        console.log(`⏰ Enviando campaña automática: ${campaign.title}`);
+        console.log(`Enviando campaña automática: ${campaign.title}`);
         try {
           await this.sendEmails(campaign.id);
           await campaign.update({ last_sent_at: now });

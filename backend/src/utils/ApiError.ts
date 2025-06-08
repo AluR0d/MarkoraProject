@@ -1,4 +1,3 @@
-// utils/ApiError.ts
 export class ApiError extends Error {
   statusCode: number;
   code: string;

@@ -58,8 +58,6 @@ export class Place extends Model {
   @Column(DataType.BOOLEAN)
   active!: boolean;
 
-  //@Column(DataType.GEOMETRY('POINT'))
-  //coords!: { type: 'Point'; coordinates: [number, number] };
   @Column(DataType.JSON)
   coords!: { type: 'Point'; coordinates: [number, number] };
 

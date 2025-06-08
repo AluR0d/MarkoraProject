@@ -41,7 +41,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     Promise.all([getUserById(payload.id), getUserRolesById(payload.id)])
       .then(([userData, roles]) => {
-        console.log('🧠 Roles recibidos del backend:', roles);
+        console.log('Roles recibidos del backend:', roles);
 
         setUser({ ...userData, roles });
       })
