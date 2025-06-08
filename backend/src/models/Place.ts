@@ -17,6 +17,7 @@ import { Owner } from './Owner';
 export class Place extends Model {
   @PrimaryKey
   @AutoIncrement
+  @AllowNull(false)
   @Column(DataType.INTEGER)
   id!: number;
 
