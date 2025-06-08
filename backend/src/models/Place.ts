@@ -4,22 +4,21 @@ import {
   Table,
   Column,
   PrimaryKey,
-  AutoIncrement,
   AllowNull,
   Default,
   BelongsTo,
   ForeignKey,
+  BeforeCreate,
 } from 'sequelize-typescript';
 import { tableNames } from '../constants/tableNames';
 import { Owner } from './Owner';
+import { nanoid } from 'nanoid';
 
 @Table({ tableName: tableNames.PLACES, timestamps: true })
 export class Place extends Model {
   @PrimaryKey
-  @AutoIncrement
-  @AllowNull(false)
-  @Column(DataType.INTEGER)
-  id!: number;
+  @Column(DataType.STRING(27))
+  id!: string;
 
   @AllowNull(false)
   @Column(DataType.TEXT)
@@ -71,4 +70,9 @@ export class Place extends Model {
 
   @BelongsTo(() => Owner)
   owner!: Owner;
+
+  @BeforeCreate
+  static async generateId(place: Place) {
+    place.id = nanoid(27);
+  }
 }

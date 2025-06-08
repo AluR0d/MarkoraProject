@@ -61,7 +61,7 @@ export class PlaceService {
     return places;
   }
 
-  static async getPlaceByPk(id: number) {
+  static async getPlaceByPk(id: string) {
     const place = await Place.findByPk(id);
     return place;
   }
@@ -71,7 +71,7 @@ export class PlaceService {
     return place;
   }
 
-  static async updatePlace(id: number, data: UpdatePlaceDTO) {
+  static async updatePlace(id: string, data: UpdatePlaceDTO) {
     const [affectedRows] = await Place.update(data, { where: { id } });
     if (affectedRows === 0) return null;
 
@@ -79,7 +79,7 @@ export class PlaceService {
     return updatedPlace;
   }
 
-  static async deletePlace(id: number) {
+  static async deletePlace(id: string) {
     const affectedRows = await Place.destroy({ where: { id } });
     return affectedRows > 0;
   }

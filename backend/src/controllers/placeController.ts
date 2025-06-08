@@ -57,7 +57,7 @@ export class PlaceController {
   getPlaceByPk = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-      const place = await PlaceService.getPlaceByPk(Number(id));
+      const place = await PlaceService.getPlaceByPk(id);
       if (!place) {
         res.status(404).json({ message: 'Place not found' });
         return;
@@ -101,16 +101,13 @@ export class PlaceController {
     }
 
     try {
-      const existingPlace = await PlaceService.getPlaceByPk(Number(id));
+      const existingPlace = await PlaceService.getPlaceByPk(id);
       if (!existingPlace) {
         res.status(404).json({ message: 'Place not found' });
         return;
       }
 
-      const updatedPlace = await PlaceService.updatePlace(
-        Number(id),
-        result.data
-      );
+      const updatedPlace = await PlaceService.updatePlace(id, result.data);
       if (!updatedPlace) {
         res.status(404).json({ message: 'Failed to update place' });
         return;
@@ -129,13 +126,13 @@ export class PlaceController {
     const { id } = req.params;
 
     try {
-      const existingPlace = await PlaceService.getPlaceByPk(Number(id));
+      const existingPlace = await PlaceService.getPlaceByPk(id);
       if (!existingPlace) {
         res.status(404).json({ message: 'Place not found' });
         return;
       }
 
-      const deletedPlace = await PlaceService.deletePlace(Number(id));
+      const deletedPlace = await PlaceService.deletePlace(id);
       if (!deletedPlace) {
         res.status(400).json({ message: 'No place was deleted' });
         return;
