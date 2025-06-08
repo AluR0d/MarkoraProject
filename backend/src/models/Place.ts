@@ -73,6 +73,14 @@ export class Place extends Model {
 
   @BeforeCreate
   static async generateId(place: Place) {
-    place.id = nanoid(27);
+    let newId: string;
+
+    while (true) {
+      newId = nanoid(27);
+      const existing = await Place.findByPk(newId);
+      if (!existing) break;
+    }
+
+    place.id = newId;
   }
 }
