@@ -1,4 +1,3 @@
-// src/components/atoms/LanguageSelector.tsx
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import { useState } from 'react';
 import LanguageIcon from '@mui/icons-material/Language';

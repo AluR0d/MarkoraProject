@@ -2,7 +2,7 @@ type Props = {
   label: string;
   onClick?: () => void;
   disabled?: boolean;
-  type?: 'button' | 'submit'; // por si quieres usarlo como submit también
+  type?: 'button' | 'submit';
 };
 
 export default function PrimaryButton({

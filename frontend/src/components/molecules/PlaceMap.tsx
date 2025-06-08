@@ -49,7 +49,7 @@ export default function PlaceMap({ place, onUpdate }: Props) {
   const coords = place.coords?.coordinates;
   if (!coords || coords.length < 2) return null;
 
-  const position: LatLngExpression = [coords[1], coords[0]]; // [lat, lng]
+  const position: LatLngExpression = [coords[1], coords[0]];
 
   const handleMapClick = (latlng: LatLng) => {
     const updatedPlace = {

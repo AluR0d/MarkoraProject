@@ -36,7 +36,7 @@ export default function AdminPage() {
     <Container
       maxWidth="lg"
       sx={{
-        mt: isMobile ? 10 : 12, // compensar altura del header
+        mt: isMobile ? 10 : 12,
         mb: 6,
       }}
     >

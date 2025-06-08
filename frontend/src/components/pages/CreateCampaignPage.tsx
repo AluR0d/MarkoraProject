@@ -302,7 +302,6 @@ export default function CreateCampaignPage() {
           </button>
         </div>
 
-        {/* Toast Notification */}
         {notification && (
           <div
             className={`fixed top-6 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md shadow-md text-sm font-medium z-50 flex items-center justify-between gap-4 w-fit max-w-md ${

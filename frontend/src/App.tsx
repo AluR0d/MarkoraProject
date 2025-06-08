@@ -1,4 +1,4 @@
-import AppRouter from './router'; // O donde tengas tu router
+import AppRouter from './router';
 
 const App = () => {
   return <AppRouter />;

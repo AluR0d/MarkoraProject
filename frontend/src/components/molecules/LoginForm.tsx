@@ -54,7 +54,6 @@ export default function LoginForm({
     <form onSubmit={handleSubmit} className="w-full">
       <FormTitle text={t('login.title')} />
 
-      {/* Email */}
       <div className="mb-4">
         <label className="block mb-1 font-medium text-[var(--color-dark)]">
           {t('login.email')}
@@ -72,7 +71,6 @@ export default function LoginForm({
         )}
       </div>
 
-      {/* Password con ícono 👁️ */}
       <div className="mb-4 relative">
         <label className="block mb-1 font-medium text-[var(--color-dark)]">
           {t('login.password')}
@@ -98,13 +96,11 @@ export default function LoginForm({
         )}
       </div>
 
-      {/* Botón enviar */}
       <SubmitButton
         label={isLoading ? t('login.loading') : t('login.submit')}
         disabled={isLoading}
       />
 
-      {/* Error general */}
       {errorMessage && (
         <p className="text-center text-red-600 mt-4 font-medium">
           {errorMessage}

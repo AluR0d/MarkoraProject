@@ -49,13 +49,12 @@ export default function DashboardAdminPanel() {
     if (!data) return;
 
     try {
-      // 📝 Registrar el informe en el backend
       await axios.post(
         `${import.meta.env.VITE_API_URL}/reports`,
         {
           title: t('dashboard.title'),
           range,
-          data_snapshot: data, // opcional, puedes quitar si quieres
+          data_snapshot: data,
         },
         {
           headers: {
@@ -65,10 +64,8 @@ export default function DashboardAdminPanel() {
       );
     } catch (err) {
       console.error('❌ Error al guardar el informe:', err);
-      // No bloqueamos la generación del PDF si falla el registro
     }
 
-    // 🧾 Generar el PDF
     const doc = new jsPDF();
     const now = new Date();
     const formattedDate = now.toLocaleString();
@@ -113,7 +110,6 @@ export default function DashboardAdminPanel() {
       </h2>
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 w-full">
-        {/* Dropdown custom */}
         <div className="relative w-full sm:w-auto">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}

@@ -7,7 +7,7 @@ type User = {
   name: string;
   email: string;
   balance: number;
-  roles: string[]; // 👈 ahora como array de strings
+  roles: string[];
 };
 
 type UserContextType = {
@@ -43,7 +43,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       .then(([userData, roles]) => {
         console.log('🧠 Roles recibidos del backend:', roles);
 
-        setUser({ ...userData, roles }); // combinamos los datos del usuario + roles
+        setUser({ ...userData, roles });
       })
 
       .catch((error) => {

@@ -9,12 +9,9 @@ type Props = {
 export default function PrivateRoute({ children }: Props) {
   const { user, isLoading } = useUser();
 
-  // Mientras se está cargando el usuario, muestra un loader
   if (isLoading) return <Loader />;
 
-  // Si no hay usuario, redirige a login
   if (!user) return <Navigate to="/login" />;
 
-  // Si hay usuario, renderiza normalmente
   return <>{children}</>;
 }
