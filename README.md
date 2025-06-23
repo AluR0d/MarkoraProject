@@ -1,2 +1,2 @@
 # MarkoraProject
-Private version of Markoras REPO
+Markoras REPO
